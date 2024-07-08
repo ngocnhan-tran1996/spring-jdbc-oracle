@@ -6,7 +6,9 @@ import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.BeanPropertyMapper;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import org.springframework.jdbc.core.SqlInOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
@@ -86,7 +88,14 @@ public final class ParameterInput<T> {
         return this;
     }
 
-    public SqlTypeValue typeValue() {
+    public Map<String, Object> toMap() {
+
+        var map = new HashMap<String, Object>();
+        map.put(this.parameterName, this.sqlTypeValue());
+        return map;
+    }
+
+    public SqlTypeValue sqlTypeValue() {
 
         return this.typeValue;
     }
