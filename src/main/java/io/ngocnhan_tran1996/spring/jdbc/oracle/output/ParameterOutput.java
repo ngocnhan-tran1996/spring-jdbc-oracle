@@ -1,5 +1,7 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.output;
 
+import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_NULL;
+
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.jdbc.core.SqlOutParameter;
@@ -24,9 +26,9 @@ public final class ParameterOutput<T> {
     public static <T> ParameterOutput<T> withParameterName(
         String parameterName,
         String typeName,
-        Class<T> clazz) {
+        Class<T> mappedClass) {
 
-        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(mappedClass, NOT_NULL.formatted("mapped class"));
 
         // TODO add logic
         return new ParameterOutput<>(parameterName, typeName);

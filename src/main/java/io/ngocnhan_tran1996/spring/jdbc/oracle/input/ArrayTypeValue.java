@@ -9,12 +9,12 @@ import java.sql.SQLException;
 import java.util.Collection;
 import oracle.jdbc.OracleConnection;
 
-class ArrayTypeValue<T extends Collection<?>> extends AbstractTypeValue {
+class ArrayTypeValue<T> extends AbstractTypeValue {
 
-    protected final T values;
     private final String arrayTypeName;
+    protected final Collection<T> values;
 
-    public ArrayTypeValue(String arrayTypeName, T values) {
+    public ArrayTypeValue(String arrayTypeName, Collection<T> values) {
 
         if (Strings.isBlank(arrayTypeName)) {
 
