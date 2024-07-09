@@ -54,11 +54,11 @@ public final class ParameterInput<T> {
 
     public final class ParameterTypeValue {
 
-        private ParameterTypeValue() {
-        }
-
         private AbstractTypeValue typeValue;
         private Integer type;
+
+        private ParameterTypeValue() {
+        }
 
         public ParameterTypeValue withArray(String arrayTypeName) {
 

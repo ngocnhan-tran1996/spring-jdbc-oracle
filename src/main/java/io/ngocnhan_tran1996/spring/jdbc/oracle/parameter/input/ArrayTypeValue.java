@@ -12,7 +12,7 @@ import oracle.jdbc.OracleConnection;
 class ArrayTypeValue<T> extends AbstractTypeValue {
 
     private final String arrayTypeName;
-    protected final Collection<T> values;
+    private final Collection<T> values;
 
     public ArrayTypeValue(String arrayTypeName, Collection<T> values) {
 
@@ -41,6 +41,11 @@ class ArrayTypeValue<T> extends AbstractTypeValue {
         return connection
             .unwrap(OracleConnection.class)
             .createOracleArray(typeName, oracleArray);
+    }
+
+    protected Collection<T> values() {
+
+        return this.values;
     }
 
 }
