@@ -9,7 +9,7 @@ import java.sql.Types;
 class ArrayReturnType<T> extends AbstractReturnType<T> {
 
     @Override
-    protected T convertStruct(Connection connection, Struct struct) throws SQLException {
+    protected T convertStruct(Connection connection, Struct struct) {
 
         return null;
     }

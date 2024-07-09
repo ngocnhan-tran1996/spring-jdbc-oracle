@@ -18,7 +18,7 @@ class StructArrayReturnType<T> extends ArrayReturnType<T> {
     }
 
     @Override
-    protected T convertStruct(Connection connection, Struct struct) throws SQLException {
+    protected T convertStruct(Connection connection, Struct struct) {
 
         return this.mapper.fromStruct(connection, struct);
     }

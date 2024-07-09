@@ -28,7 +28,7 @@ abstract class AbstractReturnType<T> implements SqlReturnType {
             : this.convertArray(cs.getConnection(), array);
     }
 
-    protected abstract T convertStruct(Connection connection, Struct struct) throws SQLException;
+    protected abstract T convertStruct(Connection connection, Struct struct);
 
     protected abstract Object convertArray(Connection connection, Array array) throws SQLException;
 
