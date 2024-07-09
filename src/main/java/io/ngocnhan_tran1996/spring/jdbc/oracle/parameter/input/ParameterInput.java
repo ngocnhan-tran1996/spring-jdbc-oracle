@@ -2,6 +2,7 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.input;
 
 import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_NULL;
 
+import io.ngocnhan_tran1996.spring.jdbc.oracle.Parameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.BeanPropertyMapper;
 import java.sql.Types;
@@ -14,16 +15,14 @@ import org.springframework.jdbc.core.SqlInOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlTypeValue;
 
-public final class ParameterInput<T> {
+public final class ParameterInput<T> extends Parameter<T> {
 
-    private final String parameterName;
-    private final Class<T> mappedClass;
     private Collection<T> values;
 
     private ParameterInput(String parameterName, Class<T> mappedClass) {
 
-        this.parameterName = parameterName;
-        this.mappedClass = mappedClass;
+        super.setParameterName(parameterName);
+        super.setMappedClass(mappedClass);
     }
 
     public static <T> ParameterInput<T> withParameterName(String parameterName) {
@@ -75,7 +74,7 @@ public final class ParameterInput<T> {
             this.typeValue = new StructTypeValue<>(
                 structTypeName,
                 value,
-                BeanPropertyMapper.newInstance(mappedClass)
+                BeanPropertyMapper.newInstance(getMappedClass())
             );
             this.type = Types.STRUCT;
             return this;
@@ -87,7 +86,7 @@ public final class ParameterInput<T> {
                 arrayTypeName,
                 values,
                 structTypeName,
-                BeanPropertyMapper.newInstance(mappedClass)
+                BeanPropertyMapper.newInstance(getMappedClass())
             );
             this.type = Types.ARRAY;
             return this;
@@ -96,7 +95,7 @@ public final class ParameterInput<T> {
         public Map<String, Object> toMap() {
 
             var map = new HashMap<String, Object>();
-            map.put(parameterName, this.sqlTypeValue());
+            map.put(getParameterName(), this.sqlTypeValue());
             return map;
         }
 
@@ -109,7 +108,7 @@ public final class ParameterInput<T> {
 
             this.validateTypeValue();
             return new SqlParameter(
-                parameterName,
+                getParameterName(),
                 this.type,
                 this.typeValue.getTypeName()
             );
@@ -119,7 +118,7 @@ public final class ParameterInput<T> {
 
             this.validateTypeValue();
             return new SqlInOutParameter(
-                parameterName,
+                getParameterName(),
                 this.type,
                 this.typeValue.getTypeName(),
                 // FIXME add logic
