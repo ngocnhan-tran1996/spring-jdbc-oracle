@@ -5,11 +5,11 @@ import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_NULL;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.BeanPropertyMapper;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.springframework.jdbc.core.SqlInOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlTypeValue;
@@ -19,8 +19,6 @@ public final class ParameterInput<T> {
     private final String parameterName;
     private final Class<T> mappedClass;
     private Collection<T> values;
-    private AbstractTypeValue typeValue;
-    private Integer type;
 
     private ParameterInput(String parameterName, Class<T> mappedClass) {
 
@@ -28,105 +26,114 @@ public final class ParameterInput<T> {
         this.mappedClass = mappedClass;
     }
 
-    public static <T> ParameterInput<T> newInstance(String parameterName) {
+    public static <T> ParameterInput<T> withParameterName(String parameterName) {
 
-        return newInstance(parameterName, null);
+        return withParameterName(parameterName, null);
     }
 
-    public static <T> ParameterInput<T> newInstance(String parameterName, Class<T> mappedClass) {
+    public static <T> ParameterInput<T> withParameterName(
+        String parameterName,
+        Class<T> mappedClass) {
 
         return new ParameterInput<>(parameterName, mappedClass);
     }
 
-    public ParameterInput<T> withValues(Collection<T> values) {
+    public ParameterTypeValue withValues(Collection<T> values) {
 
         this.values = values;
-        return this;
+        return new ParameterTypeValue();
     }
 
-    public ParameterInput<T> withValue(T value) {
+    public ParameterTypeValue withValue(T value) {
 
         this.values = value == null
             ? null
             : List.of(value);
-        return this;
+        return new ParameterTypeValue();
     }
 
-    public ParameterInput<T> withArray(String arrayTypeName) {
+    public final class ParameterTypeValue {
 
-        this.typeValue = new ArrayTypeValue<>(arrayTypeName, values);
-        this.type = Types.ARRAY;
-        return this;
-    }
+        private ParameterTypeValue() {
+        }
 
-    public ParameterInput<T> withStruct(String structTypeName) {
+        private AbstractTypeValue typeValue;
+        private Integer type;
 
-        var value = this.values == null || this.values.isEmpty()
-            ? null
-            : this.values.stream()
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
-        this.typeValue = new StructTypeValue<>(
-            structTypeName,
-            value,
-            BeanPropertyMapper.newInstance(this.mappedClass)
-        );
-        this.type = Types.STRUCT;
-        return this;
-    }
+        public ParameterTypeValue withArray(String arrayTypeName) {
 
-    public ParameterInput<T> withStructArray(String arrayTypeName, String structTypeName) {
+            this.typeValue = new ArrayTypeValue<>(arrayTypeName, values);
+            this.type = Types.ARRAY;
+            return this;
+        }
 
-        this.typeValue = new StructArrayTypeValue<>(
-            arrayTypeName,
-            this.values,
-            structTypeName,
-            BeanPropertyMapper.newInstance(this.mappedClass)
-        );
-        this.type = Types.ARRAY;
-        return this;
-    }
+        public ParameterTypeValue withStruct(String structTypeName) {
 
-    public Map<String, Object> toMap() {
+            var value = values == null || values.isEmpty()
+                ? null
+                : new ArrayList<>(values).getFirst();
+            this.typeValue = new StructTypeValue<>(
+                structTypeName,
+                value,
+                BeanPropertyMapper.newInstance(mappedClass)
+            );
+            this.type = Types.STRUCT;
+            return this;
+        }
 
-        var map = new HashMap<String, Object>();
-        map.put(this.parameterName, this.sqlTypeValue());
-        return map;
-    }
+        public ParameterTypeValue withStructArray(String arrayTypeName, String structTypeName) {
 
-    public SqlTypeValue sqlTypeValue() {
+            this.typeValue = new StructArrayTypeValue<>(
+                arrayTypeName,
+                values,
+                structTypeName,
+                BeanPropertyMapper.newInstance(mappedClass)
+            );
+            this.type = Types.ARRAY;
+            return this;
+        }
 
-        return this.typeValue;
-    }
+        public Map<String, Object> toMap() {
 
-    public SqlParameter sqlParameter() {
+            var map = new HashMap<String, Object>();
+            map.put(parameterName, this.sqlTypeValue());
+            return map;
+        }
 
-        this.validateTypeValue();
-        return new SqlParameter(
-            this.parameterName,
-            this.type,
-            this.typeValue.getTypeName()
-        );
-    }
+        public SqlTypeValue sqlTypeValue() {
 
-    public SqlInOutParameter sqlInOutParameter() {
+            return this.typeValue;
+        }
 
-        this.validateTypeValue();
-        return new SqlInOutParameter(
-            this.parameterName,
-            this.type,
-            this.typeValue.getTypeName(),
-            // FIXME add logic
-            null
-        );
-    }
+        public SqlParameter sqlParameter() {
 
-    private void validateTypeValue() {
+            this.validateTypeValue();
+            return new SqlParameter(
+                parameterName,
+                this.type,
+                this.typeValue.getTypeName()
+            );
+        }
 
-        if (this.type == null || this.typeValue == null) {
+        public SqlInOutParameter sqlInOutParameter() {
 
-            throw new ValueException(NOT_NULL.formatted("Type"));
+            this.validateTypeValue();
+            return new SqlInOutParameter(
+                parameterName,
+                this.type,
+                this.typeValue.getTypeName(),
+                // FIXME add logic
+                null
+            );
+        }
+
+        private void validateTypeValue() {
+
+            if (this.type == null || this.typeValue == null) {
+
+                throw new ValueException(NOT_NULL.formatted("Type"));
+            }
+
         }
 
     }
