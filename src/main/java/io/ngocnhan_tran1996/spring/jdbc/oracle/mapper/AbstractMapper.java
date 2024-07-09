@@ -49,10 +49,10 @@ public abstract class AbstractMapper<T> extends Parameter<T> implements Mapper<T
                 .createStruct(typeName, objects);
         } catch (Exception ex) {
 
-            String message = source == null
+            String className = source == null
                 ? null
                 : source.getClass().getName();
-            this.log.debug("Expected STRUCT but got '%s'".formatted(message), ex);
+            this.log.debug("Expected STRUCT but got '%s'".formatted(className), ex);
             return null;
         }
     }

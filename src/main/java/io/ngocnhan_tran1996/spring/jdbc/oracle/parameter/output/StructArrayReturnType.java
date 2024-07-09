@@ -1,5 +1,7 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output;
 
+import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.Mapper;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -8,11 +10,17 @@ import java.util.ArrayList;
 
 class StructArrayReturnType<T> extends ArrayReturnType<T> {
 
+    private final Mapper<T> mapper;
+
+    StructArrayReturnType(Mapper<T> mapper) {
+
+        this.mapper = mapper;
+    }
+
     @Override
     protected T convertStruct(Connection connection, Struct struct) throws SQLException {
 
-        // FIXME add logic
-        return null;
+        return this.mapper.fromStruct(connection, struct);
     }
 
     @Override
@@ -29,11 +37,10 @@ class StructArrayReturnType<T> extends ArrayReturnType<T> {
                 continue;
             }
 
-            // FIXME throw exception
-//            String errorMsg = object == null
-//                ? null
-//                : object.getClass().getName();
-//            throw new OracleTypeException(String.format("Expected STRUCT but got '%s'", errorMsg));
+            String className = object == null
+                ? null
+                : object.getClass().getName();
+            throw new ValueException("Expected STRUCT but got '%s'".formatted(className));
         }
 
         // convert type object array

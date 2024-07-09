@@ -1,6 +1,7 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output;
 
 import io.ngocnhan_tran1996.spring.jdbc.oracle.Parameter;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.BeanPropertyMapper;
 import java.util.Optional;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlReturnType;
@@ -37,14 +38,16 @@ public final class ParameterOutput<T> extends Parameter<T> {
 
     public ParameterOutput<T> withArrayStructType(String typeName) {
 
-        this.returnType = new StructArrayReturnType<>();
+        this.returnType = new StructArrayReturnType<>(
+            BeanPropertyMapper.newInstance(getMappedClass())
+        );
         this.typeName = typeName;
         return this;
     }
 
     public ParameterOutput<T> withStructType(String typeName) {
 
-        this.returnType = new StructReturnType<>();
+        this.returnType = new StructReturnType<>(BeanPropertyMapper.newInstance(getMappedClass()));
         this.typeName = typeName;
         return this;
     }
