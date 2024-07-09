@@ -1,4 +1,4 @@
-package io.ngocnhan_tran1996.spring.jdbc.oracle.output;
+package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output;
 
 import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_NULL;
 
@@ -9,29 +9,26 @@ import org.springframework.jdbc.core.SqlOutParameter;
 public final class ParameterOutput<T> {
 
     private final String parameterName;
-    private final String typeName;
+    private final Class<T> mappedClass;
+    private String typeName;
 
-    private ParameterOutput(String parameterName, String typeName) {
+    private ParameterOutput(String parameterName, Class<T> mappedClass) {
 
         this.parameterName = parameterName;
-        this.typeName = typeName;
+        this.mappedClass = mappedClass;
     }
 
     public static ParameterOutput<Object> withParameterName(String parameterName) {
 
-        // TODO add logic
         return new ParameterOutput<>(parameterName, null);
     }
 
     public static <T> ParameterOutput<T> withParameterName(
         String parameterName,
-        String typeName,
         Class<T> mappedClass) {
 
         Objects.requireNonNull(mappedClass, NOT_NULL.formatted("mapped class"));
-
-        // TODO add logic
-        return new ParameterOutput<>(parameterName, typeName);
+        return new ParameterOutput<>(parameterName, mappedClass);
     }
 
     public SqlOutParameter toSqlOutParameter() {

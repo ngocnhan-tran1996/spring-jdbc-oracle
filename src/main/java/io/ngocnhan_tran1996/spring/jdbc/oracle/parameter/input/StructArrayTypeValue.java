@@ -1,4 +1,4 @@
-package io.ngocnhan_tran1996.spring.jdbc.oracle.input;
+package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.input;
 
 import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_BLANK;
 

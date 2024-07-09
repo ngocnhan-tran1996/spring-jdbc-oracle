@@ -1,4 +1,4 @@
-package io.ngocnhan_tran1996.spring.jdbc.oracle.output;
+package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output;
 
 import java.sql.Array;
 import java.sql.CallableStatement;

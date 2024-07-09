@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
 public class BeanPropertyMapper<T> extends AbstractMapper<T> {
@@ -84,6 +85,27 @@ public class BeanPropertyMapper<T> extends AbstractMapper<T> {
         });
 
         return values;
+    }
+
+    @Override
+    protected T constructInstance(Map<String, Object> valueByName) {
+
+        var bw = new BeanWrapperImpl();
+        var instance = BeanUtils.instantiateClass(this.mappedClass);
+        bw.setBeanInstance(instance);
+
+        this.writeProperties.forEach((fieldName, pd) -> {
+
+            if (not(valueByName.containsKey(fieldName))) {
+
+                return;
+            }
+
+            String name = pd.getName();
+            bw.setPropertyValue(name, valueByName.get(fieldName));
+        });
+
+        return instance;
     }
 
 }

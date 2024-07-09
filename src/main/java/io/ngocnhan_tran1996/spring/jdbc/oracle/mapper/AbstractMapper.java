@@ -19,6 +19,8 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 
 public abstract class AbstractMapper<T> implements Mapper<T> {
 
+    private static final String MESSAGE = "%s is not struct";
+
     protected final Log log = LogFactory.getLog(this.getClass());
 
     @Override
@@ -32,7 +34,7 @@ public abstract class AbstractMapper<T> implements Mapper<T> {
 
             if (oracleTypeMetaData.getKind() != OracleTypeMetaData.Kind.STRUCT) {
 
-                throw new ValueException("%s is not struct".formatted(typeName));
+                throw new ValueException(MESSAGE.formatted(typeName));
             }
 
             var rsmd = this.getResultSetMetaData(oracleTypeMetaData);
@@ -56,11 +58,36 @@ public abstract class AbstractMapper<T> implements Mapper<T> {
     @Override
     public T fromStruct(Connection connection, Struct struct) {
 
-        // TODO add logic
-        return null;
+        try {
+
+            var typeName = struct.getSQLTypeName();
+            var oracleTypeMetaData = connection.getMetaData()
+                .unwrap(OracleDatabaseMetaData.class)
+                .getOracleTypeMetaData(typeName);
+
+            if (oracleTypeMetaData.getKind() != OracleTypeMetaData.Kind.STRUCT) {
+
+                throw new ValueException(MESSAGE.formatted(typeName));
+            }
+
+            Object[] values = struct.getAttributes();
+            var valueByName = new LinkedCaseInsensitiveMap<>(values.length);
+
+            var rsmd = this.getResultSetMetaData(oracleTypeMetaData);
+            this.extractIndexByColumnName(rsmd)
+                .forEach((columnName, index) -> valueByName.put(columnName, values[index]));
+
+            return this.constructInstance(valueByName);
+        } catch (SQLException ex) {
+
+            this.log.debug("Can not convert struct to object", ex);
+            return null;
+        }
     }
 
     protected abstract Object[] createStruct(int columns, Map<String, Integer> columnNameByIndex);
+
+    protected abstract T constructInstance(Map<String, Object> valueByName);
 
     ResultSetMetaData getResultSetMetaData(OracleTypeMetaData struct) throws SQLException {
 
