@@ -14,7 +14,9 @@ public class Parameter<T> {
 
     public void setParameterName(String parameterName) {
 
-        this.parameterName = parameterName;
+        this.parameterName = parameterName == null
+            ? null
+            : parameterName.toUpperCase();
     }
 
     public Class<T> getMappedClass() {

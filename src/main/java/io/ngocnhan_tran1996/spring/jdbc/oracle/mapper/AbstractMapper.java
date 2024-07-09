@@ -41,7 +41,8 @@ public abstract class AbstractMapper<T> extends Parameter<T> implements Mapper<T
             var rsmd = this.getResultSetMetaData(oracleTypeMetaData);
             Object[] objects = this.createStruct(
                 rsmd.getColumnCount(),
-                this.extractIndexByColumnName(rsmd)
+                this.extractIndexByColumnName(rsmd),
+                source
             );
 
             return connection.unwrap(OracleConnection.class)
@@ -86,7 +87,11 @@ public abstract class AbstractMapper<T> extends Parameter<T> implements Mapper<T
         }
     }
 
-    protected abstract Object[] createStruct(int columns, Map<String, Integer> columnNameByIndex);
+    protected abstract Object[] createStruct(
+        int columns,
+        Map<String, Integer> columnNameByIndex,
+        T source
+    );
 
     protected abstract T constructInstance(Map<String, Object> valueByName);
 

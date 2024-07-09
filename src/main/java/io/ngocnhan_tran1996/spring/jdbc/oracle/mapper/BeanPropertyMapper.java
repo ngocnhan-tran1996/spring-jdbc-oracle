@@ -14,12 +14,16 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 
 public class BeanPropertyMapper<T> extends AbstractMapper<T> {
 
+    private final BeanWrapperImpl bw = new BeanWrapperImpl();
     private final Map<String, PropertyDescriptor> readProperties = new LinkedCaseInsensitiveMap<>();
     private final Map<String, PropertyDescriptor> writeProperties = new LinkedCaseInsensitiveMap<>();
 
     private BeanPropertyMapper(Class<T> mappedClass) {
 
         super.setMappedClass(mappedClass);
+
+        var instance = BeanUtils.instantiateClass(mappedClass);
+        bw.setBeanInstance(instance);
     }
 
     public static <T> BeanPropertyMapper<T> newInstance(Class<T> mappedClass) {
@@ -30,20 +34,21 @@ public class BeanPropertyMapper<T> extends AbstractMapper<T> {
 
     BeanPropertyMapper<T> extractParameterNames() {
 
-        for (var pd : BeanUtils.getPropertyDescriptors(super.getMappedClass())) {
+        var mappedClass = super.getMappedClass();
+        for (var field : mappedClass.getDeclaredFields()) {
 
-            String name = pd.getName();
+            String name = field.getName();
 
             try {
 
-                var columnName = super.getMappedClass().getDeclaredField(name)
-                    .getDeclaredAnnotation(OracleParameter.class);
-                var propertyName = Optional.ofNullable(columnName)
+                var oracleParameterName = field.getDeclaredAnnotation(OracleParameter.class);
+                var propertyName = Optional.ofNullable(oracleParameterName)
                     .map(OracleParameter::value)
                     .filter(Predicate.not(Strings::isBlank))
                     .filter(Predicate.not(name::equalsIgnoreCase))
                     .orElse(name);
 
+                var pd = new PropertyDescriptor(name, mappedClass);
                 if (pd.getReadMethod() != null) {
 
                     this.readProperties.put(propertyName, pd);
@@ -54,7 +59,7 @@ public class BeanPropertyMapper<T> extends AbstractMapper<T> {
                     this.writeProperties.put(propertyName, pd);
                 }
 
-            } catch (NoSuchFieldException ex) {
+            } catch (Exception ex) {
 
                 this.log.debug("Can not find field %s".formatted(name), ex);
             }
@@ -65,8 +70,9 @@ public class BeanPropertyMapper<T> extends AbstractMapper<T> {
     }
 
     @Override
-    protected Object[] createStruct(int columns, Map<String, Integer> columnNameByIndex) {
+    protected Object[] createStruct(int columns, Map<String, Integer> columnNameByIndex, T source) {
 
+        this.bw.setBeanInstance(source);
         Object[] values = new Object[columns];
 
         this.readProperties.forEach((fieldName, pd) -> {
@@ -77,18 +83,15 @@ public class BeanPropertyMapper<T> extends AbstractMapper<T> {
             }
 
             String name = pd.getName();
-            values[columnNameByIndex.get(fieldName)] = pd.getValue(name);
+            values[columnNameByIndex.get(fieldName)] = this.bw.getPropertyValue(name);
         });
 
         return values;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected T constructInstance(Map<String, Object> valueByName) {
-
-        var bw = new BeanWrapperImpl();
-        var instance = BeanUtils.instantiateClass(super.getMappedClass());
-        bw.setBeanInstance(instance);
 
         this.writeProperties.forEach((fieldName, pd) -> {
 
@@ -98,10 +101,10 @@ public class BeanPropertyMapper<T> extends AbstractMapper<T> {
             }
 
             String name = pd.getName();
-            bw.setPropertyValue(name, valueByName.get(fieldName));
+            this.bw.setPropertyValue(name, valueByName.get(fieldName));
         });
 
-        return instance;
+        return (T) this.bw.getWrappedInstance();
     }
 
 }
