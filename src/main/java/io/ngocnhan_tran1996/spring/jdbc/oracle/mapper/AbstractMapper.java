@@ -87,6 +87,31 @@ public abstract class AbstractMapper<T> extends Parameter<T> implements Mapper<T
         }
     }
 
+    @Override
+    public T convert(Map<String, Object> source) {
+
+        if (source == null) {
+
+            return null;
+        }
+
+        var valueByName = new LinkedCaseInsensitiveMap<>();
+        source.forEach((columnName, value) -> {
+
+            valueByName.put(columnName, value);
+
+            String propertyName = JdbcUtils.convertUnderscoreNameToPropertyName(columnName);
+            if (not(Objects.equals(columnName, propertyName))) {
+
+                valueByName.put(propertyName, value);
+            }
+
+        });
+
+        return this.constructInstance(valueByName);
+    }
+
+
     protected abstract Object[] createStruct(
         int columns,
         Map<String, Integer> columnNameByIndex,

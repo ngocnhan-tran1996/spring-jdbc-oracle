@@ -1,21 +1,19 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output;
 
-import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_NULL;
-
-import java.util.Objects;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.Parameter;
 import java.util.Optional;
 import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlReturnType;
 
-public final class ParameterOutput<T> {
+public final class ParameterOutput<T> extends Parameter<T> {
 
-    private final String parameterName;
-    private final Class<T> mappedClass;
+    private AbstractReturnType<T> returnType;
     private String typeName;
 
     private ParameterOutput(String parameterName, Class<T> mappedClass) {
 
-        this.parameterName = parameterName;
-        this.mappedClass = mappedClass;
+        super.setParameterName(parameterName);
+        super.setMappedClass(mappedClass);
     }
 
     public static ParameterOutput<Object> withParameterName(String parameterName) {
@@ -27,23 +25,45 @@ public final class ParameterOutput<T> {
         String parameterName,
         Class<T> mappedClass) {
 
-        Objects.requireNonNull(mappedClass, NOT_NULL.formatted("mapped class"));
         return new ParameterOutput<>(parameterName, mappedClass);
     }
 
-    public SqlOutParameter toSqlOutParameter() {
+    public ParameterOutput<T> withArrayType(String typeName) {
+
+        this.returnType = new ArrayReturnType<>();
+        this.typeName = typeName;
+        return this;
+    }
+
+    public ParameterOutput<T> withArrayStructType(String typeName) {
+
+        this.returnType = new StructArrayReturnType<>();
+        this.typeName = typeName;
+        return this;
+    }
+
+    public ParameterOutput<T> withStructType(String typeName) {
+
+        this.returnType = new StructReturnType<>();
+        this.typeName = typeName;
+        return this;
+    }
+
+    public SqlOutParameter sqlOutParameter() {
 
         return new SqlOutParameter(
-            this.parameterName,
-            // TODO add logic
-//            returnType.sqlType(),
-            -1,
+            getParameterName(),
+            this.returnType.sqlType(),
             Optional.ofNullable(this.typeName)
                 .map(String::toUpperCase)
                 .orElse(null),
-            // TODO add logic
-            null
+            this.returnType
         );
+    }
+
+    public SqlReturnType sqlReturnType() {
+
+        return this.returnType;
     }
 
 }

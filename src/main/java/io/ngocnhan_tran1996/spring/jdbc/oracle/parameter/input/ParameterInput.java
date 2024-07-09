@@ -5,6 +5,7 @@ import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_NULL;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.Parameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.BeanPropertyMapper;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output.ParameterOutput;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.SqlInOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.SqlReturnType;
 import org.springframework.jdbc.core.SqlTypeValue;
 
 public final class ParameterInput<T> extends Parameter<T> {
@@ -55,6 +57,7 @@ public final class ParameterInput<T> extends Parameter<T> {
 
         private AbstractTypeValue typeValue;
         private Integer type;
+        private SqlReturnType returnType;
 
         private ParameterTypeValue() {
         }
@@ -63,6 +66,12 @@ public final class ParameterInput<T> extends Parameter<T> {
 
             this.typeValue = new ArrayTypeValue<>(arrayTypeName, values);
             this.type = Types.ARRAY;
+            this.returnType = ParameterOutput.withParameterName(
+                    getParameterName(),
+                    getMappedClass()
+                )
+                .withArrayType(arrayTypeName)
+                .sqlReturnType();
             return this;
         }
 
@@ -77,6 +86,12 @@ public final class ParameterInput<T> extends Parameter<T> {
                 BeanPropertyMapper.newInstance(getMappedClass())
             );
             this.type = Types.STRUCT;
+            this.returnType = ParameterOutput.withParameterName(
+                    getParameterName(),
+                    getMappedClass()
+                )
+                .withStructType(structTypeName)
+                .sqlReturnType();
             return this;
         }
 
@@ -89,6 +104,12 @@ public final class ParameterInput<T> extends Parameter<T> {
                 BeanPropertyMapper.newInstance(getMappedClass())
             );
             this.type = Types.ARRAY;
+            this.returnType = ParameterOutput.withParameterName(
+                    getParameterName(),
+                    getMappedClass()
+                )
+                .withArrayStructType(arrayTypeName)
+                .sqlReturnType();
             return this;
         }
 
@@ -121,8 +142,7 @@ public final class ParameterInput<T> extends Parameter<T> {
                 getParameterName(),
                 this.type,
                 this.typeValue.getTypeName(),
-                // FIXME add logic
-                null
+                this.returnType
             );
         }
 
