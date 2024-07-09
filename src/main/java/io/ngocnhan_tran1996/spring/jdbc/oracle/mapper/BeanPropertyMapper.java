@@ -1,13 +1,11 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper;
 
 import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Matchers.not;
-import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_NULL;
 
 import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
 import java.beans.PropertyDescriptor;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import org.springframework.beans.BeanUtils;
@@ -16,31 +14,29 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 
 public class BeanPropertyMapper<T> extends AbstractMapper<T> {
 
-    private final Class<T> mappedClass;
     private final Map<String, PropertyDescriptor> readProperties = new LinkedCaseInsensitiveMap<>();
     private final Map<String, PropertyDescriptor> writeProperties = new LinkedCaseInsensitiveMap<>();
 
     private BeanPropertyMapper(Class<T> mappedClass) {
 
-        this.mappedClass = mappedClass;
+        super.setMappedClass(mappedClass);
     }
 
     public static <T> BeanPropertyMapper<T> newInstance(Class<T> mappedClass) {
 
-        Objects.requireNonNull(mappedClass, NOT_NULL.formatted("mapped class"));
         return new BeanPropertyMapper<>(mappedClass)
             .extractParameterNames();
     }
 
     BeanPropertyMapper<T> extractParameterNames() {
 
-        for (var pd : BeanUtils.getPropertyDescriptors(this.mappedClass)) {
+        for (var pd : BeanUtils.getPropertyDescriptors(super.getMappedClass())) {
 
             String name = pd.getName();
 
             try {
 
-                var columnName = this.mappedClass.getDeclaredField(name)
+                var columnName = super.getMappedClass().getDeclaredField(name)
                     .getDeclaredAnnotation(OracleParameter.class);
                 var propertyName = Optional.ofNullable(columnName)
                     .map(OracleParameter::value)
@@ -91,7 +87,7 @@ public class BeanPropertyMapper<T> extends AbstractMapper<T> {
     protected T constructInstance(Map<String, Object> valueByName) {
 
         var bw = new BeanWrapperImpl();
-        var instance = BeanUtils.instantiateClass(this.mappedClass);
+        var instance = BeanUtils.instantiateClass(super.getMappedClass());
         bw.setBeanInstance(instance);
 
         this.writeProperties.forEach((fieldName, pd) -> {
