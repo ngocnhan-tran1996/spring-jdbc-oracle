@@ -36,15 +36,15 @@ class StructArrayTypeValue<T> extends ArrayTypeValue<T> {
     @Override
     protected Object createTypeValue(Connection connection, String typeName) throws SQLException {
 
-        if (this.values == null) {
+        if (this.values() == null) {
 
             return super.createTypeValue(connection, typeName);
         }
 
-        List<Struct> structs = new ArrayList<>(this.values.size());
-        this.values.forEach(value -> {
+        List<Struct> structs = new ArrayList<>(this.values().size());
+        this.values().forEach(value -> {
 
-            Struct struct = this.mapper.toStruct(connection, this.structTypeName, value);
+            var struct = this.mapper.toStruct(connection, this.structTypeName, value);
             structs.add(struct);
         });
 
