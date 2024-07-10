@@ -12,7 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
-public class BeanPropertyMapper<T> extends ClassMapper<T> {
+class BeanPropertyMapper<T> extends ClassMapper<T> {
 
     private final BeanWrapperImpl bw = new BeanWrapperImpl();
     private final Map<String, PropertyDescriptor> readProperties = new LinkedCaseInsensitiveMap<>();

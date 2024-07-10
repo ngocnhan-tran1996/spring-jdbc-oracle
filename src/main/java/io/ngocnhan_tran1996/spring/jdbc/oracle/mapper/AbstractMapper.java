@@ -17,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
-public abstract class AbstractMapper<T> implements Mapper<T> {
+abstract class AbstractMapper<T> implements Mapper<T> {
 
     private static final String MESSAGE = "%s is not struct";
 
