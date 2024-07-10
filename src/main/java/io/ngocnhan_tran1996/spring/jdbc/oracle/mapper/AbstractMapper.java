@@ -3,12 +3,12 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper;
 import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Matchers.not;
 
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Struct;
 import java.util.Map;
-import java.util.Objects;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OracleDatabaseMetaData;
 import oracle.jdbc.OracleTypeMetaData;
@@ -100,7 +100,7 @@ abstract class AbstractMapper<T> implements Mapper<T> {
             valueByName.put(columnName, value);
 
             String propertyName = JdbcUtils.convertUnderscoreNameToPropertyName(columnName);
-            if (not(Objects.equals(columnName, propertyName))) {
+            if (not(Strings.equalsIgnoreCase(columnName, propertyName))) {
 
                 valueByName.put(propertyName, value);
             }
@@ -135,7 +135,7 @@ abstract class AbstractMapper<T> implements Mapper<T> {
             indexByColumnName.put(columnName, index);
 
             String propertyName = JdbcUtils.convertUnderscoreNameToPropertyName(columnName);
-            if (not(Objects.equals(columnName, propertyName))) {
+            if (not(Strings.equalsIgnoreCase(columnName, propertyName))) {
 
                 indexByColumnName.put(propertyName, index);
             }

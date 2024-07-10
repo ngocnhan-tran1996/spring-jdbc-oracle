@@ -33,6 +33,11 @@ public final class Strings {
             .orElse(null);
     }
 
+    public static boolean equalsIgnoreCase(final String value, final String compareValue) {
+
+        return value != null && value.equalsIgnoreCase(compareValue);
+    }
+
     private static Stream<String> stream(final String... values) {
 
         return Optional.ofNullable(values)
