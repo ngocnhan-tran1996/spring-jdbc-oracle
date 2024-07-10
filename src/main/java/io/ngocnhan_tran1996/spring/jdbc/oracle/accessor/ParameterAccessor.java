@@ -2,10 +2,10 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.accessor;
 
 public abstract class ParameterAccessor<T> {
 
-    private String parameterName;
-    private Class<T> mappedClass;
+    private final String parameterName;
+    private final Class<T> mappedClass;
 
-    public ParameterAccessor(String parameterName, Class<T> mappedClass) {
+    protected ParameterAccessor(String parameterName, Class<T> mappedClass) {
 
         this.parameterName = parameterName == null
             ? null
