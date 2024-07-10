@@ -60,7 +60,7 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
         return new SqlOutParameter(
             getParameterName(),
             this.returnType.sqlType(),
-            this.typeName,
+            this.typeName.toUpperCase(),
             this.returnType
         );
     }
