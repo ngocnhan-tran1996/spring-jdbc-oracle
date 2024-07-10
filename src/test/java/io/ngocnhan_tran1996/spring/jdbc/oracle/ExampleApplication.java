@@ -1,4 +1,4 @@
-package io.ngocnhan_tran1996.example;
+package io.ngocnhan_tran1996.spring.jdbc.oracle;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

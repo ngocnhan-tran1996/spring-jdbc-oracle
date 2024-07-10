@@ -1,8 +1,11 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output;
 
+import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_NULL;
+
 import io.ngocnhan_tran1996.spring.jdbc.oracle.accessor.ParameterAccessor;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.DelegateMapper;
-import java.util.Optional;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlReturnType;
 
@@ -53,12 +56,11 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
     public SqlOutParameter sqlOutParameter() {
 
+        this.validateReturnType();
         return new SqlOutParameter(
             getParameterName(),
             this.returnType.sqlType(),
-            Optional.ofNullable(this.typeName)
-                .map(String::toUpperCase)
-                .orElse(null),
+            this.typeName,
             this.returnType
         );
     }
@@ -66,6 +68,15 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
     public SqlReturnType sqlReturnType() {
 
         return this.returnType;
+    }
+
+    private void validateReturnType() {
+
+        if (Strings.isBlank(this.typeName) || this.returnType == null) {
+
+            throw new ValueException(NOT_NULL.formatted("returnType"));
+        }
+
     }
 
 }

@@ -1,4 +1,4 @@
-package io.ngocnhan_tran1996.example.service;
+package io.ngocnhan_tran1996.spring.jdbc.oracle;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

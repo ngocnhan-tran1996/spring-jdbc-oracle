@@ -163,7 +163,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
             if (this.type == null || this.typeValue == null) {
 
-                throw new ValueException(NOT_NULL.formatted("Type"));
+                throw new ValueException(NOT_NULL.formatted("typeValue"));
             }
 
         }
