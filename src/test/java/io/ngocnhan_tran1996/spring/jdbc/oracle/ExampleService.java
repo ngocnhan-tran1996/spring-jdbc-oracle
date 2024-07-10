@@ -11,11 +11,11 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Service;
 
 @Service
-class JdbcService {
+class ExampleService {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcService(JdbcTemplate jdbcTemplate) {
+    public ExampleService(JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }

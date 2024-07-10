@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class JdbcServiceTest extends DatabaseTestContainer {
+class ExampleServiceContainerTest extends DatabaseTestContainer {
 
     @Autowired
-    JdbcService jdbcService;
+    ExampleService exampleService;
 
     @Test
     void testCallExamplePack() {
@@ -36,7 +36,7 @@ class JdbcServiceTest extends DatabaseTestContainer {
         expectOutput.put("OUT_CUSTOMERS", outCustomers);
 
         // assert
-        assertThat(jdbcService.callExamplePack())
+        assertThat(exampleService.callExamplePack())
             .usingRecursiveComparison()
             .isEqualTo(expectOutput);
     }

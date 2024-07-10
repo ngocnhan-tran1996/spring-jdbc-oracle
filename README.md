@@ -21,4 +21,15 @@ I tested on below Software/Framework version and I am **NOT** sure it can work o
 
 ## How to test
 
-typing...
+### Use `docker-compose.yml`
+
+1. Open cmd and type
+
+    ```cmd
+    spring-jdbc-oracle> docker compose up
+    ```
+2. After docker runs finish, you just run `JdbcServiceContainerTest.java`
+
+### Use 
+
+1. Wait until docker run finish and run `JdbcServiceContainerTest.java`
