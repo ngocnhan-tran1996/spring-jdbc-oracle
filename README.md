@@ -4,7 +4,7 @@ This repo references from [Spring Data JDBC Extensions for the Oracle database](
 
 I just copy and modify some code that I think it is necessary for me.
 
-## I. Before You Start
+## Before You Start
 
 I tested on below Software/Framework version and I am **NOT** sure it can work on another platform.
 
@@ -17,18 +17,18 @@ I tested on below Software/Framework version and I am **NOT** sure it can work o
 | Spring Framework       | 6.1.10                                 |
 | Spring Boot            | 3.3.1                                  |
 
-## II. How to test
+## How to test
 
-### 1. Use testcontainer
+### I. Use testcontainer
 
-1.1. Open cmd and type
+1. Open cmd and type
 
- ```cmd
- spring-jdbc-oracle> docker compose up
- ```
+     ```cmd
+     spring-jdbc-oracle> docker compose up
+     ```
 
-1.2. After docker runs finish, you just run `ExampleServiceContainerTest.java`
+2. After docker runs finish, you just run `ExampleServiceContainerTest.java`
 
-### 2. Use `docker-compose.yml`
+### II. Use `docker-compose.yml`
 
 1. You just run `ExampleServiceTest.java`
