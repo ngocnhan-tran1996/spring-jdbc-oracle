@@ -1,17 +1,13 @@
-CREATE OR REPLACE PACKAGE sys.example_pack IS
-
+CREATE OR REPLACE PACKAGE example_pack IS
     TYPE customer IS RECORD (
             first_name VARCHAR(255),
             last_name  VARCHAR(255),
             age        NUMBER
     );
-
     TYPE customers IS
         TABLE OF customer;
-
     TYPE numbers IS
         TABLE OF NUMBER INDEX BY BINARY_INTEGER;
-
     PROCEDURE example_proc (
         in_numbers       IN numbers,
         in_customer      IN customer,
@@ -26,7 +22,7 @@ CREATE OR REPLACE PACKAGE sys.example_pack IS
 
 END example_pack;
 /
-CREATE OR REPLACE PACKAGE BODY sys.example_pack IS
+CREATE OR REPLACE PACKAGE BODY example_pack IS
 
     PROCEDURE example_proc (
         in_numbers       IN numbers,
@@ -40,15 +36,12 @@ CREATE OR REPLACE PACKAGE BODY sys.example_pack IS
         out_customers    OUT customers
     ) AS
     BEGIN
-
         in_out_numbers := in_numbers;
         in_out_customer := in_customer;
         in_out_customers := in_customers;
-
         out_numbers := in_numbers;
         out_customer := in_customer;
         out_customers := in_customers;
-
     END example_proc;
 
 END example_pack;

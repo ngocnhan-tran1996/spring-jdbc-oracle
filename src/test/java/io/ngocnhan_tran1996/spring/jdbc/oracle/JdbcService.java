@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JdbcService {
+class JdbcService {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -26,10 +26,10 @@ public class JdbcService {
 
         var inNumbers = ParameterInput.withParameterName("in_numbers")
             .withValues(BigDecimal.ONE, BigDecimal.TWO)
-            .withArray("sys.example_pack.numbers");
+            .withArray("example_pack.numbers");
         var inCustomer = ParameterInput.withParameterName("in_customer", Customer.class)
             .withValue(new Customer("Nhan", "Tran", BigDecimal.ONE))
-            .withStruct("sys.example_pack.customer");
+            .withStruct("example_pack.customer");
         var inCustomers = ParameterInput.withParameterName("in_customers", Customer.class)
             .withValues(
                 List.of(
@@ -37,14 +37,14 @@ public class JdbcService {
                     new Customer("Nhan", "Tran", BigDecimal.TEN)
                 )
             )
-            .withStructArray("sys.example_pack.customers", "sys.example_pack.customer");
+            .withStructArray("example_pack.customers", "example_pack.customer");
 
         var inOutNumbers = ParameterInput.withParameterName("in_out_numbers")
             .withValues(List.of(BigDecimal.TEN, BigDecimal.ZERO))
-            .withArray("sys.example_pack.numbers");
+            .withArray("example_pack.numbers");
         var inOutCustomer = ParameterInput.withParameterName("in_out_customer", Customer.class)
             .withValue(new Customer("Tran", "Nhan", BigDecimal.TEN))
-            .withStruct("sys.example_pack.customer");
+            .withStruct("example_pack.customer");
         var inOutCustomers = ParameterInput.withParameterName("in_out_customers", Customer.class)
             .withValues(
                 List.of(
@@ -52,17 +52,16 @@ public class JdbcService {
                     new Customer("Tran", "Nhan", BigDecimal.ONE)
                 )
             )
-            .withStructArray("sys.example_pack.customers", "sys.example_pack.customer");
+            .withStructArray("example_pack.customers", "example_pack.customer");
 
         var outNumbers = ParameterOutput.withParameterName("out_numbers")
-            .withArray("sys.example_pack.numbers");
+            .withArray("example_pack.numbers");
         var outCustomer = ParameterOutput.withParameterName("out_customer", Customer.class)
-            .withStruct("sys.example_pack.customer");
+            .withStruct("example_pack.customer");
         var outCustomers = ParameterOutput.withParameterName("out_customers", Customer.class)
-            .withStructArray("sys.example_pack.customers");
+            .withStructArray("example_pack.customers");
 
-        var simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
-            .withSchemaName("SYS")
+        var simpleJdbcCall = new SimpleJdbcCall(this.jdbcTemplate)
             .withCatalogName("example_pack")
             .withProcedureName("example_proc")
             .declareParameters(
