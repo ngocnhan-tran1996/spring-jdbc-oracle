@@ -23,9 +23,6 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
     private BeanPropertyMapper(Class<T> mappedClass) {
 
         this.mappedClass = new ClassRecord<>(mappedClass).mappedClass();
-
-        var instance = BeanUtils.instantiateClass(mappedClass);
-        bw.setBeanInstance(instance);
     }
 
     public static <T> BeanPropertyMapper<T> newInstance(Class<T> mappedClass) {
@@ -93,6 +90,9 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
     @SuppressWarnings("unchecked")
     @Override
     protected T constructInstance(Map<String, Object> valueByName) {
+
+        var instance = BeanUtils.instantiateClass(mappedClass);
+        this.bw.setBeanInstance(instance);
 
         this.writeProperties.forEach((fieldName, pd) -> {
 

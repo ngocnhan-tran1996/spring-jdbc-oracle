@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521/xe
+    username: SYS as SYSDBA
+    password: ngocnhan
+    hikari:
+      schema: SYS
+      minimum-idle: 1
+      maximum-pool-size: 1

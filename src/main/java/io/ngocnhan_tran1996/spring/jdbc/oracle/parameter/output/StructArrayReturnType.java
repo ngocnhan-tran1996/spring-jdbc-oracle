@@ -43,7 +43,7 @@ class StructArrayReturnType<T> extends ArrayReturnType<T> {
             throw new ValueException("Expected STRUCT but got '%s'".formatted(className));
         }
 
-        // convert type object array
+        // convert to object array
         return values.toArray();
     }
 

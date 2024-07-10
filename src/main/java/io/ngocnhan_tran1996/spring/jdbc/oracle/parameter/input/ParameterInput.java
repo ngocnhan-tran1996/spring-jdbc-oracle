@@ -8,10 +8,12 @@ import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.DelegateMapper;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output.ParameterOutput;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.jdbc.core.SqlInOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlReturnType;
@@ -28,9 +30,9 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
         this.mapper = DelegateMapper.newInstance(mappedClass);
     }
 
-    public static <T> ParameterInput<T> withParameterName(String parameterName) {
+    public static ParameterInput<Object> withParameterName(String parameterName) {
 
-        return withParameterName(parameterName, null);
+        return withParameterName(parameterName, Object.class);
     }
 
     public static <T> ParameterInput<T> withParameterName(
@@ -38,6 +40,16 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
         Class<T> mappedClass) {
 
         return new ParameterInput<>(parameterName, mappedClass);
+    }
+
+    @SafeVarargs
+    public final ParameterTypeValue withValues(T... values) {
+
+        this.values = Optional.ofNullable(values)
+            .stream()
+            .flatMap(Arrays::stream)
+            .toList();
+        return new ParameterTypeValue();
     }
 
     public ParameterTypeValue withValues(Collection<T> values) {
@@ -71,7 +83,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
                     getParameterName(),
                     getMappedClass()
                 )
-                .withArrayType(arrayTypeName)
+                .withArray(arrayTypeName)
                 .sqlReturnType();
             return this;
         }
@@ -91,7 +103,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
                     getParameterName(),
                     getMappedClass()
                 )
-                .withStructType(structTypeName)
+                .withStruct(structTypeName)
                 .sqlReturnType();
             return this;
         }
@@ -109,7 +121,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
                     getParameterName(),
                     getMappedClass()
                 )
-                .withArrayStructType(arrayTypeName)
+                .withStructArray(arrayTypeName)
                 .sqlReturnType();
             return this;
         }

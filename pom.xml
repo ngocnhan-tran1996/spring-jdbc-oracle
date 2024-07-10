@@ -12,15 +12,18 @@
     <maven.compiler.source>22</maven.compiler.source>
     <maven.compiler.target>22</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring.version>6.1.10</spring.version>
+
+    <spring-jdbc.version>6.1.10</spring-jdbc.version>
     <oracle.jdbc.version>23.4.0.24.05</oracle.jdbc.version>
+    <springboot.version>3.3.1</springboot.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
-      <version>${spring.version}</version>
+      <version>${spring-jdbc.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -32,8 +35,15 @@
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <version>${springboot.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <version>3.3.1</version>
+      <version>${springboot.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

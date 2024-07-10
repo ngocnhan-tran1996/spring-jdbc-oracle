@@ -20,7 +20,7 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
     public static ParameterOutput<Object> withParameterName(String parameterName) {
 
-        return new ParameterOutput<>(parameterName, null);
+        return new ParameterOutput<>(parameterName, Object.class);
     }
 
     public static <T> ParameterOutput<T> withParameterName(
@@ -30,21 +30,21 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
         return new ParameterOutput<>(parameterName, mappedClass);
     }
 
-    public ParameterOutput<T> withArrayType(String typeName) {
+    public ParameterOutput<T> withArray(String typeName) {
 
         this.returnType = new ArrayReturnType<>();
         this.typeName = typeName;
         return this;
     }
 
-    public ParameterOutput<T> withArrayStructType(String typeName) {
+    public ParameterOutput<T> withStructArray(String typeName) {
 
         this.returnType = new StructArrayReturnType<>(this.mapper.get());
         this.typeName = typeName;
         return this;
     }
 
-    public ParameterOutput<T> withStructType(String typeName) {
+    public ParameterOutput<T> withStruct(String typeName) {
 
         this.returnType = new StructReturnType<>(this.mapper.get());
         this.typeName = typeName;
