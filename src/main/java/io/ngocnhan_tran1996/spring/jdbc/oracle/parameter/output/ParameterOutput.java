@@ -1,20 +1,21 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output;
 
-import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.BeanPropertyMapper;
-import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.ParameterAccessor;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.accessor.ParameterAccessor;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.DelegateMapper;
 import java.util.Optional;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlReturnType;
 
 public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
+    private final DelegateMapper<T> mapper;
     private AbstractReturnType<T> returnType;
     private String typeName;
 
     private ParameterOutput(String parameterName, Class<T> mappedClass) {
 
-        super.setParameterName(parameterName);
-        super.setMappedClass(mappedClass);
+        super(parameterName, mappedClass);
+        this.mapper = DelegateMapper.newInstance(mappedClass);
     }
 
     public static ParameterOutput<Object> withParameterName(String parameterName) {
@@ -38,16 +39,14 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
     public ParameterOutput<T> withArrayStructType(String typeName) {
 
-        this.returnType = new StructArrayReturnType<>(
-            BeanPropertyMapper.newInstance(getMappedClass())
-        );
+        this.returnType = new StructArrayReturnType<>(this.mapper.get());
         this.typeName = typeName;
         return this;
     }
 
     public ParameterOutput<T> withStructType(String typeName) {
 
-        this.returnType = new StructReturnType<>(BeanPropertyMapper.newInstance(getMappedClass()));
+        this.returnType = new StructReturnType<>(this.mapper.get());
         this.typeName = typeName;
         return this;
     }

@@ -2,6 +2,7 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper;
 
 import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Matchers.not;
 
+import io.ngocnhan_tran1996.spring.jdbc.oracle.accessor.ClassRecord;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
 import java.beans.PropertyDescriptor;
@@ -12,15 +13,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
-class BeanPropertyMapper<T> extends ClassMapper<T> {
+class BeanPropertyMapper<T> extends AbstractMapper<T> {
 
     private final BeanWrapperImpl bw = new BeanWrapperImpl();
     private final Map<String, PropertyDescriptor> readProperties = new LinkedCaseInsensitiveMap<>();
     private final Map<String, PropertyDescriptor> writeProperties = new LinkedCaseInsensitiveMap<>();
+    private final Class<T> mappedClass;
 
     private BeanPropertyMapper(Class<T> mappedClass) {
 
-        super.setMappedClass(mappedClass);
+        this.mappedClass = new ClassRecord<>(mappedClass).mappedClass();
 
         var instance = BeanUtils.instantiateClass(mappedClass);
         bw.setBeanInstance(instance);
@@ -34,8 +36,7 @@ class BeanPropertyMapper<T> extends ClassMapper<T> {
 
     BeanPropertyMapper<T> extractParameterNames() {
 
-        var mappedClass = super.getMappedClass();
-        for (var field : mappedClass.getDeclaredFields()) {
+        for (var field : this.mappedClass.getDeclaredFields()) {
 
             String name = field.getName();
 

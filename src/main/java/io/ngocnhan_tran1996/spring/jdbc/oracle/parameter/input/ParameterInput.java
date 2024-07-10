@@ -2,9 +2,9 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.input;
 
 import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_NULL;
 
+import io.ngocnhan_tran1996.spring.jdbc.oracle.accessor.ParameterAccessor;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
-import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.BeanPropertyMapper;
-import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.ParameterAccessor;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.DelegateMapper;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output.ParameterOutput;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -19,12 +19,13 @@ import org.springframework.jdbc.core.SqlTypeValue;
 
 public final class ParameterInput<T> extends ParameterAccessor<T> {
 
+    private final DelegateMapper<T> mapper;
     private Collection<T> values;
 
     private ParameterInput(String parameterName, Class<T> mappedClass) {
 
-        super.setParameterName(parameterName);
-        super.setMappedClass(mappedClass);
+        super(parameterName, mappedClass);
+        this.mapper = DelegateMapper.newInstance(mappedClass);
     }
 
     public static <T> ParameterInput<T> withParameterName(String parameterName) {
@@ -83,7 +84,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
             this.typeValue = new StructTypeValue<>(
                 structTypeName,
                 value,
-                BeanPropertyMapper.newInstance(getMappedClass())
+                mapper.get()
             );
             this.type = Types.STRUCT;
             this.returnType = ParameterOutput.withParameterName(
@@ -101,7 +102,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
                 arrayTypeName,
                 values,
                 structTypeName,
-                BeanPropertyMapper.newInstance(getMappedClass())
+                mapper.get()
             );
             this.type = Types.ARRAY;
             this.returnType = ParameterOutput.withParameterName(
