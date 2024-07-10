@@ -2,7 +2,6 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper;
 
 import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Matchers.not;
 
-import io.ngocnhan_tran1996.spring.jdbc.oracle.Parameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
@@ -18,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
-public abstract class AbstractMapper<T> extends Parameter<T> implements Mapper<T> {
+public abstract class AbstractMapper<T> implements Mapper<T> {
 
     private static final String MESSAGE = "%s is not struct";
 

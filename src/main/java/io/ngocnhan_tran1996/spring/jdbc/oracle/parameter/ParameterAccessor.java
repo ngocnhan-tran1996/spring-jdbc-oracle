@@ -1,8 +1,8 @@
-package io.ngocnhan_tran1996.spring.jdbc.oracle;
+package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter;
 
 import java.util.Objects;
 
-public class Parameter<T> {
+public abstract class ParameterAccessor<T> {
 
     private String parameterName;
     private Class<T> mappedClass;

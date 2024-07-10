@@ -1,12 +1,12 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output;
 
-import io.ngocnhan_tran1996.spring.jdbc.oracle.Parameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.BeanPropertyMapper;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.ParameterAccessor;
 import java.util.Optional;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlReturnType;
 
-public final class ParameterOutput<T> extends Parameter<T> {
+public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
     private AbstractReturnType<T> returnType;
     private String typeName;

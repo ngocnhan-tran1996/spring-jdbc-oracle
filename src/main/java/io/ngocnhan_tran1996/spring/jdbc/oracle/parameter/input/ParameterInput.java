@@ -2,9 +2,9 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.input;
 
 import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_NULL;
 
-import io.ngocnhan_tran1996.spring.jdbc.oracle.Parameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.BeanPropertyMapper;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.ParameterAccessor;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output.ParameterOutput;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlReturnType;
 import org.springframework.jdbc.core.SqlTypeValue;
 
-public final class ParameterInput<T> extends Parameter<T> {
+public final class ParameterInput<T> extends ParameterAccessor<T> {
 
     private Collection<T> values;
 
