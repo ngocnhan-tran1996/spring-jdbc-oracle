@@ -29,7 +29,7 @@ class ExampleService {
             BigDecimal.class);
 
         var inNumbers = ParameterInput.withParameterName("in_numbers")
-            .withValues(BigDecimal.ONE, BigDecimal.TWO)
+            .withValues(BigDecimal.ONE, BigDecimal.ZERO)
             .withArray("example_pack.numbers");
         var inCustomer = ParameterInput.withParameterName("in_customer", mappedClass)
             .withValue(BeanUtils.instantiateClass(customer, "Nhan", "Tran", BigDecimal.ONE))
@@ -37,7 +37,7 @@ class ExampleService {
         var inCustomers = ParameterInput.withParameterName("in_customers", mappedClass)
             .withValues(
                 List.of(
-                    BeanUtils.instantiateClass(customer, "Tran", "Nhan", BigDecimal.TWO),
+                    BeanUtils.instantiateClass(customer, "Tran", "Nhan", BigDecimal.ZERO),
                     BeanUtils.instantiateClass(customer, "Nhan", "Tran", BigDecimal.TEN)
                 )
             )

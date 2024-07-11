@@ -25,10 +25,10 @@ class ExampleServiceTest extends SetupTestData {
     void with_type_Pojo() throws NoSuchMethodException {
 
         // arrange
-        var outNumbers = new BigDecimal[]{BigDecimal.ONE, BigDecimal.TWO};
+        var outNumbers = new BigDecimal[]{BigDecimal.ONE, BigDecimal.ZERO};
         var outCustomer = new Customer("Nhan", "Tran", BigDecimal.ONE);
         var outCustomers = new Customer[]{
-            new Customer("Tran", "Nhan", BigDecimal.TWO),
+            new Customer("Tran", "Nhan", BigDecimal.ZERO),
             new Customer("Nhan", "Tran", BigDecimal.TEN)
         };
 
@@ -52,10 +52,10 @@ class ExampleServiceTest extends SetupTestData {
     void with_type_Record() throws NoSuchMethodException {
 
         // arrange
-        var outNumbers = new BigDecimal[]{BigDecimal.ONE, BigDecimal.TWO};
+        var outNumbers = new BigDecimal[]{BigDecimal.ONE, BigDecimal.ZERO};
         var outCustomer = new CustomerRecord("Nhan", "Tran", BigDecimal.ONE);
         var outCustomers = new CustomerRecord[]{
-            new CustomerRecord("Tran", "Nhan", BigDecimal.TWO),
+            new CustomerRecord("Tran", "Nhan", BigDecimal.ZERO),
             new CustomerRecord("Nhan", "Tran", BigDecimal.TEN)
         };
 

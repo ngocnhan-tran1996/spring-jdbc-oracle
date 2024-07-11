@@ -92,7 +92,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
             var value = values == null || values.isEmpty()
                 ? null
-                : new ArrayList<>(values).getFirst();
+                : new ArrayList<>(values).get(0);
             this.typeValue = new StructTypeValue<>(
                 structTypeName,
                 value,
