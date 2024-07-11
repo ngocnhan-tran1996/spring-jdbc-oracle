@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-abstract class SetupTestData {
+public abstract class SetupTestData {
 
     @Autowired
     JdbcTemplate jdbcTemplate;

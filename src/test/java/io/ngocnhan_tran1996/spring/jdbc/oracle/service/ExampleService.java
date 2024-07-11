@@ -1,4 +1,4 @@
-package io.ngocnhan_tran1996.spring.jdbc.oracle;
+package io.ngocnhan_tran1996.spring.jdbc.oracle.service;
 
 import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.input.ParameterInput;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output.ParameterOutput;

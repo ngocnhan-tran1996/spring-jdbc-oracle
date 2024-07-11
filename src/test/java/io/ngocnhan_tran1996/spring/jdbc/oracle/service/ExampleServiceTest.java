@@ -1,15 +1,18 @@
-package io.ngocnhan_tran1996.spring.jdbc.oracle;
+package io.ngocnhan_tran1996.spring.jdbc.oracle.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.ngocnhan_tran1996.spring.jdbc.oracle.SetupTestData;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("local")
 @SpringBootTest
-class ExampleServiceContainerTest extends DatabaseTestContainer {
+class ExampleServiceTest extends SetupTestData {
 
     @Autowired
     ExampleService exampleService;
