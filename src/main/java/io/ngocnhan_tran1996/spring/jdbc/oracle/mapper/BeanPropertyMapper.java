@@ -112,6 +112,11 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
         return instance;
     }
 
+    public Map<String, PropertyDescriptor> getReadProperties() {
+
+        return this.readProperties;
+    }
+
     public Class<T> getMappedClass() {
 
         return this.mappedClass;

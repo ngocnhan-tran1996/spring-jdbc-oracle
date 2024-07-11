@@ -9,4 +9,9 @@ public record ClassRecord<T>(Class<T> mappedClass) {
         Objects.requireNonNull(mappedClass, "mapped class");
     }
 
+    public boolean isTypeRecord() {
+
+        return this.mappedClass.isAssignableFrom(Record.class);
+    }
+
 }

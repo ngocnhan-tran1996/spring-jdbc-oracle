@@ -1,5 +1,6 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper;
 
+import io.ngocnhan_tran1996.spring.jdbc.oracle.accessor.ClassRecord;
 import java.sql.Connection;
 import java.sql.Struct;
 import java.util.Map;
@@ -10,7 +11,9 @@ public final class DelegateMapper<T> implements Mapper<T> {
 
     private DelegateMapper(Class<T> mappedClass) {
 
-        this.mapper = BeanPropertyMapper.newInstance(mappedClass);
+        this.mapper = new ClassRecord<>(mappedClass).isTypeRecord()
+            ? RecordPropertyMapper.newInstance(mappedClass)
+            : BeanPropertyMapper.newInstance(mappedClass);
     }
 
     public static <T> DelegateMapper<T> newInstance(Class<T> mappedClass) {
