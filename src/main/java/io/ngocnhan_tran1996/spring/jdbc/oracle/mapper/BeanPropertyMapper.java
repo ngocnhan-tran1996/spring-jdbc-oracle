@@ -15,12 +15,11 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 
 class BeanPropertyMapper<T> extends AbstractMapper<T> {
 
-    private final BeanWrapperImpl bw = new BeanWrapperImpl();
     private final Map<String, PropertyDescriptor> readProperties = new LinkedCaseInsensitiveMap<>();
     private final Map<String, PropertyDescriptor> writeProperties = new LinkedCaseInsensitiveMap<>();
     private final Class<T> mappedClass;
 
-    private BeanPropertyMapper(Class<T> mappedClass) {
+    BeanPropertyMapper(Class<T> mappedClass) {
 
         this.mappedClass = new ClassRecord<>(mappedClass).mappedClass();
     }
@@ -46,7 +45,13 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
                     .filter(Predicate.not(name::equalsIgnoreCase))
                     .orElse(name);
 
-                var pd = new PropertyDescriptor(name, mappedClass);
+                var pd = BeanUtils.getPropertyDescriptor(this.mappedClass, name);
+
+                if (pd == null) {
+
+                    continue;
+                }
+
                 if (pd.getReadMethod() != null) {
 
                     this.readProperties.put(propertyName, pd);
@@ -70,7 +75,7 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
     @Override
     protected Object[] createStruct(int columns, Map<String, Integer> columnNameByIndex, T source) {
 
-        this.bw.setBeanInstance(source);
+        var bw = new BeanWrapperImpl(source);
         Object[] values = new Object[columns];
 
         this.readProperties.forEach((fieldName, pd) -> {
@@ -81,18 +86,17 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
             }
 
             String name = pd.getName();
-            values[columnNameByIndex.get(fieldName)] = this.bw.getPropertyValue(name);
+            values[columnNameByIndex.get(fieldName)] = bw.getPropertyValue(name);
         });
 
         return values;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected T constructInstance(Map<String, Object> valueByName) {
 
         var instance = BeanUtils.instantiateClass(mappedClass);
-        this.bw.setBeanInstance(instance);
+        var bw = new BeanWrapperImpl(instance);
 
         this.writeProperties.forEach((fieldName, pd) -> {
 
@@ -102,10 +106,15 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
             }
 
             String name = pd.getName();
-            this.bw.setPropertyValue(name, valueByName.get(fieldName));
+            bw.setPropertyValue(name, valueByName.get(fieldName));
         });
 
-        return (T) this.bw.getWrappedInstance();
+        return instance;
+    }
+
+    public Class<T> getMappedClass() {
+
+        return this.mappedClass;
     }
 
 }
