@@ -45,4 +45,31 @@ class ExampleServiceTest extends SetupTestData {
             .isEqualTo(expectOutput);
     }
 
+    @Test
+    void callExamplePackWithRecord() {
+
+        // arrange
+        var outNumbers = new BigDecimal[]{BigDecimal.ONE, BigDecimal.TWO};
+        var outCustomer = new CustomerRecord("Nhan", "Tran", BigDecimal.ONE);
+        var outCustomers = new CustomerRecord[]{
+            new CustomerRecord("Tran", "Nhan", BigDecimal.TWO),
+            new CustomerRecord("Nhan", "Tran", BigDecimal.TEN)
+        };
+
+        var expectOutput = new HashMap<String, Object>();
+        expectOutput.put("IN_OUT_NUMBERS", outNumbers);
+        expectOutput.put("OUT_NUMBERS", outNumbers);
+
+        expectOutput.put("IN_OUT_CUSTOMER", outCustomer);
+        expectOutput.put("OUT_CUSTOMER", outCustomer);
+
+        expectOutput.put("IN_OUT_CUSTOMERS", outCustomers);
+        expectOutput.put("OUT_CUSTOMERS", outCustomers);
+
+        // assert
+        assertThat(exampleService.callExamplePackWithRecord())
+            .usingRecursiveComparison()
+            .isEqualTo(expectOutput);
+    }
+
 }

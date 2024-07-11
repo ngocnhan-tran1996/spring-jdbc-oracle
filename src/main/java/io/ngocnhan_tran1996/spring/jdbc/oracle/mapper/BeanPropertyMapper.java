@@ -105,8 +105,7 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
                 return;
             }
 
-            String name = pd.getName();
-            bw.setPropertyValue(name, valueByName.get(fieldName));
+            bw.setPropertyValue(pd.getName(), valueByName.get(fieldName));
         });
 
         return instance;

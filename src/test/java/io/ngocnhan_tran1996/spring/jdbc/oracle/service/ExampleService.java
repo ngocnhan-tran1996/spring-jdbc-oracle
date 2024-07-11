@@ -91,4 +91,77 @@ class ExampleService {
         return simpleJdbcCall.execute(sqlParameterSource);
     }
 
+    Map<String, Object> callExamplePackWithRecord() {
+
+        this.jdbcTemplate.setResultsMapCaseInsensitive(true);
+
+        var inNumbers = ParameterInput.withParameterName("in_numbers")
+            .withValues(BigDecimal.ONE, BigDecimal.TWO)
+            .withArray("example_pack.numbers");
+        var inCustomer = ParameterInput.withParameterName("in_customer", CustomerRecord.class)
+            .withValue(new CustomerRecord("Nhan", "Tran", BigDecimal.ONE))
+            .withStruct("example_pack.customer");
+        var inCustomers = ParameterInput.withParameterName("in_customers", CustomerRecord.class)
+            .withValues(
+                List.of(
+                    new CustomerRecord("Tran", "Nhan", BigDecimal.TWO),
+                    new CustomerRecord("Nhan", "Tran", BigDecimal.TEN)
+                )
+            )
+            .withStructArray("example_pack.customers", "example_pack.customer");
+
+        var inOutNumbers = ParameterInput.withParameterName("in_out_numbers")
+            .withValues(List.of(BigDecimal.TEN, BigDecimal.ZERO))
+            .withArray("example_pack.numbers");
+        var inOutCustomer = ParameterInput.withParameterName("in_out_customer",
+                CustomerRecord.class)
+            .withValue(new CustomerRecord("Tran", "Nhan", BigDecimal.TEN))
+            .withStruct("example_pack.customer");
+        var inOutCustomers = ParameterInput.withParameterName("in_out_customers",
+                CustomerRecord.class)
+            .withValues(
+                List.of(
+                    new CustomerRecord("Nhan", "Tran", BigDecimal.ZERO),
+                    new CustomerRecord("Tran", "Nhan", BigDecimal.ONE)
+                )
+            )
+            .withStructArray("example_pack.customers", "example_pack.customer");
+
+        var outNumbers = ParameterOutput.withParameterName("out_numbers")
+            .withArray("example_pack.numbers");
+        var outCustomer = ParameterOutput.withParameterName("out_customer", CustomerRecord.class)
+            .withStruct("example_pack.customer");
+        var outCustomers = ParameterOutput.withParameterName("out_customers", CustomerRecord.class)
+            .withStructArray("example_pack.customers");
+
+        var simpleJdbcCall = new SimpleJdbcCall(this.jdbcTemplate)
+            .withCatalogName("example_pack")
+            .withProcedureName("example_proc")
+            .declareParameters(
+
+                inNumbers.sqlParameter(),
+                inCustomer.sqlParameter(),
+                inCustomers.sqlParameter(),
+
+                inOutNumbers.sqlInOutParameter(),
+                inOutCustomer.sqlInOutParameter(),
+                inOutCustomers.sqlInOutParameter(),
+
+                outNumbers.sqlOutParameter(),
+                outCustomer.sqlOutParameter(),
+                outCustomers.sqlOutParameter()
+            );
+
+        var sqlParameterSource = new MapSqlParameterSource()
+            .addValues(inNumbers.toMap())
+            .addValues(inCustomer.toMap())
+            .addValues(inCustomers.toMap())
+
+            .addValues(inOutNumbers.toMap())
+            .addValues(inOutCustomer.toMap())
+            .addValues(inOutCustomers.toMap());
+
+        return simpleJdbcCall.execute(sqlParameterSource);
+    }
+
 }

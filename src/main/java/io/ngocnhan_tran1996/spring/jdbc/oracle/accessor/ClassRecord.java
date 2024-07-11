@@ -11,7 +11,7 @@ public record ClassRecord<T>(Class<T> mappedClass) {
 
     public boolean isTypeRecord() {
 
-        return this.mappedClass.isAssignableFrom(Record.class);
+        return Record.class.isAssignableFrom(this.mappedClass);
     }
 
 }

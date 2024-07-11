@@ -5,7 +5,6 @@ import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Matchers.not;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
@@ -36,19 +35,25 @@ class RecordPropertyMapper<T> extends BeanPropertyMapper<T> {
     @Override
     protected T constructInstance(Map<String, Object> valueByName) {
 
+        var args = new ArrayList<>();
         var bw = new BeanWrapperImpl();
-        List<Object> args = new ArrayList<>(this.constructor.getParameterCount());
 
         super.getReadProperties().forEach((fieldName, pd) -> {
 
-            String name = pd.getName();
-            if (not(valueByName.containsKey(fieldName)) && not(valueByName.containsKey(name))) {
+            var invalidName = not(valueByName.containsKey(fieldName))
+                && not(valueByName.containsKey(pd.getName()));
+            if (invalidName) {
 
                 return;
             }
 
-            args.add(bw.convertIfNecessary(valueByName.get(name), pd.getPropertyType()));
+            args.add(bw.convertIfNecessary(valueByName.get(fieldName), pd.getPropertyType()));
         });
+
+        if (args.size() != this.constructor.getParameterCount()) {
+
+            throw new ValueException("Record must same parameters");
+        }
 
         return BeanUtils.instantiateClass(this.constructor, args.toArray());
     }
