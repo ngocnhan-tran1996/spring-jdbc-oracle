@@ -25,16 +25,4 @@ I tested on below Software/Framework version and I am **NOT** sure it can work o
 
 ## How to test
 
-### I. Use testcontainer
-
-1. Open cmd and type
-
-     ```cmd
-     spring-jdbc-oracle> docker compose up
-     ```
-
-2. After docker runs finish, you just run `ExampleServiceContainerTest.java`
-
-### II. Use `docker-compose.yml`
-
-1. You just run `ExampleServiceTest.java`
+Just run `ExampleServiceTest.java`

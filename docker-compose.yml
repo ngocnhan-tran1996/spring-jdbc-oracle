@@ -1,8 +1,0 @@
-services:
-  oracle:
-    container_name: oracle-db
-    image: gvenzl/oracle-xe:21.3.0-slim-faststart
-    environment:
-      - "ORACLE_PASSWORD=ngocnhan"
-    ports:
-      - "1521:1521"

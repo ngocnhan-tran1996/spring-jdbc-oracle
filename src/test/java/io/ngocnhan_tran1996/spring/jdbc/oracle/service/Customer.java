@@ -3,7 +3,7 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.service;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
 import java.math.BigDecimal;
 
-public class Customer {
+class Customer {
 
     @OracleParameter("first_name")
     private String name;
