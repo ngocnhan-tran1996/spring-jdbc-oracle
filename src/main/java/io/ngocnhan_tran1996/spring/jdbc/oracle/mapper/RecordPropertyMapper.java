@@ -52,7 +52,7 @@ class RecordPropertyMapper<T> extends BeanPropertyMapper<T> {
 
         if (args.size() != this.constructor.getParameterCount()) {
 
-            throw new ValueException("Record must same parameters");
+            throw new ValueException("Record must have same parameters");
         }
 
         return BeanUtils.instantiateClass(this.constructor, args.toArray());

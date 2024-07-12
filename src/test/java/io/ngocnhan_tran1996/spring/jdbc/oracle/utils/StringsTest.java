@@ -5,12 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class StringsTest {
 
     @Test
-    void testIsBlank() {
+    void when_input_is_blank() {
 
         assertTrue(Strings.isBlank(null));
         assertTrue(Strings.isBlank(""));
@@ -20,7 +23,7 @@ class StringsTest {
     }
 
     @Test
-    void testIsNotBlank() {
+    void when_input_is_not_blank() {
 
         assertFalse(Strings.isNotBlank(null));
         assertFalse(Strings.isNotBlank(""));
@@ -30,7 +33,7 @@ class StringsTest {
     }
 
     @Test
-    void testFirstNoneBlank() {
+    void first_none_blank() {
 
         assertNull(Strings.firstNoneBlank());
         assertNull(Strings.firstNoneBlank((String) null));
@@ -43,7 +46,7 @@ class StringsTest {
     }
 
     @Test
-    void testEqualsIgnoreCase() {
+    void equals_ignore_case() {
 
         assertFalse(Strings.equalsIgnoreCase(null, null));
         assertFalse(Strings.equalsIgnoreCase(null, "X"));
