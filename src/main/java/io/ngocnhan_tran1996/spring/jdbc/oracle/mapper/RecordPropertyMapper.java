@@ -28,6 +28,12 @@ class RecordPropertyMapper<T> extends BeanPropertyMapper<T> {
         }
     }
 
+    public static <T> RecordPropertyMapper<T> newInstance(Class<T> mappedClass) {
+
+        return new RecordPropertyMapper<>(mappedClass)
+            .extractParameterNames();
+    }
+
     @Override
     RecordPropertyMapper<T> extractParameterNames() {
 
@@ -48,12 +54,6 @@ class RecordPropertyMapper<T> extends BeanPropertyMapper<T> {
         }
 
         return this;
-    }
-
-    public static <T> RecordPropertyMapper<T> newInstance(Class<T> mappedClass) {
-
-        return new RecordPropertyMapper<>(mappedClass)
-            .extractParameterNames();
     }
 
     @Override

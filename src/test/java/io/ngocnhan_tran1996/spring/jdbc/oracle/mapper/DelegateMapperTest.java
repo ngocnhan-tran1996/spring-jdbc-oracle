@@ -44,6 +44,41 @@ class DelegateMapperTest extends SetupTestData {
             .isNotNull();
     }
 
+    static class MoreFieldCustomer extends Customer {
+
+        private BigDecimal missingField;
+        private BigDecimal missingAccessorField;
+        private String noGetField;
+
+        public MoreFieldCustomer() {
+        }
+
+        public MoreFieldCustomer(String name, String lastName, BigDecimal age) {
+
+            super(name, lastName, age);
+        }
+
+        public BigDecimal getMissingField() {
+
+            return this.missingField;
+        }
+
+        public void setMissingField(BigDecimal missingField) {
+
+            this.missingField = missingField;
+        }
+
+        public void setNoGetField(String noGetField) {
+
+            this.noGetField = noGetField;
+        }
+
+    }
+
+    record EmptyRecord() {
+
+    }
+
     @Nested
     class ConvertMethod {
 
@@ -247,41 +282,6 @@ class DelegateMapperTest extends SetupTestData {
             )
                 .isNull();
         }
-
-    }
-
-    static class MoreFieldCustomer extends Customer {
-
-        private BigDecimal missingField;
-        private BigDecimal missingAccessorField;
-        private String noGetField;
-
-        public MoreFieldCustomer() {
-        }
-
-        public MoreFieldCustomer(String name, String lastName, BigDecimal age) {
-
-            super(name, lastName, age);
-        }
-
-        public BigDecimal getMissingField() {
-
-            return this.missingField;
-        }
-
-        public void setMissingField(BigDecimal missingField) {
-
-            this.missingField = missingField;
-        }
-
-        public void setNoGetField(String noGetField) {
-
-            this.noGetField = noGetField;
-        }
-
-    }
-
-    record EmptyRecord() {
 
     }
 
