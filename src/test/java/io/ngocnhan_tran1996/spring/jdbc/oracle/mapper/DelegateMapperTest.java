@@ -7,7 +7,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.Customer;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.CustomerRecord;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.SetupTestData;
-import io.ngocnhan_tran1996.spring.jdbc.oracle.config.ExampleConfig;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import java.math.BigDecimal;
 import java.sql.DriverManager;
@@ -19,11 +18,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @SpringBootTest
-@Import(ExampleConfig.class)
+//@Import(ExampleConfig.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class DelegateMapperTest extends SetupTestData {
 
@@ -31,55 +31,69 @@ class DelegateMapperTest extends SetupTestData {
     HikariDataSource dataSource;
 
     @Test
-    void when_class_is_not_type_record() {
-
-        var mapper = DelegateMapper.newInstance(Customer.class);
-
-        var value = Map.<String, Object>of(
-            "lastName", "test",
-            "first_name", "Nhan",
-            "age", BigDecimal.TEN
-        );
-
-        assertThat(mapper.convert(null))
-            .isNull();
-
-        assertThat(mapper.convert(Map.of()))
-            .usingRecursiveComparison()
-            .isEqualTo(new Customer());
-
-        assertThat(mapper.convert(value))
-            .usingRecursiveComparison()
-            .isEqualTo(new Customer("Nhan", "test", BigDecimal.TEN));
-    }
-
-    @Test
-    void when_class_is_type_record() {
-
-        var mapper = DelegateMapper.newInstance(CustomerRecord.class);
-
-        assertThat(mapper.convert(null))
-            .isNull();
-
-        var emptyValue = Map.<String, Object>of();
-        assertThatExceptionOfType(ValueException.class)
-            .isThrownBy(() -> mapper.convert(emptyValue));
-
-        var value = Map.<String, Object>of(
-            "lastName", "Tran",
-            "first_name", "Nhan",
-            "age", BigDecimal.TEN
-        );
-        assertThat(mapper.convert(value))
-            .usingRecursiveComparison()
-            .isEqualTo(new CustomerRecord("Nhan", "Tran", BigDecimal.TEN));
-    }
-
-    @Test
     void when_class_is_empty_record() {
 
         assertThatExceptionOfType(ValueException.class)
             .isThrownBy(() -> DelegateMapper.newInstance(EmptyRecord.class));
+    }
+
+    @Test
+    void when_class_is_MoreFieldCustomer() {
+
+        assertThat(DelegateMapper.newInstance(MoreFieldCustomer.class))
+            .isNotNull();
+    }
+
+    @Nested
+    class ConvertMethod {
+
+        @Test
+        void when_class_is_not_type_record() {
+
+            var mapper = DelegateMapper.newInstance(Customer.class);
+
+            assertThat(mapper.convert(null))
+                .isNull();
+
+            var emptyValue = Map.<String, Object>of();
+            assertThat(mapper.convert(emptyValue))
+                .usingRecursiveComparison()
+                .isEqualTo(new Customer());
+
+            var value = Map.<String, Object>of(
+                "lastName", "test",
+                "first_name", "Nhan",
+                "age", BigDecimal.TEN
+            );
+            assertThat(mapper.convert(value))
+                .usingRecursiveComparison()
+                .isEqualTo(new Customer("Nhan", "test", BigDecimal.TEN));
+        }
+
+        @Test
+        void when_class_is_type_record() {
+
+            var mapper = DelegateMapper.newInstance(CustomerRecord.class);
+
+            assertThat(mapper.convert(null))
+                .isNull();
+
+            var emptyValue = Map.<String, Object>of();
+            assertThat(mapper.convert(emptyValue))
+                .usingRecursiveComparison()
+                .isEqualTo(new CustomerRecord(null, null, null));
+
+            var value = Map.<String, Object>of(
+                "lastName", "Tran",
+                "first_name", "Nhan",
+                "age", BigDecimal.TEN,
+                "missingField", "X"
+            );
+            assertThat(mapper.convert(value))
+                .usingRecursiveComparison()
+                .isEqualTo(new CustomerRecord("Nhan", "Tran", BigDecimal.TEN));
+        }
+
     }
 
     @Nested
@@ -179,9 +193,9 @@ class DelegateMapperTest extends SetupTestData {
         }
 
         @Test
-        void to_struct_from_object_with_connection() throws SQLException {
+        void to_struct_from_object_is_MoreFieldCustomer_with_connection() throws SQLException {
 
-            var mapper = DelegateMapper.newInstance(Customer.class);
+            var mapper = DelegateMapper.newInstance(MoreFieldCustomer.class);
 
             var connection = dataSource.getConnection();
 
@@ -195,13 +209,74 @@ class DelegateMapperTest extends SetupTestData {
                 mapper.toStruct(
                     connection,
                     "SYS.EXAMPLE_PACK.CUSTOMER",
-                    new Customer("Nhan", "Tran", BigDecimal.TEN)
+                    new MoreFieldCustomer("Nhan", "Tran", BigDecimal.TEN)
                 )
             )
                 .usingRecursiveComparison()
                 .isEqualTo(struct);
 
             DataSourceUtils.releaseConnection(connection, dataSource);
+        }
+
+        @Test
+        void to_struct_from_object_with_connection_is_null() {
+
+            var mapper = DelegateMapper.newInstance(Customer.class);
+
+            assertThat(
+                mapper.toStruct(
+                    null,
+                    "SYS.EXAMPLE_PACK.CUSTOMER",
+                    new Customer("Nhan", "Tran", BigDecimal.TEN)
+                )
+            )
+                .isNull();
+        }
+
+        @Test
+        void to_struct_from_object_with_connection_is_null_and_object_is_null() {
+
+            var mapper = DelegateMapper.newInstance(Customer.class);
+
+            assertThat(
+                mapper.toStruct(
+                    null,
+                    "SYS.EXAMPLE_PACK.CUSTOMER",
+                    null
+                )
+            )
+                .isNull();
+        }
+
+    }
+
+    static class MoreFieldCustomer extends Customer {
+
+        private BigDecimal missingField;
+        private BigDecimal missingAccessorField;
+        private String noGetField;
+
+        public MoreFieldCustomer() {
+        }
+
+        public MoreFieldCustomer(String name, String lastName, BigDecimal age) {
+
+            super(name, lastName, age);
+        }
+
+        public BigDecimal getMissingField() {
+
+            return this.missingField;
+        }
+
+        public void setMissingField(BigDecimal missingField) {
+
+            this.missingField = missingField;
+        }
+
+        public void setNoGetField(String noGetField) {
+
+            this.noGetField = noGetField;
         }
 
     }

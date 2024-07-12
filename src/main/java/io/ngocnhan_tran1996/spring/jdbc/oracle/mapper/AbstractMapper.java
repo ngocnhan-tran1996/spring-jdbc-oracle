@@ -26,7 +26,7 @@ abstract class AbstractMapper<T> implements Mapper<T> {
         try {
 
             var rsmd = this.getResultSetMetaData(connection, typeName);
-            Object[] objects = this.createStruct(
+            Object[] objects = this.toStruct(
                 rsmd.getColumnCount(),
                 this.extractIndexByColumnName(rsmd),
                 source
@@ -89,7 +89,7 @@ abstract class AbstractMapper<T> implements Mapper<T> {
     }
 
 
-    protected abstract Object[] createStruct(
+    protected abstract Object[] toStruct(
         int columns,
         Map<String, Integer> columnNameByIndex,
         T source
