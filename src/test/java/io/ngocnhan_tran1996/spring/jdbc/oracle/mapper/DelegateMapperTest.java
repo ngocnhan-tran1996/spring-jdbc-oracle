@@ -7,6 +7,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.Customer;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.CustomerRecord;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.SetupTestData;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import java.math.BigDecimal;
 import java.sql.DriverManager;
@@ -38,40 +39,27 @@ class DelegateMapperTest extends SetupTestData {
     }
 
     @Test
+    void when_class_is_record() {
+
+        assertThat(DelegateMapper.newInstance(NoDuplicateFieldRecord.class))
+            .isNotNull();
+    }
+
+    @Test
     void when_class_is_MoreFieldCustomer() {
 
         assertThat(DelegateMapper.newInstance(MoreFieldCustomer.class))
             .isNotNull();
     }
 
-    static class MoreFieldCustomer extends Customer {
+    @Test
+    void when_class_is_record_and_duplicate_field() {
 
-        private BigDecimal missingAccessorField;
-        private String noSetField;
-        private String noGetField;
+        assertThatExceptionOfType(ValueException.class)
+            .isThrownBy(() -> DelegateMapper.newInstance(DuplicateFieldRecord.class));
 
-        public MoreFieldCustomer() {
-        }
-
-        public MoreFieldCustomer(String name, String lastName, BigDecimal age) {
-
-            super(name, lastName, age);
-        }
-
-        public String getNoSetField() {
-
-            return this.noSetField;
-        }
-
-        public void setNoGetField(String noGetField) {
-
-            this.noGetField = noGetField;
-        }
-
-    }
-
-    record EmptyRecord() {
-
+        assertThatExceptionOfType(ValueException.class)
+            .isThrownBy(() -> DelegateMapper.newInstance(DuplicateAnnotationRecord.class));
     }
 
     @Nested
@@ -277,6 +265,65 @@ class DelegateMapperTest extends SetupTestData {
             )
                 .isNull();
         }
+
+    }
+
+    static class MoreFieldCustomer extends Customer {
+
+        private BigDecimal missingAccessorField;
+        private String noSetField;
+        private String noGetField;
+
+        public MoreFieldCustomer() {
+        }
+
+        public MoreFieldCustomer(String name, String lastName, BigDecimal age) {
+
+            super(name, lastName, age);
+        }
+
+        public String getNoSetField() {
+
+            return this.noSetField;
+        }
+
+        public void setNoGetField(String noGetField) {
+
+            this.noGetField = noGetField;
+        }
+
+    }
+
+    record EmptyRecord() {
+
+    }
+
+    public record DuplicateFieldRecord(
+        @OracleParameter("first_name")
+        String name,
+        String first_name,
+        BigDecimal age
+    ) {
+
+    }
+
+    public record DuplicateAnnotationRecord(
+        @OracleParameter("first_name")
+        String name,
+        @OracleParameter("first_name")
+        String lastName,
+        BigDecimal age
+    ) {
+
+    }
+
+    public record NoDuplicateFieldRecord(
+        @OracleParameter("first_name")
+        String name,
+        @OracleParameter("last_name")
+        String first_name,
+        BigDecimal age
+    ) {
 
     }
 

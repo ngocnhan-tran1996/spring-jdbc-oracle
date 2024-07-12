@@ -4,6 +4,7 @@ import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Matchers.not;
 
 import io.ngocnhan_tran1996.spring.jdbc.oracle.accessor.ClassRecord;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
 import java.beans.PropertyDescriptor;
 import java.util.List;
@@ -63,6 +64,11 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
                 .filter(Predicate.not(Strings::isBlank))
                 .filter(Predicate.not(name::equalsIgnoreCase))
                 .orElse(name);
+
+            if (this.readProperties.containsKey(propertyName)){
+
+                throw new ValueException("Field name must be unique");
+            }
 
             if (pd.getReadMethod() != null) {
 
