@@ -2,6 +2,8 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.ngocnhan_tran1996.spring.jdbc.oracle.Customer;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.CustomerRecord;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.SetupTestData;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.config.ExampleConfig;
 import java.math.BigDecimal;
