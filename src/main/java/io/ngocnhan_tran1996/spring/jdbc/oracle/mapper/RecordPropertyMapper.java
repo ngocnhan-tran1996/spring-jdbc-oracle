@@ -1,12 +1,9 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper;
 
-import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
-import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.LinkedCaseInsensitiveMap;
@@ -26,34 +23,19 @@ class RecordPropertyMapper<T> extends BeanPropertyMapper<T> {
 
             throw new ValueException("Record must have parameters");
         }
+
+        super.extractProperties();
     }
 
     public static <T> RecordPropertyMapper<T> newInstance(Class<T> mappedClass) {
 
-        return new RecordPropertyMapper<>(mappedClass)
-            .extractParameterNames();
+        return new RecordPropertyMapper<>(mappedClass);
     }
 
     @Override
-    RecordPropertyMapper<T> extractParameterNames() {
+    void doExtractProperties(PropertyDescriptor pd, String propertyName, String name) {
 
-        for (var property : super.getMapperProperties()) {
-
-            var field = property.field();
-            var pd = property.propertyDescriptor();
-
-            var name = pd.getName();
-            var oracleParameterName = field.getDeclaredAnnotation(OracleParameter.class);
-            var propertyName = Optional.ofNullable(oracleParameterName)
-                .map(OracleParameter::value)
-                .filter(Predicate.not(Strings::isBlank))
-                .filter(Predicate.not(name::equalsIgnoreCase))
-                .orElse(name);
-
-            this.parameterByFieldName.put(name, propertyName);
-        }
-
-        return this;
+        this.parameterByFieldName.put(name, propertyName);
     }
 
     @Override

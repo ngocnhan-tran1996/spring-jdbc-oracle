@@ -46,8 +46,8 @@ class DelegateMapperTest extends SetupTestData {
 
     static class MoreFieldCustomer extends Customer {
 
-        private BigDecimal missingField;
         private BigDecimal missingAccessorField;
+        private String noSetField;
         private String noGetField;
 
         public MoreFieldCustomer() {
@@ -58,14 +58,9 @@ class DelegateMapperTest extends SetupTestData {
             super(name, lastName, age);
         }
 
-        public BigDecimal getMissingField() {
+        public String getNoSetField() {
 
-            return this.missingField;
-        }
-
-        public void setMissingField(BigDecimal missingField) {
-
-            this.missingField = missingField;
+            return this.noSetField;
         }
 
         public void setNoGetField(String noGetField) {

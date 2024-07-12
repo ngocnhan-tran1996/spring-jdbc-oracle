@@ -5,8 +5,10 @@ import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Matchers.not;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.accessor.ClassRecord;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
+import java.beans.PropertyDescriptor;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -37,16 +39,17 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
                     return new MapperProperty(field, propertyDescriptor);
                 }
             )
+            .filter(mapperProperty -> Objects.nonNull(mapperProperty.field()))
             .toList();
     }
 
     public static <T> BeanPropertyMapper<T> newInstance(Class<T> mappedClass) {
 
         return new BeanPropertyMapper<>(mappedClass)
-            .extractParameterNames();
+            .extractProperties();
     }
 
-    BeanPropertyMapper<T> extractParameterNames() {
+    BeanPropertyMapper<T> extractProperties() {
 
         for (var property : this.mapperProperties) {
 
@@ -66,13 +69,19 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
                 this.readProperties.put(propertyName, name);
             }
 
-            if (pd.getWriteMethod() != null) {
-
-                this.writeProperties.put(propertyName, name);
-            }
+            this.doExtractProperties(pd, propertyName, name);
         }
 
         return this;
+    }
+
+    void doExtractProperties(PropertyDescriptor pd, String propertyName, String name) {
+
+        if (pd.getWriteMethod() != null) {
+
+            this.writeProperties.put(propertyName, name);
+        }
+
     }
 
     @Override
@@ -116,11 +125,6 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
     public Class<T> getMappedClass() {
 
         return this.mappedClass;
-    }
-
-    public List<MapperProperty> getMapperProperties() {
-
-        return this.mapperProperties;
     }
 
 }
