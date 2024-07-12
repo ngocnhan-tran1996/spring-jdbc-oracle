@@ -2,7 +2,6 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper;
 
 import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Matchers.not;
 
-import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
@@ -19,8 +18,6 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 
 abstract class AbstractMapper<T> implements Mapper<T> {
 
-    private static final String MESSAGE = "%s is not struct";
-
     protected final Log log = LogFactory.getLog(this.getClass());
 
     @Override
@@ -28,16 +25,7 @@ abstract class AbstractMapper<T> implements Mapper<T> {
 
         try {
 
-            var oracleTypeMetaData = connection.getMetaData()
-                .unwrap(OracleDatabaseMetaData.class)
-                .getOracleTypeMetaData(typeName);
-
-            if (oracleTypeMetaData.getKind() != OracleTypeMetaData.Kind.STRUCT) {
-
-                throw new ValueException(MESSAGE.formatted(typeName));
-            }
-
-            var rsmd = this.getResultSetMetaData(oracleTypeMetaData);
+            var rsmd = this.getResultSetMetaData(connection, typeName);
             Object[] objects = this.createStruct(
                 rsmd.getColumnCount(),
                 this.extractIndexByColumnName(rsmd),
@@ -51,7 +39,7 @@ abstract class AbstractMapper<T> implements Mapper<T> {
             String className = source == null
                 ? null
                 : source.getClass().getName();
-            this.log.debug("Expected STRUCT but got '%s'".formatted(className), ex);
+            this.log.error("Expected STRUCT but got '%s'".formatted(className), ex);
             return null;
         }
     }
@@ -61,27 +49,17 @@ abstract class AbstractMapper<T> implements Mapper<T> {
 
         try {
 
-            var typeName = struct.getSQLTypeName();
-            var oracleTypeMetaData = connection.getMetaData()
-                .unwrap(OracleDatabaseMetaData.class)
-                .getOracleTypeMetaData(typeName);
-
-            if (oracleTypeMetaData.getKind() != OracleTypeMetaData.Kind.STRUCT) {
-
-                throw new ValueException(MESSAGE.formatted(typeName));
-            }
-
             Object[] values = struct.getAttributes();
             var valueByName = new LinkedCaseInsensitiveMap<>(values.length);
 
-            var rsmd = this.getResultSetMetaData(oracleTypeMetaData);
+            var rsmd = this.getResultSetMetaData(connection, struct.getSQLTypeName());
             this.extractIndexByColumnName(rsmd)
                 .forEach((columnName, index) -> valueByName.put(columnName, values[index]));
 
             return this.constructInstance(valueByName);
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
 
-            this.log.debug("Can not convert struct to object", ex);
+            this.log.error("Can not convert struct to object", ex);
             return null;
         }
     }
@@ -119,9 +97,19 @@ abstract class AbstractMapper<T> implements Mapper<T> {
 
     protected abstract T constructInstance(Map<String, Object> valueByName);
 
-    ResultSetMetaData getResultSetMetaData(OracleTypeMetaData struct) throws SQLException {
+    ResultSetMetaData getResultSetMetaData(Connection connection, String typeName)
+        throws SQLException {
 
-        return ((OracleTypeMetaData.Struct) struct).getMetaData();
+        if (connection.getMetaData() instanceof OracleDatabaseMetaData oracleDatabaseMetaData) {
+
+            var oracleTypeMetaData = oracleDatabaseMetaData.getOracleTypeMetaData(typeName);
+            return ((OracleTypeMetaData.Struct) oracleTypeMetaData).getMetaData();
+        }
+
+        var oracleTypeMetaData = connection.getMetaData()
+            .unwrap(OracleDatabaseMetaData.class)
+            .getOracleTypeMetaData(typeName);
+        return ((OracleTypeMetaData.Struct) oracleTypeMetaData).getMetaData();
     }
 
     Map<String, Integer> extractIndexByColumnName(ResultSetMetaData rsmd) throws SQLException {

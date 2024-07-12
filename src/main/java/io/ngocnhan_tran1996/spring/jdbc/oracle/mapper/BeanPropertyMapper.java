@@ -64,7 +64,7 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
 
             } catch (Exception ex) {
 
-                this.log.debug("Can not find field %s".formatted(name), ex);
+                this.log.error("Can not find field %s".formatted(name), ex);
             }
 
         }
