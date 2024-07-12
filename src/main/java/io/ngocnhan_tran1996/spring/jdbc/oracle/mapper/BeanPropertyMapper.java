@@ -34,37 +34,29 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
 
         for (var field : this.mappedClass.getDeclaredFields()) {
 
-            String name = field.getName();
+            var name = field.getName();
+            var oracleParameterName = field.getDeclaredAnnotation(OracleParameter.class);
+            var propertyName = Optional.ofNullable(oracleParameterName)
+                .map(OracleParameter::value)
+                .filter(Predicate.not(Strings::isBlank))
+                .filter(Predicate.not(name::equalsIgnoreCase))
+                .orElse(name);
 
-            try {
+            var pd = BeanUtils.getPropertyDescriptor(this.mappedClass, name);
 
-                var oracleParameterName = field.getDeclaredAnnotation(OracleParameter.class);
-                var propertyName = Optional.ofNullable(oracleParameterName)
-                    .map(OracleParameter::value)
-                    .filter(Predicate.not(Strings::isBlank))
-                    .filter(Predicate.not(name::equalsIgnoreCase))
-                    .orElse(name);
+            if (pd == null) {
 
-                var pd = BeanUtils.getPropertyDescriptor(this.mappedClass, name);
+                continue;
+            }
 
-                if (pd == null) {
+            if (pd.getReadMethod() != null) {
 
-                    continue;
-                }
+                this.readProperties.put(propertyName, pd);
+            }
 
-                if (pd.getReadMethod() != null) {
+            if (pd.getWriteMethod() != null) {
 
-                    this.readProperties.put(propertyName, pd);
-                }
-
-                if (pd.getWriteMethod() != null) {
-
-                    this.writeProperties.put(propertyName, pd);
-                }
-
-            } catch (Exception ex) {
-
-                this.log.error("Can not find field %s".formatted(name), ex);
+                this.writeProperties.put(propertyName, pd);
             }
 
         }
