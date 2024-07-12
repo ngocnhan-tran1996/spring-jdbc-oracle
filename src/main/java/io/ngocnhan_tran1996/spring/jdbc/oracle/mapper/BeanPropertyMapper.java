@@ -65,7 +65,7 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
                 .filter(Predicate.not(name::equalsIgnoreCase))
                 .orElse(name);
 
-            if (this.readProperties.containsKey(propertyName)){
+            if (this.readProperties.containsKey(propertyName)) {
 
                 throw new ValueException("Field name must be unique");
             }

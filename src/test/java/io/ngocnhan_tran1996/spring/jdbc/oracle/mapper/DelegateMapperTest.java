@@ -268,63 +268,63 @@ class DelegateMapperTest extends SetupTestData {
 
     }
 
-    static class MoreFieldCustomer extends Customer {
+}
 
-        private BigDecimal missingAccessorField;
-        private String noSetField;
-        private String noGetField;
+class MoreFieldCustomer extends Customer {
 
-        public MoreFieldCustomer() {
-        }
+    private BigDecimal missingAccessorField;
+    private String noSetField;
+    private String noGetField;
 
-        public MoreFieldCustomer(String name, String lastName, BigDecimal age) {
-
-            super(name, lastName, age);
-        }
-
-        public String getNoSetField() {
-
-            return this.noSetField;
-        }
-
-        public void setNoGetField(String noGetField) {
-
-            this.noGetField = noGetField;
-        }
-
+    public MoreFieldCustomer() {
     }
 
-    record EmptyRecord() {
+    public MoreFieldCustomer(String name, String lastName, BigDecimal age) {
 
+        super(name, lastName, age);
     }
 
-    public record DuplicateFieldRecord(
-        @OracleParameter("first_name")
-        String name,
-        String first_name,
-        BigDecimal age
-    ) {
+    public String getNoSetField() {
 
+        return this.noSetField;
     }
 
-    public record DuplicateAnnotationRecord(
-        @OracleParameter("first_name")
-        String name,
-        @OracleParameter("first_name")
-        String lastName,
-        BigDecimal age
-    ) {
+    public void setNoGetField(String noGetField) {
 
+        this.noGetField = noGetField;
     }
 
-    public record NoDuplicateFieldRecord(
-        @OracleParameter("first_name")
-        String name,
-        @OracleParameter("last_name")
-        String first_name,
-        BigDecimal age
-    ) {
+}
 
-    }
+record EmptyRecord() {
+
+}
+
+record DuplicateFieldRecord(
+    @OracleParameter("first_name")
+    String name,
+    String first_name,
+    BigDecimal age
+) {
+
+}
+
+record DuplicateAnnotationRecord(
+    @OracleParameter("first_name")
+    String name,
+    @OracleParameter("first_name")
+    String lastName,
+    BigDecimal age
+) {
+
+}
+
+record NoDuplicateFieldRecord(
+    @OracleParameter("first_name")
+    String name,
+    @OracleParameter("last_name")
+    String first_name,
+    BigDecimal age
+) {
 
 }
