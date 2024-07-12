@@ -11,7 +11,7 @@ class ArrayReturnType<T> extends AbstractReturnType<T> {
     @Override
     protected T convertStruct(Connection connection, Struct struct) {
 
-        return null;
+        throw new UnsupportedOperationException("not implement");
     }
 
     @Override
