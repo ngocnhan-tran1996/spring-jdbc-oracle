@@ -20,4 +20,27 @@ class ParameterInputTest {
             .isThrownBy(isTypeNull::sqlInOutParameter);
     }
 
+    @Test
+    void with_type_name_is_blank() {
+
+        var parameterTypeValue = ParameterInput.withParameterName("x")
+            .withValues(Collections.emptyList());
+
+        // case array
+        assertThatExceptionOfType(ValueException.class)
+            .isThrownBy(() -> parameterTypeValue.withArray(""));
+        assertThatExceptionOfType(ValueException.class)
+            .isThrownBy(() -> parameterTypeValue.withArray(null));
+
+        // case struct
+        assertThatExceptionOfType(ValueException.class)
+            .isThrownBy(() -> parameterTypeValue.withStruct("    "));
+
+        // case struct array
+        assertThatExceptionOfType(ValueException.class)
+            .isThrownBy(() -> parameterTypeValue.withStructArray("x", null));
+        assertThatExceptionOfType(ValueException.class)
+            .isThrownBy(() -> parameterTypeValue.withStructArray("x", ""));
+    }
+
 }

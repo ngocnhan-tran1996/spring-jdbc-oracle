@@ -36,7 +36,7 @@ class StructArrayTypeValue<T> extends ArrayTypeValue<T> {
     @Override
     protected Object createTypeValue(Connection connection, String typeName) throws SQLException {
 
-        if (this.values() == null) {
+        if (super.values() == null) {
 
             return super.createTypeValue(connection, typeName);
         }
