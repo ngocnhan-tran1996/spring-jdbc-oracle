@@ -1,9 +1,5 @@
 # Spring Jdbc Oracle
 
-- case value = null
-- case convert value to value
-- config convert value to value
-
 This repo references from [Spring Data JDBC Extensions for the Oracle database](https://github.com/spring-attic/spring-data-jdbc-ext).
 
 I just copy and modify some code that I think it is necessary for me.
@@ -74,9 +70,9 @@ Please take a look and you will know how to use it
 1. [Example script](src/test/resources/script/example_pack.sql)
 2. [ExampleService](src/test/java/io/ngocnhan_tran1996/spring/jdbc/oracle/service/ExampleService.java) execute above script using `JdbcTemplate`
 
-## Convert to Java
+### Convert to Java
 
-### Type Input or Type Input Output
+#### Type Input or Type Input Output
 
 Use file: `ParameterInput.java`
 
@@ -158,7 +154,7 @@ public class Customer {
 }
 ```
 
-### Type Output
+#### Type Output
 
 Use file: `ParameterOutput.java`
 
@@ -229,6 +225,61 @@ public class Customer {
 
     // getter/setter
 }
+```
+
+### Implementation
+
+`SimpleJdbcCall` and `MapSqlParameterSource` come from Spring.
+
+```java
+var simpleJdbcCall = new SimpleJdbcCall(this.jdbcTemplate)
+    .withCatalogName("example_pack")
+    .withProcedureName("EXAMPLE_PROC")
+    .declareParameters(
+
+        inCustomerObject.sqlParameter(),
+        inNumbers.sqlParameter(),
+        inCustomer.sqlParameter(),
+        inCustomers.sqlParameter(),
+
+        inOutCustomerObject.sqlInOutParameter(),
+        inOutNumbers.sqlInOutParameter(),
+        inOutCustomer.sqlInOutParameter(),
+        inOutCustomers.sqlInOutParameter(),
+
+        outCustomerObject.sqlOutParameter(),
+        outNumbers.sqlOutParameter(),
+        outCustomer.sqlOutParameter(),
+        outCustomers.sqlOutParameter()
+    );
+
+var sqlParameterSource = new MapSqlParameterSource()
+    .addValues(inCustomerObject.toMap())
+    .addValues(inNumbers.toMap())
+    .addValues(inCustomer.toMap())
+    .addValues(inCustomers.toMap())
+
+    .addValues(inOutCustomerObject.toMap())
+    .addValues(inOutNumbers.toMap())
+    .addValues(inOutCustomer.toMap())
+    .addValues(inOutCustomers.toMap());
+
+// return Map<String, Object>
+return simpleJdbcCall.execute(sqlParameterSource);
+
+// the result, key is always uppercase
+var result = new HashMap<String, Object>();
+result.containsKey("IN_OUT_NUMBERS");
+result.containsKey("OUT_NUMBERS");
+
+result.containsKey("IN_OUT_CUSTOMER");
+result.containsKey("OUT_CUSTOMER");
+
+result.containsKey("IN_OUT_CUSTOMERS");
+result.containsKey("OUT_CUSTOMERS");
+
+result.containsKey("IN_OUT_CUSTOMER_OBJECT");
+result.containsKey("OUT_CUSTOMER_OBJECT");
 ```
 
 ## Reference
