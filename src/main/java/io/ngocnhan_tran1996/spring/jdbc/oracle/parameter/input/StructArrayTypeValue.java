@@ -18,7 +18,7 @@ class StructArrayTypeValue<T> extends ArrayTypeValue<T> {
     private final String structTypeName;
     private final Mapper<T> mapper;
 
-    public StructArrayTypeValue(
+    StructArrayTypeValue(
         String arrayTypeName,
         Collection<T> values,
         String structTypeName,

@@ -14,7 +14,7 @@ class ArrayTypeValue<T> extends AbstractTypeValue {
     private final String arrayTypeName;
     private final Collection<T> values;
 
-    public ArrayTypeValue(String arrayTypeName, Collection<T> values) {
+    ArrayTypeValue(String arrayTypeName, Collection<T> values) {
 
         if (Strings.isBlank(arrayTypeName)) {
 
