@@ -21,11 +21,6 @@ public final class DelegateMapper<T> implements Mapper<T> {
         return new DelegateMapper<>(mappedClass);
     }
 
-    public Mapper<T> get() {
-
-        return this.mapper;
-    }
-
     @Override
     public Struct toStruct(Connection connection, String typeName, T source) {
 

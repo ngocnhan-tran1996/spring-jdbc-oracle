@@ -35,22 +35,22 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
     public ParameterOutput<T> withArray(String typeName) {
 
-        this.returnType = new ArrayReturnType<>();
         this.typeName = typeName;
+        this.returnType = new ArrayReturnType<>();
         return this;
     }
 
     public ParameterOutput<T> withStructArray(String typeName) {
 
-        this.returnType = new StructArrayReturnType<>(this.mapper.get());
         this.typeName = typeName;
+        this.returnType = new StructArrayReturnType<>(this.mapper);
         return this;
     }
 
     public ParameterOutput<T> withStruct(String typeName) {
 
-        this.returnType = new StructReturnType<>(this.mapper.get());
         this.typeName = typeName;
+        this.returnType = new StructReturnType<>(this.mapper);
         return this;
     }
 
@@ -72,7 +72,7 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
     private void validateReturnType() {
 
-        if (Strings.isBlank(this.typeName) || this.returnType == null) {
+        if (Strings.isBlank(this.typeName)) {
 
             throw new ValueException(NOT_NULL.formatted("returnType"));
         }

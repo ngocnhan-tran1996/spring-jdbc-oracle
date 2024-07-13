@@ -96,7 +96,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
             this.typeValue = new StructTypeValue<>(
                 structTypeName,
                 value,
-                mapper.get()
+                mapper
             );
             this.type = Types.STRUCT;
             this.returnType = ParameterOutput.withParameterName(
@@ -114,7 +114,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
                 arrayTypeName,
                 values,
                 structTypeName,
-                mapper.get()
+                mapper
             );
             this.type = Types.ARRAY;
             this.returnType = ParameterOutput.withParameterName(
