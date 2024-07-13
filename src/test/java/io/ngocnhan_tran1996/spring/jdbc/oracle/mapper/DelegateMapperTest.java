@@ -8,6 +8,7 @@ import io.ngocnhan_tran1996.spring.jdbc.oracle.Customer;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.CustomerRecord;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.SetupTestData;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.config.ExampleConfig;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import java.math.BigDecimal;
 import java.sql.DriverManager;
@@ -19,12 +20,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
 @SpringBootTest
-//@Import(ExampleConfig.class)
+@Import(ExampleConfig.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class DelegateMapperTest extends SetupTestData {
 

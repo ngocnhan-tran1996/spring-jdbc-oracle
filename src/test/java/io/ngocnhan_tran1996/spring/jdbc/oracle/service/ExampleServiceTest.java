@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.Customer;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.CustomerRecord;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.SetupTestData;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.config.ExampleConfig;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -12,11 +13,10 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.context.annotation.Import;
 
-@ActiveProfiles("test")
 @SpringBootTest
-//@Import(ExampleConfig.class)
+@Import(ExampleConfig.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ExampleServiceTest extends SetupTestData {
 

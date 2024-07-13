@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.zaxxer.hikari.HikariDataSource;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.Customer;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.SetupTestData;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.config.ExampleConfig;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.DelegateMapper;
 import java.math.BigDecimal;
@@ -15,11 +16,10 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.context.annotation.Import;
 
-@ActiveProfiles("test")
 @SpringBootTest
-//@Import(ExampleConfig.class)
+@Import(ExampleConfig.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class StructArrayReturnTypeTest extends SetupTestData {
 
