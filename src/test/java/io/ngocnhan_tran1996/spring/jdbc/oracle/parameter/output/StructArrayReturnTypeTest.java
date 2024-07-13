@@ -33,7 +33,7 @@ class StructArrayReturnTypeTest extends SetupTestData {
         try (var connection = dataSource.getConnection().unwrap(OracleConnection.class)) {
 
             var numbers = connection.createOracleArray(
-                "SYS.EXAMPLE_PACK.NUMBERS",
+                "EXAMPLE_PACK.NUMBERS",
                 new Object[]{BigDecimal.TEN, BigDecimal.ONE}
             );
 
@@ -41,7 +41,7 @@ class StructArrayReturnTypeTest extends SetupTestData {
                 .isThrownBy(() -> returnType.convertArray(connection, numbers));
 
             var nullValues = connection.createOracleArray(
-                "SYS.EXAMPLE_PACK.NUMBERS",
+                "EXAMPLE_PACK.NUMBERS",
                 new Object[]{null}
             );
 

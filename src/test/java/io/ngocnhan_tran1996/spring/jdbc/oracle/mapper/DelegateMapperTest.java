@@ -130,7 +130,7 @@ class DelegateMapperTest extends SetupTestData {
 
             var struct = connection
                 .createStruct(
-                    "SYS.EXAMPLE_PACK.CUSTOMER",
+                    "EXAMPLE_PACK.CUSTOMER",
                     new Object[]{"Nhan", "Tran", BigDecimal.TEN}
                 );
 
@@ -150,7 +150,7 @@ class DelegateMapperTest extends SetupTestData {
 
             var struct = connection
                 .createStruct(
-                    "SYS.EXAMPLE_PACK.CUSTOMER",
+                    "EXAMPLE_PACK.CUSTOMER",
                     new Object[]{"Nhan", "Tran", BigDecimal.TEN}
                 );
 
@@ -170,7 +170,7 @@ class DelegateMapperTest extends SetupTestData {
 
             var struct = connection
                 .createStruct(
-                    "SYS.EXAMPLE_PACK.CUSTOMER",
+                    "EXAMPLE_PACK.CUSTOMER",
                     new Object[0]
                 );
 
@@ -193,14 +193,14 @@ class DelegateMapperTest extends SetupTestData {
 
             var struct = connection
                 .createStruct(
-                    "SYS.EXAMPLE_PACK.CUSTOMER",
+                    "EXAMPLE_PACK.CUSTOMER",
                     new Object[]{"Nhan", "Tran", BigDecimal.TEN}
                 );
 
             assertThat(
                 mapper.toStruct(
                     connection,
-                    "SYS.EXAMPLE_PACK.CUSTOMER",
+                    "EXAMPLE_PACK.CUSTOMER",
                     new Customer("Nhan", "Tran", BigDecimal.TEN)
                 )
             )
@@ -219,14 +219,14 @@ class DelegateMapperTest extends SetupTestData {
 
             var struct = connection
                 .createStruct(
-                    "SYS.EXAMPLE_PACK.CUSTOMER",
+                    "EXAMPLE_PACK.CUSTOMER",
                     new Object[]{"Nhan", "Tran", BigDecimal.TEN}
                 );
 
             assertThat(
                 mapper.toStruct(
                     connection,
-                    "SYS.EXAMPLE_PACK.CUSTOMER",
+                    "EXAMPLE_PACK.CUSTOMER",
                     new MoreFieldCustomer("Nhan", "Tran", BigDecimal.TEN)
                 )
             )
@@ -244,7 +244,7 @@ class DelegateMapperTest extends SetupTestData {
             assertThat(
                 mapper.toStruct(
                     null,
-                    "SYS.EXAMPLE_PACK.CUSTOMER",
+                    "EXAMPLE_PACK.CUSTOMER",
                     new Customer("Nhan", "Tran", BigDecimal.TEN)
                 )
             )
@@ -259,7 +259,7 @@ class DelegateMapperTest extends SetupTestData {
             assertThat(
                 mapper.toStruct(
                     null,
-                    "SYS.EXAMPLE_PACK.CUSTOMER",
+                    "EXAMPLE_PACK.CUSTOMER",
                     null
                 )
             )
