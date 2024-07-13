@@ -64,6 +64,8 @@ class ExampleService {
             )
             .withStructArray("example_pack.customers", "example_pack.customer");
 
+        var outCustomerObjects = ParameterOutput.withParameterName("out_customer_objects")
+            .withArray("example_pack.customer_objects");
         var outCustomerObject = ParameterOutput.withParameterName("out_customer_object")
             .withStruct("customer_object");
         var outNumbers = ParameterOutput.withParameterName("out_numbers")
@@ -88,6 +90,7 @@ class ExampleService {
                 inOutCustomer.sqlInOutParameter(),
                 inOutCustomers.sqlInOutParameter(),
 
+                outCustomerObjects.sqlOutParameter(),
                 outCustomerObject.sqlOutParameter(),
                 outNumbers.sqlOutParameter(),
                 outCustomer.sqlOutParameter(),

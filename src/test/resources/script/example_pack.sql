@@ -5,6 +5,8 @@ CREATE OR REPLACE TYPE customer_object AS OBJECT (
 /
 
 CREATE OR REPLACE PACKAGE example_pack IS
+    TYPE customer_objects IS
+        TABLE OF customer_object;
     TYPE customer IS RECORD (
             first_name VARCHAR(255),
             last_name  VARCHAR(255),
@@ -23,6 +25,7 @@ CREATE OR REPLACE PACKAGE example_pack IS
         in_out_numbers         IN OUT numbers,
         in_out_customer        IN OUT customer,
         in_out_customers       IN OUT customers,
+        out_customer_objects   OUT customer_objects,
         out_customer_object    OUT customer_object,
         out_numbers            OUT numbers,
         out_customer           OUT customer,
@@ -43,6 +46,7 @@ CREATE OR REPLACE PACKAGE BODY example_pack IS
         in_out_numbers         IN OUT numbers,
         in_out_customer        IN OUT customer,
         in_out_customers       IN OUT customers,
+        out_customer_objects   OUT customer_objects,
         out_customer_object    OUT customer_object,
         out_numbers            OUT numbers,
         out_customer           OUT customer,
@@ -53,6 +57,7 @@ CREATE OR REPLACE PACKAGE BODY example_pack IS
         in_out_numbers := in_numbers;
         in_out_customer := in_customer;
         in_out_customers := in_customers;
+        out_customer_objects := NULL;
         out_customer_object := in_customer_object;
         out_numbers := in_numbers;
         out_customer := in_customer;

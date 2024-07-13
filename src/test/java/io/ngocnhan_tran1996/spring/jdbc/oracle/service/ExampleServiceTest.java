@@ -47,6 +47,8 @@ class ExampleServiceTest extends SetupTestData {
         expectOutput.put("IN_OUT_CUSTOMER_OBJECT", null);
         expectOutput.put("OUT_CUSTOMER_OBJECT", null);
 
+        expectOutput.put("OUT_CUSTOMER_OBJECTS", null);
+
         // assert
         assertThat(exampleService.callExamplePack(Customer.class))
             .usingRecursiveComparison()
@@ -76,6 +78,8 @@ class ExampleServiceTest extends SetupTestData {
 
         expectOutput.put("IN_OUT_CUSTOMER_OBJECT", null);
         expectOutput.put("OUT_CUSTOMER_OBJECT", null);
+
+        expectOutput.put("OUT_CUSTOMER_OBJECTS", null);
 
         // assert
         assertThat(exampleService.callExamplePack(CustomerRecord.class))
