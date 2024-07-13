@@ -15,8 +15,8 @@ I just copy and modify some code that I think it is necessary for me.
   - [Before You Start](#before-you-start)
   - [How To Test](#how-to-test)
   - [Usage](#usage)
-    - [Type Input](#type-input)
-    - [Type Input Output](#type-input-output)
+  - [Convert to Java](#convert-to-java)
+    - [Type Input or Type Input Output](#type-input-or-type-input-output)
     - [Type Output](#type-output)
   - [Reference](#reference)
 
