@@ -165,7 +165,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
         private void validateTypeValue() {
 
-            if (this.type == null || this.typeValue == null) {
+            if (this.type == null) {
 
                 throw new ValueException(NOT_NULL.formatted("typeValue"));
             }
