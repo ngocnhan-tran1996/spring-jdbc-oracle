@@ -11,9 +11,10 @@ I just copy and modify some code that I think it is necessary for me.
   - [Before You Start](#before-you-start)
   - [How To Test](#how-to-test)
   - [Usage](#usage)
-  - [Convert to Java](#convert-to-java)
-    - [Type Input or Type Input Output](#type-input-or-type-input-output)
-    - [Type Output](#type-output)
+    - [Convert to Java](#convert-to-java)
+      - [`ParameterInput.java` supports Type Input or Type Input Output](#parameterinputjava-supports-type-input-or-type-input-output)
+      - [`ParameterOutput.java` supports Type Output](#parameteroutputjava-supports-type-output)
+    - [Implementation](#implementation)
   - [Reference](#reference)
 
 ## Before You Start
@@ -72,9 +73,7 @@ Please take a look and you will know how to use it
 
 ### Convert to Java
 
-#### Type Input or Type Input Output
-
-Use file: `ParameterInput.java`
+#### `ParameterInput.java` supports Type Input or Type Input Output
 
 ```oracle
 TYPE customer IS RECORD (
@@ -154,9 +153,7 @@ public class Customer {
 }
 ```
 
-#### Type Output
-
-Use file: `ParameterOutput.java`
+#### `ParameterOutput.java` supports Type Output
 
 ```oracle
 TYPE customer IS RECORD (
@@ -172,7 +169,7 @@ TYPE numbers IS
     TABLE OF NUMBER INDEX BY BINARY_INTEGER;
 
 PROCEDURE example_proc (
-    -- in/inout parameters,
+    -- in/inout parameters
     out_numbers      OUT numbers,
     out_customer     OUT customer,
     out_customers    OUT customers
@@ -268,7 +265,7 @@ var sqlParameterSource = new MapSqlParameterSource()
 return simpleJdbcCall.execute(sqlParameterSource);
 
 // the result, key is always uppercase
-var result = new HashMap<String, Object>();
+var result = simpleJdbcCall.execute(sqlParameterSource);
 result.containsKey("IN_OUT_NUMBERS");
 result.containsKey("OUT_NUMBERS");
 
