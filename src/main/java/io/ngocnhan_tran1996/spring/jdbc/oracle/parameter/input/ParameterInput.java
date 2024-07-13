@@ -128,8 +128,12 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
         public Map<String, Object> toMap() {
 
+            var value = Optional.ofNullable(values)
+                .map(v -> this.sqlTypeValue())
+                .orElse(null);
+
             var map = new HashMap<String, Object>();
-            map.put(getParameterName(), this.sqlTypeValue());
+            map.put(getParameterName(), value);
             return map;
         }
 

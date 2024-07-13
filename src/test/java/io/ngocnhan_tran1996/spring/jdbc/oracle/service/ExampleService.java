@@ -28,6 +28,9 @@ class ExampleService {
         var customer = mappedClass.getDeclaredConstructor(String.class, String.class,
             BigDecimal.class);
 
+        var inCustomerObject = ParameterInput.withParameterName("in_customer_object")
+            .withValue(null)
+            .withStruct("customer_object");
         var inNumbers = ParameterInput.withParameterName("in_numbers")
             .withValues(BigDecimal.ONE, BigDecimal.ZERO)
             .withArray("example_pack.numbers");
@@ -43,6 +46,9 @@ class ExampleService {
             )
             .withStructArray("example_pack.customers", "example_pack.customer");
 
+        var inOutCustomerObject = ParameterInput.withParameterName("in_out_customer_object")
+            .withValue(null)
+            .withStruct("customer_object");
         var inOutNumbers = ParameterInput.withParameterName("in_out_numbers")
             .withValues(List.of(BigDecimal.TEN, BigDecimal.ZERO))
             .withArray("example_pack.numbers");
@@ -58,6 +64,8 @@ class ExampleService {
             )
             .withStructArray("example_pack.customers", "example_pack.customer");
 
+        var outCustomerObject = ParameterOutput.withParameterName("out_customer_object")
+            .withStruct("customer_object");
         var outNumbers = ParameterOutput.withParameterName("out_numbers")
             .withArray("example_pack.numbers");
         var outCustomer = ParameterOutput.withParameterName("out_customer", mappedClass)
@@ -67,27 +75,32 @@ class ExampleService {
 
         var simpleJdbcCall = new SimpleJdbcCall(this.jdbcTemplate)
             .withCatalogName("example_pack")
-            .withProcedureName("example_proc")
+            .withProcedureName("EXAMPLE_PROC")
             .declareParameters(
 
+                inCustomerObject.sqlParameter(),
                 inNumbers.sqlParameter(),
                 inCustomer.sqlParameter(),
                 inCustomers.sqlParameter(),
 
+                inOutCustomerObject.sqlInOutParameter(),
                 inOutNumbers.sqlInOutParameter(),
                 inOutCustomer.sqlInOutParameter(),
                 inOutCustomers.sqlInOutParameter(),
 
+                outCustomerObject.sqlOutParameter(),
                 outNumbers.sqlOutParameter(),
                 outCustomer.sqlOutParameter(),
                 outCustomers.sqlOutParameter()
             );
 
         var sqlParameterSource = new MapSqlParameterSource()
+            .addValues(inCustomerObject.toMap())
             .addValues(inNumbers.toMap())
             .addValues(inCustomer.toMap())
             .addValues(inCustomers.toMap())
 
+            .addValues(inOutCustomerObject.toMap())
             .addValues(inOutNumbers.toMap())
             .addValues(inOutCustomer.toMap())
             .addValues(inOutCustomers.toMap());
