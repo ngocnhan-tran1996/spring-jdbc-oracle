@@ -48,8 +48,11 @@ class RecordPropertyMapper<T> extends BeanPropertyMapper<T> {
         int i = 0;
         for (var parameter : this.constructor.getParameters()) {
 
+            var targetType = parameter.getType();
             var fieldName = this.parameterByFieldName.get(parameter.getName());
-            args[i] = bw.convertIfNecessary(valueByName.get(fieldName), parameter.getType());
+            var value = this.convertValue(valueByName.get(fieldName), targetType);
+
+            args[i] = bw.convertIfNecessary(value, targetType);
             i++;
         }
 
