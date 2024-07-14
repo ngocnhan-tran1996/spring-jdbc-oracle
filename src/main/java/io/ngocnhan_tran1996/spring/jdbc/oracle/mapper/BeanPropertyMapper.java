@@ -4,10 +4,14 @@ import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Matchers.not;
 
 import io.ngocnhan_tran1996.spring.jdbc.oracle.accessor.ClassRecord;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.converter.support.NoneConverter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.converter.support.OracleConverters;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.MapperProperty;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.WriteProperty;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,7 +27,7 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
 
     private static final OracleConverters converters = OracleConverters.INSTANCE;
     private final Map<String, String> readProperties = new LinkedCaseInsensitiveMap<>();
-    private final Map<String, String> writeProperties = new LinkedCaseInsensitiveMap<>();
+    private final Map<String, WriteProperty> writeProperties = new LinkedCaseInsensitiveMap<>();
     private final List<MapperProperty> mapperProperties;
     private final Class<T> mappedClass;
 
@@ -77,18 +81,19 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
                 this.readProperties.put(propertyName, name);
             }
 
-            // FIXME add converter
-            this.doExtractProperties(pd, propertyName);
+            var convertMethod = this.findMethod(pd, oracleParameter);
+            var writeProperty = new WriteProperty(propertyName, name, convertMethod);
+            this.doExtractProperties(pd, writeProperty);
         }
 
         return this;
     }
 
-    void doExtractProperties(PropertyDescriptor pd, String propertyName) {
+    void doExtractProperties(PropertyDescriptor pd, WriteProperty writeProperty) {
 
         if (pd.getWriteMethod() != null) {
 
-            this.writeProperties.put(propertyName, pd.getName());
+            this.writeProperties.put(writeProperty.propertyName(), writeProperty);
         }
 
     }
@@ -118,22 +123,32 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
         var instance = BeanUtils.instantiateClass(this.mappedClass);
         var bw = new BeanWrapperImpl(instance);
 
-        this.writeProperties.forEach((columnName, fieldName) -> {
+        this.writeProperties.forEach((columnName, writeProperty) -> {
 
             if (not(valueByName.containsKey(columnName))) {
 
                 return;
             }
 
-            var value = this.convertValue(
-                valueByName.get(columnName),
-                bw.getPropertyType(fieldName)
-            );
+            var rawValue = valueByName.get(columnName);
+            var fieldName = writeProperty.fieldName();
+            var value = Optional.ofNullable(writeProperty.convertMethod())
+                .map(method -> ReflectionUtils.invokeMethod(method, rawValue))
+                .orElseGet(() -> this.convertValue(rawValue, bw.getPropertyType(fieldName)));
 
             bw.setPropertyValue(fieldName, value);
         });
 
         return instance;
+    }
+
+    private Method findMethod(PropertyDescriptor pd, OracleParameter oracleParameter) {
+
+        return Optional.ofNullable(oracleParameter)
+            .map(OracleParameter::converter)
+            .filter(Predicate.not(NoneConverter.class::isAssignableFrom))
+            .map(aClass -> BeanUtils.findMethod(aClass, "convert", pd.getPropertyType()))
+            .orElse(null);
     }
 
     Object convertValue(Object value, Class<?> targetType) {

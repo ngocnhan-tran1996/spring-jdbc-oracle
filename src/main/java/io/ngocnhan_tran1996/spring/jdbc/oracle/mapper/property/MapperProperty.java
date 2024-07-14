@@ -1,4 +1,4 @@
-package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper;
+package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;

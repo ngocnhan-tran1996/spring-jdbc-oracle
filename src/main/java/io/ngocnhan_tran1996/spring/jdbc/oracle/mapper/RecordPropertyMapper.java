@@ -1,17 +1,20 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper;
 
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.WriteProperty;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.LinkedCaseInsensitiveMap;
+import org.springframework.util.ReflectionUtils;
 
 class RecordPropertyMapper<T> extends BeanPropertyMapper<T> {
 
     private final Constructor<T> constructor;
-    private final Map<String, String> parameterByFieldName = new LinkedCaseInsensitiveMap<>();
+    private final Map<String, WriteProperty> parameterByFieldName = new LinkedCaseInsensitiveMap<>();
 
     private RecordPropertyMapper(Class<T> mappedClass) {
 
@@ -33,10 +36,9 @@ class RecordPropertyMapper<T> extends BeanPropertyMapper<T> {
     }
 
     @Override
-    void doExtractProperties(PropertyDescriptor pd, String propertyName) {
+    void doExtractProperties(PropertyDescriptor pd, WriteProperty writeProperty) {
 
-        // FIXME add converter
-        this.parameterByFieldName.put(pd.getName(), propertyName);
+        this.parameterByFieldName.put(pd.getName(), writeProperty);
     }
 
     @Override
@@ -49,8 +51,11 @@ class RecordPropertyMapper<T> extends BeanPropertyMapper<T> {
         for (var parameter : this.constructor.getParameters()) {
 
             var targetType = parameter.getType();
-            var fieldName = this.parameterByFieldName.get(parameter.getName());
-            var value = this.convertValue(valueByName.get(fieldName), targetType);
+            var writeProperty = this.parameterByFieldName.get(parameter.getName());
+            var rawValue = valueByName.get(writeProperty.propertyName());
+            var value = Optional.ofNullable(writeProperty.convertMethod())
+                .map(method -> ReflectionUtils.invokeMethod(method, rawValue))
+                .orElseGet(() -> this.convertValue(rawValue, targetType));
 
             args[i] = bw.convertIfNecessary(value, targetType);
             i++;
