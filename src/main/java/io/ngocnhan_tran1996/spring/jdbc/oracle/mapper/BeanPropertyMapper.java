@@ -58,8 +58,8 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
             var pd = property.propertyDescriptor();
 
             var name = pd.getName();
-            var oracleParameterName = field.getDeclaredAnnotation(OracleParameter.class);
-            var propertyName = Optional.ofNullable(oracleParameterName)
+            var oracleParameter = field.getDeclaredAnnotation(OracleParameter.class);
+            var propertyName = Optional.ofNullable(oracleParameter)
                 .map(OracleParameter::value)
                 .filter(Predicate.not(Strings::isBlank))
                 .filter(Predicate.not(name::equalsIgnoreCase))
@@ -75,17 +75,18 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
                 this.readProperties.put(propertyName, name);
             }
 
-            this.doExtractProperties(pd, propertyName, name);
+            // FIXME add converter
+            this.doExtractProperties(pd, propertyName);
         }
 
         return this;
     }
 
-    void doExtractProperties(PropertyDescriptor pd, String propertyName, String name) {
+    void doExtractProperties(PropertyDescriptor pd, String propertyName) {
 
         if (pd.getWriteMethod() != null) {
 
-            this.writeProperties.put(propertyName, name);
+            this.writeProperties.put(propertyName, pd.getName());
         }
 
     }

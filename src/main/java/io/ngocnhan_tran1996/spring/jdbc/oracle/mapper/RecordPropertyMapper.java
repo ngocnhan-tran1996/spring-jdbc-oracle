@@ -33,9 +33,10 @@ class RecordPropertyMapper<T> extends BeanPropertyMapper<T> {
     }
 
     @Override
-    void doExtractProperties(PropertyDescriptor pd, String propertyName, String name) {
+    void doExtractProperties(PropertyDescriptor pd, String propertyName) {
 
-        this.parameterByFieldName.put(name, propertyName);
+        // FIXME add converter
+        this.parameterByFieldName.put(pd.getName(), propertyName);
     }
 
     @Override
