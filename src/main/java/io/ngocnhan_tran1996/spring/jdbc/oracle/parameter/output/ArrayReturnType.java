@@ -54,7 +54,7 @@ class ArrayReturnType<T> extends AbstractReturnType<T> {
         return Types.ARRAY;
     }
 
-    public Class<?> getTargetType() {
+    Class<?> getTargetType() {
 
         return this.targetType;
     }
