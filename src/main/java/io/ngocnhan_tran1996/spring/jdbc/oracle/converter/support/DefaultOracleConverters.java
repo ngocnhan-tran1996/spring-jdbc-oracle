@@ -21,7 +21,7 @@ public final class DefaultOracleConverters implements OracleConverters {
     public static final OracleConverters INSTANCE = new DefaultOracleConverters();
 
     private final Set<ConvertAdapter> globalConverters = new CopyOnWriteArraySet<>();
-    private final Map<ConverterKey, ConvertAdapter> converterCaches = new ConcurrentHashMap<>();
+    private final Map<ConvertKey, ConvertAdapter> converterCaches = new ConcurrentHashMap<>();
 
     private DefaultOracleConverters() {
 
@@ -42,7 +42,7 @@ public final class DefaultOracleConverters implements OracleConverters {
             throw new ValueException("ConverterFactory must not be null");
         }
 
-        var converterKey = this.getConverterKey(
+        var converterKey = this.getConvertKey(
             converterFactory.getClass(),
             OracleConverterFactory.class
         );
@@ -51,9 +51,9 @@ public final class DefaultOracleConverters implements OracleConverters {
             throw new ValueException("Unable determine %s".formatted(converterFactory));
         }
 
-        var existConverterKey = this.globalConverters.stream()
-            .anyMatch(globalConverter -> globalConverter.existConverterKey(converterKey));
-        if (not(existConverterKey)) {
+        var existConvertKey = this.globalConverters.stream()
+            .anyMatch(globalConverter -> globalConverter.existConvertKey(converterKey));
+        if (not(existConvertKey)) {
 
             this.globalConverters.add(new ConvertAdapter(converterFactory, converterKey));
         }
@@ -68,7 +68,7 @@ public final class DefaultOracleConverters implements OracleConverters {
             throw new ValueException("Converter must not be null");
         }
 
-        var converterKey = this.getConverterKey(converter.getClass(), OracleConverter.class);
+        var converterKey = this.getConvertKey(converter.getClass(), OracleConverter.class);
         if (converterKey == null) {
 
             throw new ValueException("Unable determine %s".formatted(converter));
@@ -85,7 +85,7 @@ public final class DefaultOracleConverters implements OracleConverters {
             .convert(source);
     }
 
-    private ConverterKey getConverterKey(Class<?> converterClass, Class<?> genericClass) {
+    private ConvertKey getConvertKey(Class<?> converterClass, Class<?> genericClass) {
 
         ResolvableType resolvableType = ResolvableType.forClass(converterClass)
             .as(genericClass);
@@ -102,7 +102,7 @@ public final class DefaultOracleConverters implements OracleConverters {
             return null;
         }
 
-        return new ConverterKey(sourceType, targetType);
+        return new ConvertKey(sourceType, targetType);
     }
 
     private ConvertAdapter find(Class<?> sourceType, Class<?> targetType) {
@@ -119,7 +119,7 @@ public final class DefaultOracleConverters implements OracleConverters {
             for (var targetCandidate : targetCandidates) {
 
                 var converter = this.converterCaches.get(
-                    new ConverterKey(sourceCandidate, targetCandidate)
+                    new ConvertKey(sourceCandidate, targetCandidate)
                 );
 
                 if (converter != null) {
@@ -225,7 +225,7 @@ public final class DefaultOracleConverters implements OracleConverters {
         }
     }
 
-    private record ConverterKey(Class<?> sourceType, Class<?> targetType) {
+    private record ConvertKey(Class<?> sourceType, Class<?> targetType) {
 
     }
 
@@ -235,10 +235,10 @@ public final class DefaultOracleConverters implements OracleConverters {
 
         private final OracleConverter<Object, Object> converter;
         private final OracleConverterFactory<Object, Object> converterFactory;
-        private final ConverterKey converterKey;
+        private final ConvertKey converterKey;
 
         @SuppressWarnings("unchecked")
-        ConvertAdapter(OracleConverterFactory<?, ?> converterFactory, ConverterKey converterKey) {
+        ConvertAdapter(OracleConverterFactory<?, ?> converterFactory, ConvertKey converterKey) {
 
             this.converter = null;
             this.converterFactory = (OracleConverterFactory<Object, Object>) converterFactory;
@@ -259,7 +259,7 @@ public final class DefaultOracleConverters implements OracleConverters {
                 && this.converterFactory.matches(sourceType, targetType);
         }
 
-        boolean existConverterKey(ConverterKey converterKey) {
+        boolean existConvertKey(ConvertKey converterKey) {
 
             return this.converterKey != null
                 && this.converterKey.equals(converterKey);
