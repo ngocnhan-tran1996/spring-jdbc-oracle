@@ -4,8 +4,9 @@ import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Matchers.not;
 
 import io.ngocnhan_tran1996.spring.jdbc.oracle.accessor.ClassRecord;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.converter.OracleConverters;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.converter.support.DefaultOracleConverters;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.converter.support.NoneConverter;
-import io.ngocnhan_tran1996.spring.jdbc.oracle.converter.support.OracleConverters;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.MapperProperty;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.WriteProperty;
@@ -25,7 +26,7 @@ import org.springframework.util.ReflectionUtils;
 
 class BeanPropertyMapper<T> extends AbstractMapper<T> {
 
-    private static final OracleConverters converters = OracleConverters.INSTANCE;
+    private static final OracleConverters converters = DefaultOracleConverters.INSTANCE;
     private final Map<String, String> readProperties = new LinkedCaseInsensitiveMap<>();
     private final Map<String, WriteProperty> writeProperties = new LinkedCaseInsensitiveMap<>();
     private final List<MapperProperty> mapperProperties;
@@ -156,8 +157,7 @@ class BeanPropertyMapper<T> extends AbstractMapper<T> {
         var sourceType = Optional.ofNullable(value)
             .map(Object::getClass)
             .orElse(null);
-        return converters.find(sourceType, targetType)
-            .convert(value);
+        return converters.convert(value, sourceType, targetType);
     }
 
     Class<T> getMappedClass() {
