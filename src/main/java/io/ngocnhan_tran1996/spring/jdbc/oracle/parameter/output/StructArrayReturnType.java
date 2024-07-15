@@ -11,6 +11,11 @@ class StructArrayReturnType<T> extends ArrayReturnType<T> {
 
     private final Mapper<T> mapper;
 
+    StructArrayReturnType(Mapper<T> mapper) {
+
+        this(mapper, null);
+    }
+
     StructArrayReturnType(Mapper<T> mapper, Class<?> targetType) {
 
         super(targetType);

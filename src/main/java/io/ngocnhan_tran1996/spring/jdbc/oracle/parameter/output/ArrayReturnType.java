@@ -16,6 +16,11 @@ class ArrayReturnType<T> extends AbstractReturnType<T> {
 
     private final Class<?> targetType;
 
+    ArrayReturnType() {
+
+        this(null);
+    }
+
     ArrayReturnType(Class<?> targetType) {
 
         if (targetType != null && not(Collection.class.isAssignableFrom(targetType))) {
