@@ -12,8 +12,8 @@ I just copy and modify some code that I think it is necessary for me.
   - [How To Test](#how-to-test)
   - [Usage](#usage)
     - [Convert to Java](#convert-to-java)
-      - [`ParameterInput.java` supports Type Input or Type Input Output](#parameterinputjava-supports-type-input-or-type-input-output)
-      - [`ParameterOutput.java` supports Type Output](#parameteroutputjava-supports-type-output)
+      - [`ParameterInput.java`](#parameterinputjava)
+      - [`ParameterOutput.java`](#parameteroutputjava)
     - [Implementation](#implementation)
   - [Reference](#reference)
 
@@ -73,7 +73,9 @@ Please take a look and you will know how to use it
 
 ### Convert to Java
 
-#### `ParameterInput.java` supports Type Input or Type Input Output
+#### `ParameterInput.java`
+
+**`ParameterInput.java` supports Type Input or Type Input Output**
 
 ```oracle
 TYPE customer IS RECORD (
@@ -153,7 +155,9 @@ public class Customer {
 }
 ```
 
-#### `ParameterOutput.java` supports Type Output
+#### `ParameterOutput.java`
+
+**`ParameterOutput.java` supports Type Output**
 
 ```oracle
 TYPE customer IS RECORD (
@@ -183,7 +187,7 @@ PROCEDURE example_proc (
 ParameterOutput.withParameterName(...) // parameter_name
         .withArray(...) // schema.package.array_type_name
         .withStruct(...) // schema.package.type_name
-        .withStructArray(...) // schema.package.array_type_name, schema.package.type_name
+        .withStructArray(...) // schema.package.array_type_name
 
 /**
  * use this in case type contains keyword "TYPE `numbers` IS TABLE OF `primitive type`"
