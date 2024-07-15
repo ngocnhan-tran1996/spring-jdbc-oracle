@@ -6,14 +6,14 @@ import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Struct;
-import java.util.ArrayList;
 
 class StructArrayReturnType<T> extends ArrayReturnType<T> {
 
     private final Mapper<T> mapper;
 
-    StructArrayReturnType(Mapper<T> mapper) {
+    StructArrayReturnType(Mapper<T> mapper, Class<?> targetType) {
 
+        super(targetType);
         this.mapper = mapper;
     }
 
@@ -27,13 +27,15 @@ class StructArrayReturnType<T> extends ArrayReturnType<T> {
     protected Object convertArray(Connection connection, Array array) throws SQLException {
 
         var objects = (Object[]) array.getArray();
-        var values = new ArrayList<T>(objects.length);
+        var length = objects.length;
+        var values = new Object[length];
 
-        for (var object : objects) {
+        for (int i = 0; i < objects.length; i++) {
 
+            var object = objects[i];
             if (object instanceof Struct struct) {
 
-                values.add(this.convertStruct(connection, struct));
+                values[i] = this.convertStruct(connection, struct);
                 continue;
             }
 
@@ -43,8 +45,9 @@ class StructArrayReturnType<T> extends ArrayReturnType<T> {
             throw new ValueException("Expected STRUCT but got '%s'".formatted(className));
         }
 
-        // convert to object array
-        return values.toArray();
+        return super.getTargetType() == null
+            ? values
+            : super.arrayToCollection(values);
     }
 
 }

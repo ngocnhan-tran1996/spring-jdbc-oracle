@@ -30,8 +30,7 @@ public final class DefaultOracleConverters implements OracleConverters {
 
     private static void addDefaultConverters(DefaultOracleConverters converters) {
 
-//        converters.addConverterFactory(new NumberToNumberConverterFactory());
-//        converters.addConverter(new NumberToStringConverter());
+        converters.addConverterFactory(new NumberToStringConverterFactory());
     }
 
     @Override
@@ -127,16 +126,16 @@ public final class DefaultOracleConverters implements OracleConverters {
                     return converter;
                 }
 
-                for (var globalConverter : this.globalConverters) {
-
-                    if (globalConverter.matches(sourceType, targetType)) {
-
-                        return globalConverter;
-                    }
-
-                }
-
             }
+        }
+
+        for (var globalConverter : this.globalConverters) {
+
+            if (globalConverter.matches(sourceType, targetType)) {
+
+                return globalConverter;
+            }
+
         }
 
         return ConvertAdapter.NONE;
@@ -268,10 +267,10 @@ public final class DefaultOracleConverters implements OracleConverters {
         @SuppressWarnings("unchecked")
         OracleConverter<Object, Object> getConverter(Class<?> targetType) {
 
-            return this.converterFactory != null
-                ? (OracleConverter<Object, Object>) this.converterFactory.getOracleConverter(
-                targetType)
-                : this.converter;
+            return this.converterFactory == null
+                ? this.converter
+                : (OracleConverter<Object, Object>) this.converterFactory
+                    .getOracleConverter(targetType);
         }
 
     }
