@@ -106,7 +106,7 @@ PROCEDURE example_proc (
  * if package is not blank, it will be `schema.package.type_name`, otherwise `schema.type_name`
  * /
 ParameterInput.withParameterName(...) // parameter_name
-        .withValues(...) // for multiple values and withValue for one value
+        .withValues(...) // for multiple values
         .withValues(List.of(...)) // for multiple values
         .withValue(...) // for one value
         .withArray(...) // schema.package.array_type_name
