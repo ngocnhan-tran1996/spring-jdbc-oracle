@@ -5,19 +5,19 @@ from [Spring Data JDBC Extensions for the Oracle database](https://github.com/sp
 
 I just copy and modify some code that I think it is necessary for me.
 
-## Table of Contents
+**Table of Contents**
 
 - [Spring Jdbc Oracle](#spring-jdbc-oracle)
-    - [Table of Contents](#table-of-contents)
-    - [Before You Start](#before-you-start)
-    - [How To Test](#how-to-test)
-    - [Usage](#usage)
-        - [Convert to Java](#convert-to-java)
-            - [`ParameterInput.java`](#parameterinputjava)
-            - [`ParameterOutput.java`](#parameteroutputjava)
-            - [Naming Convention and Annotation `OracleParameter`](#naming-convention-and-annotation-oracleparameter)
-        - [Implementation](#implementation)
-    - [Reference](#reference)
+  - [Before You Start](#before-you-start)
+  - [How To Test](#how-to-test)
+  - [Usage](#usage)
+    - [Convert to Java](#convert-to-java)
+      - [`ParameterInput.java`](#parameterinputjava)
+      - [`ParameterOutput.java`](#parameteroutputjava)
+      - [Convention and Annotation `OracleParameter`](#convention-and-annotation-oracleparameter)
+        - [Naming Convention](#naming-convention)
+    - [Implementation](#implementation)
+  - [Reference](#reference)
 
 ## Before You Start
 
@@ -232,7 +232,9 @@ public class Customer {
 }
 ```
 
-#### Naming Convention and Annotation `OracleParameter`
+#### Convention and Annotation `OracleParameter`
+
+##### Naming Convention
 
 **Example**
 
@@ -258,7 +260,7 @@ public class Customer {
 
 **When not to use @OracleParameter**
 
-I have a small example in case not to use @OracleParameter.
+I have a small comparison.
 
 | **Type Name** | **Field Name** | 
 |---------------|----------------|
