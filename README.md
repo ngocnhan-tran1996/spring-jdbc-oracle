@@ -15,7 +15,9 @@ I just copy and modify some code that I think it is necessary for me.
       - [`ParameterInput.java`](#parameterinputjava)
       - [`ParameterOutput.java`](#parameteroutputjava)
     - [Convention and Annotation `OracleParameter`](#convention-and-annotation-oracleparameter)
+      - [Data Convention](#data-convention)
       - [Naming Convention](#naming-convention)
+      - [Annotation `OracleParameter`](#annotation-oracleparameter)
     - [Implementation](#implementation)
   - [Reference](#reference)
 
@@ -234,8 +236,6 @@ public class Customer {
 
 ### Convention and Annotation `OracleParameter`
 
-#### Naming Convention
-
 **Example**
 
 ```oracle
@@ -249,7 +249,7 @@ TYPE customer IS RECORD (
 ```java
 public class Customer {
 
-    @OracleParameter("first_name") // same name with record `customer`
+    @OracleParameter("first_name") // same name with record first_name `customer`
     private String name;
     private String lastName;
     private BigDecimal age;
@@ -258,7 +258,14 @@ public class Customer {
 }
 ```
 
-**When not to use @OracleParameter**
+#### Data Convention
+
+| **Type Data** | **Java Data** | 
+|---------------|---------------|
+| Number        | BigDecimal    |
+| VARCHAR       | String        |
+
+#### Naming Convention
 
 I have a small comparison.
 
@@ -269,9 +276,9 @@ I have a small comparison.
 | LAST_NAME     | lastName       |
 | LASTNAME      | lastName       |
 
-**When to use @OracleParameter**
+#### Annotation `OracleParameter`
 
-Use `@OracleParameter` in case both field name are not match.
+Use annotation `OracleParameter` in case both field name are not match.
 
 ### Implementation
 
