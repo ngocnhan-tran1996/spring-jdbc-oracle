@@ -14,8 +14,8 @@ I just copy and modify some code that I think it is necessary for me.
     - [Convert to Java](#convert-to-java)
       - [`ParameterInput.java`](#parameterinputjava)
       - [`ParameterOutput.java`](#parameteroutputjava)
-      - [Convention and Annotation `OracleParameter`](#convention-and-annotation-oracleparameter)
-        - [Naming Convention](#naming-convention)
+    - [Convention and Annotation `OracleParameter`](#convention-and-annotation-oracleparameter)
+      - [Naming Convention](#naming-convention)
     - [Implementation](#implementation)
   - [Reference](#reference)
 
@@ -232,9 +232,9 @@ public class Customer {
 }
 ```
 
-#### Convention and Annotation `OracleParameter`
+### Convention and Annotation `OracleParameter`
 
-##### Naming Convention
+#### Naming Convention
 
 **Example**
 
