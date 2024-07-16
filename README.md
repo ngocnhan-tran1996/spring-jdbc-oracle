@@ -1,21 +1,23 @@
 # Spring Jdbc Oracle
 
-This repo references from [Spring Data JDBC Extensions for the Oracle database](https://github.com/spring-attic/spring-data-jdbc-ext).
+This repo references
+from [Spring Data JDBC Extensions for the Oracle database](https://github.com/spring-attic/spring-data-jdbc-ext).
 
 I just copy and modify some code that I think it is necessary for me.
 
 ## Table of Contents
 
 - [Spring Jdbc Oracle](#spring-jdbc-oracle)
-  - [Table of Contents](#table-of-contents)
-  - [Before You Start](#before-you-start)
-  - [How To Test](#how-to-test)
-  - [Usage](#usage)
-    - [Convert to Java](#convert-to-java)
-      - [`ParameterInput.java`](#parameterinputjava)
-      - [`ParameterOutput.java`](#parameteroutputjava)
-    - [Implementation](#implementation)
-  - [Reference](#reference)
+    - [Table of Contents](#table-of-contents)
+    - [Before You Start](#before-you-start)
+    - [How To Test](#how-to-test)
+    - [Usage](#usage)
+        - [Convert to Java](#convert-to-java)
+            - [`ParameterInput.java`](#parameterinputjava)
+            - [`ParameterOutput.java`](#parameteroutputjava)
+            - [Naming Convention and Annotation `OracleParameter`](#naming-convention-and-annotation-oracleparameter)
+        - [Implementation](#implementation)
+    - [Reference](#reference)
 
 ## Before You Start
 
@@ -36,7 +38,8 @@ Just run `ExampleServiceTest.java`
 
 ## Usage
 
-I am a developer and I am so lazy. If you struggle with Oracle types like me, this repository can help you.
+I am a developer and I am so lazy. If you struggle with Oracle types like me, this repository can
+help you.
 
 **Example**
 
@@ -69,7 +72,8 @@ PROCEDURE example_proc (
 Please take a look and you will know how to use it
 
 1. [Example script](src/test/resources/script/example_pack.sql)
-2. [ExampleService](src/test/java/io/ngocnhan_tran1996/spring/jdbc/oracle/service/ExampleService.java) execute above script using `JdbcTemplate`
+2. [ExampleService](src/test/java/io/ngocnhan_tran1996/spring/jdbc/oracle/service/ExampleService.java)
+   execute above script using `JdbcTemplate`
 
 ### Convert to Java
 
@@ -186,8 +190,8 @@ PROCEDURE example_proc (
  * /
 ParameterOutput.withParameterName(...) // parameter_name
         .withArray(...) // schema.package.array_type_name
-        .withStruct(...) // schema.package.type_name
         .withStructArray(...) // schema.package.array_type_name
+        .withStruct(...) // schema.package.type_name
 
 /**
  * use this in case type contains keyword "TYPE `numbers` IS TABLE OF `primitive type`"
@@ -227,6 +231,45 @@ public class Customer {
     // getter/setter
 }
 ```
+
+#### Naming Convention and Annotation `OracleParameter`
+
+**Example**
+
+```oracle
+TYPE customer IS RECORD (
+        first_name VARCHAR(255),
+        last_name  VARCHAR(255),
+        age        NUMBER
+);
+```
+
+```java
+public class Customer {
+
+    @OracleParameter("first_name") // same name with record `customer`
+    private String name;
+    private String lastName;
+    private BigDecimal age;
+
+    // getter/setter
+}
+```
+
+**When not to use @OracleParameter**
+
+I have a small example in case not to use @OracleParameter.
+
+| **Type Name** | **Field Name** | 
+|---------------|----------------|
+| last_name     | last_name      |
+| last_name     | lastName       |
+| LAST_NAME     | lastName       |
+| LASTNAME      | lastName       |
+
+**When to use @OracleParameter**
+
+Use `@OracleParameter` in case both field name are not match.
 
 ### Implementation
 
@@ -268,15 +311,15 @@ var sqlParameterSource = new MapSqlParameterSource()
 // return Map<String, Object>
 return simpleJdbcCall.execute(sqlParameterSource);
 
-// the result, key is always uppercase
+// see the result and type
 var result = simpleJdbcCall.execute(sqlParameterSource);
 result.containsKey("IN_OUT_NUMBERS");
-result.containsKey("OUT_NUMBERS");
+result.containsKey("OUT_NUMBERS"); // Array BigDecimal = BigDecimal[].class
 
 result.containsKey("IN_OUT_CUSTOMER");
 result.containsKey("OUT_CUSTOMER");
 
-result.containsKey("IN_OUT_CUSTOMERS");
+result.containsKey("IN_OUT_CUSTOMERS"); // Array Customer class = Customer[].class
 result.containsKey("OUT_CUSTOMERS");
 
 result.containsKey("IN_OUT_CUSTOMER_OBJECT");
