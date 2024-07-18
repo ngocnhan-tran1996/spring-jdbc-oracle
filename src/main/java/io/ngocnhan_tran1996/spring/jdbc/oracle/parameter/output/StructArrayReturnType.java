@@ -35,7 +35,7 @@ class StructArrayReturnType<T> extends ArrayReturnType<T> {
         var length = objects.length;
         var values = new Object[length];
 
-        for (int i = 0; i < objects.length; i++) {
+        for (int i = 0; i < length; i++) {
 
             var object = objects[i];
             if (object instanceof Struct struct) {

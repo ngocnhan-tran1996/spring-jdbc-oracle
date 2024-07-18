@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import oracle.jdbc.OracleConnection;
 
 class StructArrayTypeValue<T> extends ArrayTypeValue<T> {
@@ -41,16 +40,18 @@ class StructArrayTypeValue<T> extends ArrayTypeValue<T> {
             return super.createTypeValue(connection, typeName);
         }
 
-        List<Struct> structs = new ArrayList<>(this.values().size());
-        this.values().forEach(value -> {
+        var values = new ArrayList<>(super.values());
+        var size = values.size();
+        Struct[] structs = new Struct[size];
 
-            var struct = this.mapper.toStruct(connection, this.structTypeName, value);
-            structs.add(struct);
-        });
+        for (int i = 0; i < size; i++) {
+
+            structs[i] = this.mapper.toStruct(connection, this.structTypeName, values.get(i));
+        }
 
         return connection
             .unwrap(OracleConnection.class)
-            .createOracleArray(typeName, structs.toArray(Struct[]::new));
+            .createOracleArray(typeName, structs);
     }
 
 }
