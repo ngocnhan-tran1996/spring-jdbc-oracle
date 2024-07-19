@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 public final class Strings {
 
+    public static final String EMPTY = "";
     public static final String NOT_BLANK = "%s must not be blank";
     public static final String NOT_NULL = "%s must not be null";
 

@@ -40,7 +40,7 @@ abstract class AbstractMapper implements Mapper {
             String className = source == null
                 ? null
                 : source.getClass().getName();
-            this.log.error("Expected STRUCT but got '%s'".formatted(className), ex);
+            this.log.error("Could not convert class %s to STRUCT".formatted(className), ex);
             return null;
         }
     }
@@ -57,7 +57,7 @@ abstract class AbstractMapper implements Mapper {
             this.extractIndexByColumnName(rsmd)
                 .forEach((columnName, index) -> valueByName.put(columnName, values[index]));
 
-            return this.constructInstance(valueByName);
+            return this.constructInstance(connection, valueByName);
         } catch (Exception ex) {
 
             this.log.error("Can not convert struct to object", ex);
@@ -86,7 +86,7 @@ abstract class AbstractMapper implements Mapper {
 
         });
 
-        return this.constructInstance(valueByName);
+        return this.constructInstance(null, valueByName);
     }
 
     protected abstract <T> Object[] toStruct(
@@ -96,7 +96,10 @@ abstract class AbstractMapper implements Mapper {
         T source
     );
 
-    protected abstract <T> T constructInstance(Map<String, Object> valueByName);
+    protected abstract <T> T constructInstance(
+        Connection connection,
+        Map<String, Object> valueByName
+    );
 
     ResultSetMetaData getResultSetMetaData(Connection connection, String typeName)
         throws SQLException {
