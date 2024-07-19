@@ -32,7 +32,7 @@ class StructArrayTypeValueTest extends SetupTestData {
             "EXAMPLE_PACK.CUSTOMERS",
             null,
             "EXAMPLE_PACK.CUSTOMERS",
-            DelegateMapper.newInstance(Customer.class)
+            DelegateMapper.newInstance(Customer.class).get()
         )
             .createTypeValue(connection, "EXAMPLE_PACK.CUSTOMERS");
 

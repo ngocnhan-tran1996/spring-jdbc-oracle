@@ -29,7 +29,8 @@ class StructArrayReturnTypeTest extends SetupTestData {
     @Test
     void convert_array_not_contains_struct() throws SQLException {
 
-        var returnType = new StructArrayReturnType<>(DelegateMapper.newInstance(Customer.class));
+        var mapper = DelegateMapper.newInstance(Customer.class).get();
+        var returnType = new StructArrayReturnType<>(mapper);
         try (var connection = dataSource.getConnection().unwrap(OracleConnection.class)) {
 
             var numbers = connection.createOracleArray(

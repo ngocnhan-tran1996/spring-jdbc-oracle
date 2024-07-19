@@ -5,6 +5,7 @@ import static io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings.NOT_NULL;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.accessor.ParameterAccessor;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.DelegateMapper;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.Mapper;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output.ParameterOutput;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -21,13 +22,13 @@ import org.springframework.jdbc.core.SqlTypeValue;
 
 public final class ParameterInput<T> extends ParameterAccessor<T> {
 
-    private final DelegateMapper<T> mapper;
+    private final Mapper mapper;
     private Collection<T> values;
 
     private ParameterInput(String parameterName, Class<T> mappedClass) {
 
         super(parameterName, mappedClass);
-        this.mapper = DelegateMapper.newInstance(mappedClass);
+        this.mapper = DelegateMapper.newInstance(mappedClass).get();
     }
 
     public static ParameterInput<Object> withParameterName(String parameterName) {

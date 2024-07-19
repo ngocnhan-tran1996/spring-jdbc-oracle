@@ -16,17 +16,18 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
-abstract class AbstractMapper<T> implements Mapper<T> {
+abstract class AbstractMapper implements Mapper {
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
     @Override
-    public Struct toStruct(Connection connection, String typeName, T source) {
+    public <T> Struct toStruct(Connection connection, String typeName, T source) {
 
         try {
 
             var rsmd = this.getResultSetMetaData(connection, typeName);
             Object[] objects = this.toStruct(
+                connection,
                 rsmd.getColumnCount(),
                 this.extractIndexByColumnName(rsmd),
                 source
@@ -45,7 +46,7 @@ abstract class AbstractMapper<T> implements Mapper<T> {
     }
 
     @Override
-    public T fromStruct(Connection connection, Struct struct) {
+    public <T> T fromStruct(Connection connection, Struct struct) {
 
         try {
 
@@ -65,7 +66,7 @@ abstract class AbstractMapper<T> implements Mapper<T> {
     }
 
     @Override
-    public T convert(Map<String, Object> source) {
+    public <T> T convert(Map<String, Object> source) {
 
         if (source == null) {
 
@@ -88,14 +89,14 @@ abstract class AbstractMapper<T> implements Mapper<T> {
         return this.constructInstance(valueByName);
     }
 
-
-    protected abstract Object[] toStruct(
+    protected abstract <T> Object[] toStruct(
+        Connection connection,
         int columns,
         Map<String, Integer> columnNameByIndex,
         T source
     );
 
-    protected abstract T constructInstance(Map<String, Object> valueByName);
+    protected abstract <T> T constructInstance(Map<String, Object> valueByName);
 
     ResultSetMetaData getResultSetMetaData(Connection connection, String typeName)
         throws SQLException {

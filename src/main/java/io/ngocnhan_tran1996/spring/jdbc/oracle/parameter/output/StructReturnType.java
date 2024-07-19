@@ -5,7 +5,7 @@ import java.sql.Types;
 
 class StructReturnType<T> extends StructArrayReturnType<T> {
 
-    StructReturnType(Mapper<T> mapper) {
+    StructReturnType(Mapper mapper) {
 
         super(mapper);
     }

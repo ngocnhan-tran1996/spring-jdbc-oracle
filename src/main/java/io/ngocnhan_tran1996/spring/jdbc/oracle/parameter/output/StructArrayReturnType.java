@@ -9,14 +9,14 @@ import java.sql.Struct;
 
 class StructArrayReturnType<T> extends ArrayReturnType<T> {
 
-    private final Mapper<T> mapper;
+    private final Mapper mapper;
 
-    StructArrayReturnType(Mapper<T> mapper) {
+    StructArrayReturnType(Mapper mapper) {
 
         this(mapper, null);
     }
 
-    StructArrayReturnType(Mapper<T> mapper, Class<?> targetType) {
+    StructArrayReturnType(Mapper mapper, Class<?> targetType) {
 
         super(targetType);
         this.mapper = mapper;

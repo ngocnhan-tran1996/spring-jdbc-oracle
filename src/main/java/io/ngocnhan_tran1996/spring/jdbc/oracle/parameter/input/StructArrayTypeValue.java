@@ -15,13 +15,13 @@ import oracle.jdbc.OracleConnection;
 class StructArrayTypeValue<T> extends ArrayTypeValue<T> {
 
     private final String structTypeName;
-    private final Mapper<T> mapper;
+    private final Mapper mapper;
 
     StructArrayTypeValue(
         String arrayTypeName,
         Collection<T> values,
         String structTypeName,
-        Mapper<T> mapper) {
+        Mapper mapper) {
 
         super(arrayTypeName, values);
         if (Strings.isBlank(structTypeName)) {

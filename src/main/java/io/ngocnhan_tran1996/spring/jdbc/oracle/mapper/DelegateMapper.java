@@ -5,9 +5,9 @@ import java.sql.Connection;
 import java.sql.Struct;
 import java.util.Map;
 
-public final class DelegateMapper<T> implements Mapper<T> {
+public final class DelegateMapper<T> {
 
-    private final Mapper<T> mapper;
+    private final Mapper mapper;
 
     private DelegateMapper(Class<T> mappedClass) {
 
@@ -21,22 +21,24 @@ public final class DelegateMapper<T> implements Mapper<T> {
         return new DelegateMapper<>(mappedClass);
     }
 
-    @Override
     public Struct toStruct(Connection connection, String typeName, T source) {
 
         return this.mapper.toStruct(connection, typeName, source);
     }
 
-    @Override
     public T fromStruct(Connection connection, Struct struct) {
 
         return this.mapper.fromStruct(connection, struct);
     }
 
-    @Override
     public T convert(Map<String, Object> source) {
 
         return this.mapper.convert(source);
+    }
+
+    public Mapper get() {
+
+        return this.mapper;
     }
 
 }

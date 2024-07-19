@@ -14,9 +14,9 @@ class StructTypeValue<T> extends AbstractTypeValue {
 
     private final String structTypeName;
     private final T value;
-    private final Mapper<T> mapper;
+    private final Mapper mapper;
 
-    StructTypeValue(String structTypeName, T value, Mapper<T> mapper) {
+    StructTypeValue(String structTypeName, T value, Mapper mapper) {
 
         if (Strings.isBlank(structTypeName)) {
 
