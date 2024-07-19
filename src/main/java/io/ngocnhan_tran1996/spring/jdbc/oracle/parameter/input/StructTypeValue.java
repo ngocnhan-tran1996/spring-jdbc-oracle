@@ -7,7 +7,6 @@ import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.Mapper;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Objects;
 
 class StructTypeValue<T> extends AbstractTypeValue {
@@ -35,7 +34,7 @@ class StructTypeValue<T> extends AbstractTypeValue {
     }
 
     @Override
-    protected Object createTypeValue(Connection connection, String typeName) throws SQLException {
+    protected Object createTypeValue(Connection connection, String typeName) {
 
         return this.mapper.toStruct(connection, this.structTypeName, this.value);
     }
