@@ -3,14 +3,12 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.TypeProperty;
-import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output.ParameterOutput;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
 class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
@@ -64,37 +62,14 @@ class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
             var typeProperty = this.parameterByFieldName.get(fieldName);
             var rawValue = valueByName.get(typeProperty.getFieldName());
 
-            Object value = switch (typeProperty.getType()) {
-
-                case STRUCT -> ParameterOutput.withParameterName(
-                        fieldName,
-                        (Class<Object>) targetType
-                    )
-                    .withStruct(typeProperty.getStructName())
-                    .convert(connection, rawValue);
-
-                case ARRAY -> ParameterOutput.withParameterName(fieldName)
-                    .withArray(typeProperty.getArrayName())
-                    .convert(connection, rawValue);
-
-                case STRUCT_ARRAY -> {
-
-                    var childClass = super.extractClass(
-                        TypeDescriptor.valueOf(parameter.getType()));
-                    yield ParameterOutput.withParameterName(fieldName, childClass)
-                        .withStructArray(typeProperty.getArrayName())
-                        .convert(connection, rawValue);
-                }
-
-                case CONVERTER -> BeanUtils.findMethod(
-                    typeProperty.getConverter(),
-                    "convert",
-                    targetType
-                );
-
-                default -> super.convertValue(rawValue, targetType);
-            };
-
+            Object value = this.constructValue(
+                typeProperty,
+                fieldName,
+                (Class<Object>) targetType,
+                connection,
+                rawValue,
+                bw.getPropertyTypeDescriptor(fieldName)
+            );
             args[i] = bw.convertIfNecessary(value, targetType);
             i++;
         }

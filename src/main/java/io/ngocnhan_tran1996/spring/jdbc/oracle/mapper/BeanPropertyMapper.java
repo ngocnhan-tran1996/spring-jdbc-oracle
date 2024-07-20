@@ -189,36 +189,14 @@ class BeanPropertyMapper<S> extends AbstractMapper {
             var propertyType = bw.getPropertyType(fieldName);
             var rawValue = valueByName.get(columnName);
 
-            Object value = switch (typeProperty.getType()) {
-
-                case STRUCT -> ParameterOutput.withParameterName(
-                        fieldName,
-                        (Class<Object>) propertyType
-                    )
-                    .withStruct(typeProperty.getStructName())
-                    .convert(connection, rawValue);
-
-                case ARRAY -> ParameterOutput.withParameterName(fieldName)
-                    .withArray(typeProperty.getArrayName())
-                    .convert(connection, rawValue);
-
-                case STRUCT_ARRAY -> {
-
-                    var childClass = this.extractClass(bw.getPropertyTypeDescriptor(fieldName));
-                    yield ParameterOutput.withParameterName(fieldName, childClass)
-                        .withStructArray(typeProperty.getArrayName())
-                        .convert(connection, rawValue);
-                }
-
-                case CONVERTER -> BeanUtils.findMethod(
-                    typeProperty.getConverter(),
-                    "convert",
-                    propertyType
-                );
-
-                default -> this.convertValue(rawValue, propertyType);
-            };
-
+            Object value = this.constructValue(
+                typeProperty,
+                fieldName,
+                (Class<Object>) propertyType,
+                connection,
+                rawValue,
+                bw.getPropertyTypeDescriptor(fieldName)
+            );
             bw.setPropertyValue(fieldName, value);
         });
 
@@ -273,15 +251,54 @@ class BeanPropertyMapper<S> extends AbstractMapper {
         };
     }
 
-    Object convertValue(Object value, Class<?> targetType) {
+    Object constructValue(
+        TypeProperty typeProperty,
+        String fieldName,
+        Class<Object> targetType,
+        Connection connection,
+        Object rawValue,
+        TypeDescriptor typeDescriptor) {
 
-        var sourceType = Optional.ofNullable(value)
-            .map(Object::getClass)
-            .orElse(null);
-        return converters.convert(value, sourceType, targetType);
+        return switch (typeProperty.getType()) {
+
+            case STRUCT -> ParameterOutput.withParameterName(fieldName, targetType)
+                .withStruct(typeProperty.getStructName())
+                .convert(connection, rawValue);
+
+            case ARRAY -> ParameterOutput.withParameterName(fieldName)
+                .withArray(typeProperty.getArrayName())
+                .convert(connection, rawValue);
+
+            case STRUCT_ARRAY -> ParameterOutput.withParameterName(
+                    fieldName,
+                    this.extractClass(typeDescriptor)
+                )
+                .withStructArray(typeProperty.getArrayName())
+                .convert(connection, rawValue);
+
+            case CONVERTER -> BeanUtils.findMethod(
+                typeProperty.getConverter(),
+                "convert",
+                targetType
+            );
+
+            default -> {
+
+                var sourceType = Optional.ofNullable(rawValue)
+                    .map(Object::getClass)
+                    .orElse(null);
+                yield converters.convert(rawValue, sourceType, targetType);
+            }
+        };
+
     }
 
-    Object[] toArrayOrNull(Object object) {
+    Class<S> getMappedClass() {
+
+        return this.mappedClass;
+    }
+
+    private Object[] toArrayOrNull(Object object) {
 
         return Optional.ofNullable(object)
             .map(o -> {
@@ -296,7 +313,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
             .orElse(null);
     }
 
-    Class<?> extractClass(TypeDescriptor typeDescriptor) {
+    private Class<?> extractClass(TypeDescriptor typeDescriptor) {
 
         var resolvableType = Objects.requireNonNull(
                 typeDescriptor,
@@ -309,11 +326,6 @@ class BeanPropertyMapper<S> extends AbstractMapper {
             : resolvableType.asCollection()
                 .getGenerics()[0];
         return resolvableType.resolve();
-    }
-
-    Class<S> getMappedClass() {
-
-        return this.mappedClass;
     }
 
 }
