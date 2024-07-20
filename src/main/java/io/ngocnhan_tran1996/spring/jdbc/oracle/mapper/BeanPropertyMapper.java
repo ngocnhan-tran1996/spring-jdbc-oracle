@@ -27,7 +27,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.util.ObjectUtils;
@@ -121,7 +121,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
         Map<String, Integer> columnNameByIndex,
         T source) {
 
-        var bw = new BeanWrapperImpl(source);
+        var bw = PropertyAccessorFactory.forBeanPropertyAccess(source);
         Object[] values = new Object[columns];
 
         this.readProperties.forEach((columnName, typeProperty) -> {
@@ -176,7 +176,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
     protected <T> T constructInstance(Connection connection, Map<String, Object> valueByName) {
 
         var instance = BeanUtils.instantiateClass(this.mappedClass);
-        var bw = new BeanWrapperImpl(instance);
+        var bw = PropertyAccessorFactory.forBeanPropertyAccess(instance);
 
         this.writeProperties.forEach((columnName, typeProperty) -> {
 

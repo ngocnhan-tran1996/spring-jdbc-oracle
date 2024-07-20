@@ -8,7 +8,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Struct;
 import java.util.Map;
-import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OracleDatabaseMetaData;
 import oracle.jdbc.OracleTypeMetaData;
 import org.apache.commons.logging.Log;
@@ -33,8 +32,7 @@ abstract class AbstractMapper implements Mapper {
                 source
             );
 
-            return connection.unwrap(OracleConnection.class)
-                .createStruct(typeName, objects);
+            return connection.createStruct(typeName, objects);
         } catch (Exception ex) {
 
             String className = source == null
