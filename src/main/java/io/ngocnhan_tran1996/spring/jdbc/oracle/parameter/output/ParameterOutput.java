@@ -40,7 +40,7 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
     public ParameterOutput<T> withArray(String typeName) {
 
         this.typeName = typeName;
-        this.returnType = new ArrayReturnType<>();
+        this.returnType = new ArrayReturnType<>(this.getMappedClass());
         return this;
     }
 

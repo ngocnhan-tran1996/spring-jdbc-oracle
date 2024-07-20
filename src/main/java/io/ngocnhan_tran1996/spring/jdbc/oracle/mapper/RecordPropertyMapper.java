@@ -66,7 +66,7 @@ class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
             Object value = this.constructValue(
                 typeProperty,
                 fieldName,
-                (Class<Object>) targetType,
+                targetType,
                 connection,
                 rawValue,
                 TypeDescriptor.valueOf(parameter.getType())

@@ -142,10 +142,11 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                         .withStruct(typeProperty.getStructName())
                         .convert(connection);
 
-                case ARRAY -> ParameterInput.withParameterName(fieldName)
-                    .withValues(MapperUtils.toArrayOrNull(value))
-                    .withArray(typeProperty.getArrayName())
-                    .convert(connection);
+                case ARRAY ->
+                    ParameterInput.withParameterName(fieldName, (Class<Object>) propertyType)
+                        .withValues(MapperUtils.toArrayOrNull(value))
+                        .withArray(typeProperty.getArrayName())
+                        .convert(connection);
 
                 case STRUCT_ARRAY -> {
 
@@ -193,7 +194,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
             Object value = this.constructValue(
                 typeProperty,
                 fieldName,
-                (Class<Object>) propertyType,
+                propertyType,
                 connection,
                 rawValue,
                 bw.getPropertyTypeDescriptor(fieldName)
@@ -255,7 +256,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
     Object constructValue(
         TypeProperty typeProperty,
         String fieldName,
-        Class<Object> targetType,
+        Class<?> targetType,
         Connection connection,
         Object rawValue,
         TypeDescriptor typeDescriptor) {
