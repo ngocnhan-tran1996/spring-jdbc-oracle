@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
 class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
@@ -68,7 +69,7 @@ class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
                 (Class<Object>) targetType,
                 connection,
                 rawValue,
-                bw.getPropertyTypeDescriptor(fieldName)
+                TypeDescriptor.valueOf(parameter.getType())
             );
             args[i] = bw.convertIfNecessary(value, targetType);
             i++;

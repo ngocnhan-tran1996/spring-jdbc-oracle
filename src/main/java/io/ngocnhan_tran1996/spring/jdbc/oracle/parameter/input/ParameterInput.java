@@ -129,21 +129,26 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
         public Map<String, Object> toMap() {
 
             var map = new HashMap<String, Object>();
-            map.put(getParameterName(), this.getValue().orElse(null));
+            map.put(getParameterName(), this.getTypeValue().orElse(null));
             return map;
+        }
+
+        public Optional<Object> getTypeValue() {
+
+            return Optional.ofNullable(values)
+                .map(v -> this.sqlTypeValue());
         }
 
         public Optional<Object> getValue() {
 
-            return Optional.ofNullable(values)
-                .map(v -> this.sqlTypeValue());
+            return Optional.ofNullable(values);
         }
 
         public Object convert(Connection connection) {
 
             try {
 
-                var value = this.getValue();
+                var value = this.getTypeValue();
                 if (value.isPresent()) {
 
                     var sqlTypeValue = (AbstractTypeValue) value.get();

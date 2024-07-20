@@ -15,10 +15,10 @@ import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.TypeProperty;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.TypeProperty.Types;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.input.ParameterInput;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output.ParameterOutput;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.MapperUtils;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
 import java.beans.PropertyDescriptor;
 import java.sql.Connection;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,7 +30,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.LinkedCaseInsensitiveMap;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 class BeanPropertyMapper<S> extends AbstractMapper {
@@ -144,15 +143,17 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                         .convert(connection);
 
                 case ARRAY -> ParameterInput.withParameterName(fieldName)
-                    .withValues(this.toArrayOrNull(value))
+                    .withValues(MapperUtils.toArrayOrNull(value))
                     .withArray(typeProperty.getArrayName())
                     .convert(connection);
 
                 case STRUCT_ARRAY -> {
 
-                    var childClass = this.extractClass(bw.getPropertyTypeDescriptor(fieldName));
-                    yield ParameterInput.withParameterName(fieldName, (Class<Object>) childClass)
-                        .withValues(this.toArrayOrNull(value))
+                    propertyType = MapperUtils.extractClass(
+                        bw.getPropertyTypeDescriptor(fieldName)
+                    );
+                    yield ParameterInput.withParameterName(fieldName, (Class<Object>) propertyType)
+                        .withValues(MapperUtils.toArrayOrNull(value))
                         .withStructArray(typeProperty.getArrayName(), typeProperty.getStructName())
                         .convert(connection);
                 }
@@ -271,7 +272,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
 
             case STRUCT_ARRAY -> ParameterOutput.withParameterName(
                     fieldName,
-                    this.extractClass(typeDescriptor)
+                    MapperUtils.extractClass(typeDescriptor)
                 )
                 .withStructArray(typeProperty.getArrayName())
                 .convert(connection, rawValue);
@@ -296,36 +297,6 @@ class BeanPropertyMapper<S> extends AbstractMapper {
     Class<S> getMappedClass() {
 
         return this.mappedClass;
-    }
-
-    private Object[] toArrayOrNull(Object object) {
-
-        return Optional.ofNullable(object)
-            .map(o -> {
-
-                if (o instanceof Collection<?> collection) {
-
-                    return collection.toArray();
-                }
-
-                return ObjectUtils.toObjectArray(o);
-            })
-            .orElse(null);
-    }
-
-    private Class<?> extractClass(TypeDescriptor typeDescriptor) {
-
-        var resolvableType = Objects.requireNonNull(
-                typeDescriptor,
-                "STRUCT_ARRAY type is invalid"
-            )
-            .getResolvableType();
-
-        resolvableType = resolvableType.isArray()
-            ? resolvableType.getComponentType()
-            : resolvableType.asCollection()
-                .getGenerics()[0];
-        return resolvableType.resolve();
     }
 
 }
