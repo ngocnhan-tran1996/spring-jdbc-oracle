@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.springframework.jdbc.core.SqlInOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlReturnType;
@@ -48,9 +49,9 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
     public final ParameterTypeValue withValues(T... values) {
 
         this.values = Optional.ofNullable(values)
-            .stream()
-            .flatMap(Arrays::stream)
-            .toList();
+            .map(Arrays::stream)
+            .map(Stream::toList)
+            .orElse(null);
         return new ParameterTypeValue();
     }
 

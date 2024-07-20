@@ -3,13 +3,14 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle.mapper;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.annotation.OracleParameter;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.TypeProperty;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output.ParameterOutput;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
-import java.sql.Struct;
 import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
 class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
@@ -42,7 +43,8 @@ class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
         String columnName,
         OracleParameter oracleParameter) {
 
-        var typeProperty = this.getTypeProperty(columnName, OracleParameter::output)
+        // Record class will save columnName instead
+        var typeProperty = super.getTypeProperty(columnName, OracleParameter::output)
             .apply(oracleParameter);
         this.parameterByFieldName.put(pd.getName(), typeProperty);
     }
@@ -58,22 +60,40 @@ class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
         for (var parameter : this.constructor.getParameters()) {
 
             var targetType = parameter.getType();
-            var typeProperty = this.parameterByFieldName.get(parameter.getName());
+            var fieldName = parameter.getName();
+            var typeProperty = this.parameterByFieldName.get(fieldName);
             var rawValue = valueByName.get(typeProperty.getFieldName());
 
-            Object value;
-            switch (typeProperty.getType()) {
+            Object value = switch (typeProperty.getType()) {
 
-                case STRUCT -> {
+                case STRUCT -> ParameterOutput.withParameterName(
+                        fieldName,
+                        (Class<Object>) targetType
+                    )
+                    .withStruct(typeProperty.getStructName())
+                    .convert(connection, rawValue);
 
-                    var mapper = DelegateMapper.newInstance(targetType).get();
-                    value = mapper.fromStruct(connection, (Struct) rawValue);
+                case ARRAY -> ParameterOutput.withParameterName(fieldName)
+                    .withArray(typeProperty.getArrayName())
+                    .convert(connection, rawValue);
+
+                case STRUCT_ARRAY -> {
+
+                    var childClass = super.extractClass(
+                        TypeDescriptor.valueOf(parameter.getType()));
+                    yield ParameterOutput.withParameterName(fieldName, childClass)
+                        .withStructArray(typeProperty.getArrayName())
+                        .convert(connection, rawValue);
                 }
 
-                case CONVERTER -> value = this.convertValue(rawValue, targetType);
+                case CONVERTER -> BeanUtils.findMethod(
+                    typeProperty.getConverter(),
+                    "convert",
+                    targetType
+                );
 
-                default -> value = rawValue;
-            }
+                default -> super.convertValue(rawValue, targetType);
+            };
 
             args[i] = bw.convertIfNecessary(value, targetType);
             i++;

@@ -144,7 +144,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                         .convert(connection);
 
                 case ARRAY -> ParameterInput.withParameterName(fieldName)
-                    .withValues(this.toArray(value))
+                    .withValues(this.toArrayOrNull(value))
                     .withArray(typeProperty.getArrayName())
                     .convert(connection);
 
@@ -152,7 +152,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
 
                     var childClass = this.extractClass(bw.getPropertyTypeDescriptor(fieldName));
                     yield ParameterInput.withParameterName(fieldName, (Class<Object>) childClass)
-                        .withValues(this.toArray(value))
+                        .withValues(this.toArrayOrNull(value))
                         .withStructArray(typeProperty.getArrayName(), typeProperty.getStructName())
                         .convert(connection);
                 }
@@ -281,19 +281,19 @@ class BeanPropertyMapper<S> extends AbstractMapper {
         return converters.convert(value, sourceType, targetType);
     }
 
-    Object toArray(Object object) {
+    Object[] toArrayOrNull(Object object) {
 
-        if (object == null) {
+        return Optional.ofNullable(object)
+            .map(o -> {
 
-            return null;
-        }
+                if (o instanceof Collection<?> collection) {
 
-        if (object instanceof Collection<?> collection) {
+                    return collection.toArray();
+                }
 
-            return collection.toArray();
-        }
-
-        return ObjectUtils.toObjectArray(object);
+                return ObjectUtils.toObjectArray(o);
+            })
+            .orElse(null);
     }
 
     Class<?> extractClass(TypeDescriptor typeDescriptor) {
