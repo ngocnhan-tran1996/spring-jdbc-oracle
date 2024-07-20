@@ -13,12 +13,6 @@ class StructArrayReturnType<T> extends ArrayReturnType<T> {
 
     StructArrayReturnType(Mapper mapper) {
 
-        this(mapper, null);
-    }
-
-    StructArrayReturnType(Mapper mapper, Class<?> targetType) {
-
-        super(targetType);
         this.mapper = mapper;
     }
 

@@ -13,10 +13,12 @@ import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.MapperProperty;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.TypeProperty;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.property.TypeProperty.Types;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.input.ParameterInput;
+import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output.ParameterOutput;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
 import java.beans.PropertyDescriptor;
 import java.sql.Connection;
-import java.sql.Struct;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -26,7 +28,9 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.LinkedCaseInsensitiveMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 class BeanPropertyMapper<S> extends AbstractMapper {
@@ -109,6 +113,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected <T> Object[] toStruct(
         Connection connection,
@@ -127,27 +132,39 @@ class BeanPropertyMapper<S> extends AbstractMapper {
             }
 
             var fieldName = typeProperty.getFieldName();
+            var propertyType = bw.getPropertyType(fieldName);
             var value = bw.getPropertyValue(fieldName);
-            switch (typeProperty.getType()) {
 
-                case STRUCT -> {
+            values[columnNameByIndex.get(columnName)] = switch (typeProperty.getType()) {
 
-                    var mapper = DelegateMapper.newInstance(bw.getPropertyType(fieldName)).get();
-                    values[columnNameByIndex.get(columnName)] = mapper.toStruct(
-                        connection,
-                        typeProperty.getStructName(),
-                        value
-                    );
+                case STRUCT ->
+                    ParameterInput.withParameterName(fieldName, (Class<Object>) propertyType)
+                        .withValue(value)
+                        .withStruct(typeProperty.getStructName())
+                        .convert(connection);
+
+                case ARRAY -> ParameterInput.withParameterName(fieldName)
+                    .withValues(this.toArray(value))
+                    .withArray(typeProperty.getArrayName())
+                    .convert(connection);
+
+                case STRUCT_ARRAY -> {
+
+                    var childClass = this.extractClass(bw.getPropertyTypeDescriptor(fieldName));
+                    yield ParameterInput.withParameterName(fieldName, (Class<Object>) childClass)
+                        .withValues(this.toArray(value))
+                        .withStructArray(typeProperty.getArrayName(), typeProperty.getStructName())
+                        .convert(connection);
                 }
 
                 case CONVERTER -> BeanUtils.findMethod(
                     typeProperty.getConverter(),
                     "convert",
-                    bw.getPropertyType(fieldName)
+                    propertyType
                 );
 
-                default -> values[columnNameByIndex.get(columnName)] = value;
-            }
+                default -> value;
+            };
 
         });
 
@@ -168,22 +185,39 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                 return;
             }
 
-            var rawValue = valueByName.get(columnName);
             var fieldName = typeProperty.getFieldName();
-            Object value;
-            switch (typeProperty.getType()) {
+            var propertyType = bw.getPropertyType(fieldName);
+            var rawValue = valueByName.get(columnName);
 
-                case STRUCT -> {
+            Object value = switch (typeProperty.getType()) {
 
-                    var mapper = DelegateMapper.newInstance(bw.getPropertyType(fieldName)).get();
-                    value = mapper.fromStruct(connection, (Struct) rawValue);
+                case STRUCT -> ParameterOutput.withParameterName(
+                        fieldName,
+                        (Class<Object>) propertyType
+                    )
+                    .withStruct(typeProperty.getStructName())
+                    .convert(connection, rawValue);
+
+                case ARRAY -> ParameterOutput.withParameterName(fieldName)
+                    .withArray(typeProperty.getArrayName())
+                    .convert(connection, rawValue);
+
+                case STRUCT_ARRAY -> {
+
+                    var childClass = this.extractClass(bw.getPropertyTypeDescriptor(fieldName));
+                    yield ParameterOutput.withParameterName(fieldName, childClass)
+                        .withStructArray(typeProperty.getArrayName())
+                        .convert(connection, rawValue);
                 }
 
-                case CONVERTER ->
-                    value = this.convertValue(rawValue, bw.getPropertyType(fieldName));
+                case CONVERTER -> BeanUtils.findMethod(
+                    typeProperty.getConverter(),
+                    "convert",
+                    propertyType
+                );
 
-                default -> value = rawValue;
-            }
+                default -> this.convertValue(rawValue, propertyType);
+            };
 
             bw.setPropertyValue(fieldName, value);
         });
@@ -209,27 +243,29 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                         var arrayName = oracleTypeValue.arrayName();
                         var converter = (Class<? extends OracleConverter<Object, Object>>) oracleTypeValue.converter();
 
-                        if (Strings.isBlank(structName)) {
+                        if (Strings.isNotBlank(structName)) {
 
-                            if (NoneConverter.class.isAssignableFrom(converter)) {
-
-                                return;
-                            }
-
-                            typeProperty.setType(Types.CONVERTER);
-                            typeProperty.setConverter(converter);
-                            return;
+                            typeProperty.setType(Types.STRUCT);
+                            typeProperty.setStructName(structName.toUpperCase());
                         }
-
-                        typeProperty.setType(Types.STRUCT);
-                        typeProperty.setStructName(structName.toUpperCase());
 
                         if (Strings.isNotBlank(arrayName)) {
 
-                            typeProperty.setType(Types.ARRAY);
+                            var type = typeProperty.getType() == Types.STRUCT
+                                ? Types.STRUCT_ARRAY
+                                : Types.ARRAY;
+                            typeProperty.setType(type);
                             typeProperty.setArrayName(arrayName.toUpperCase());
                         }
 
+                        if (typeProperty.getType() != Types.NONE
+                            || NoneConverter.class.isAssignableFrom(converter)) {
+
+                            return;
+                        }
+
+                        typeProperty.setType(Types.CONVERTER);
+                        typeProperty.setConverter(converter);
                     }
                 );
 
@@ -243,6 +279,36 @@ class BeanPropertyMapper<S> extends AbstractMapper {
             .map(Object::getClass)
             .orElse(null);
         return converters.convert(value, sourceType, targetType);
+    }
+
+    Object toArray(Object object) {
+
+        if (object == null) {
+
+            return null;
+        }
+
+        if (object instanceof Collection<?> collection) {
+
+            return collection.toArray();
+        }
+
+        return ObjectUtils.toObjectArray(object);
+    }
+
+    Class<?> extractClass(TypeDescriptor typeDescriptor) {
+
+        var resolvableType = Objects.requireNonNull(
+                typeDescriptor,
+                "STRUCT_ARRAY type is invalid"
+            )
+            .getResolvableType();
+
+        resolvableType = resolvableType.isArray()
+            ? resolvableType.getComponentType()
+            : resolvableType.asCollection()
+                .getGenerics()[0];
+        return resolvableType.resolve();
     }
 
     Class<S> getMappedClass() {

@@ -66,6 +66,7 @@ public class TypeProperty {
         NONE,
         STRUCT,
         ARRAY,
+        STRUCT_ARRAY,
         CONVERTER
     }
 

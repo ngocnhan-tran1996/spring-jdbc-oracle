@@ -7,6 +7,7 @@ import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.DelegateMapper;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.Mapper;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.output.ParameterOutput;
+import java.sql.Connection;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,10 +81,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
             this.typeValue = new ArrayTypeValue<>(arrayTypeName, values);
             this.type = Types.ARRAY;
-            this.returnType = ParameterOutput.withParameterName(
-                    getParameterName(),
-                    getMappedClass()
-                )
+            this.returnType = ParameterOutput.withParameterName(getParameterName())
                 .withArray(arrayTypeName)
                 .sqlReturnType();
             return this;
@@ -129,13 +127,34 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
         public Map<String, Object> toMap() {
 
-            var value = Optional.ofNullable(values)
-                .map(v -> this.sqlTypeValue())
-                .orElse(null);
-
             var map = new HashMap<String, Object>();
-            map.put(getParameterName(), value);
+            map.put(getParameterName(), this.getValue().orElse(null));
             return map;
+        }
+
+        public Optional<Object> getValue() {
+
+            return Optional.ofNullable(values)
+                .map(v -> this.sqlTypeValue());
+        }
+
+        public Object convert(Connection connection) {
+
+            try {
+
+                var value = this.getValue();
+                if (value.isPresent()) {
+
+                    var sqlTypeValue = (AbstractTypeValue) value.get();
+                    return typeValue.createTypeValue(connection, sqlTypeValue.getTypeName());
+                }
+
+                return null;
+            } catch (Exception ex) {
+
+                return null;
+            }
+
         }
 
         public SqlTypeValue sqlTypeValue() {

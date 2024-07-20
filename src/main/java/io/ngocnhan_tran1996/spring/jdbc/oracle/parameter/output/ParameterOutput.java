@@ -7,6 +7,9 @@ import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.DelegateMapper;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.mapper.Mapper;
 import io.ngocnhan_tran1996.spring.jdbc.oracle.utils.Strings;
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.Struct;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlReturnType;
 
@@ -36,25 +39,8 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
     public ParameterOutput<T> withArray(String typeName) {
 
-        return this.withArray(typeName, null);
-    }
-
-    public ParameterOutput<T> withStructArray(String typeName) {
-
-        return this.withStructArray(typeName, null);
-    }
-
-    public ParameterOutput<T> withArray(String typeName, Class<?> targetType) {
-
         this.typeName = typeName;
-        this.returnType = new ArrayReturnType<>(targetType);
-        return this;
-    }
-
-    public ParameterOutput<T> withStructArray(String typeName, Class<?> targetType) {
-
-        this.typeName = typeName;
-        this.returnType = new StructArrayReturnType<>(this.mapper, targetType);
+        this.returnType = new ArrayReturnType<>();
         return this;
     }
 
@@ -62,6 +48,13 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
         this.typeName = typeName;
         this.returnType = new StructReturnType<>(this.mapper);
+        return this;
+    }
+
+    public ParameterOutput<T> withStructArray(String typeName) {
+
+        this.typeName = typeName;
+        this.returnType = new StructArrayReturnType<>(this.mapper);
         return this;
     }
 
@@ -74,6 +67,22 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
             this.typeName.toUpperCase(),
             this.returnType
         );
+    }
+
+    public Object convert(Connection connection, Object value) {
+
+        try {
+
+            var sqlReturnType = this.sqlReturnType();
+
+            return sqlReturnType instanceof StructReturnType<?> structReturnType
+                ? structReturnType.convertStruct(connection, (Struct) value)
+                : ((AbstractReturnType<?>) sqlReturnType).convertArray(connection, (Array) value);
+        } catch (Exception ex) {
+
+            return null;
+        }
+
     }
 
     public SqlReturnType sqlReturnType() {
