@@ -2,6 +2,9 @@ package io.ngocnhan_tran1996.spring.jdbc.oracle;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -17,18 +20,28 @@ public abstract class SetupTestData {
     JdbcTemplate jdbcTemplate;
 
     @Value("classpath:script/example_pack.sql")
-    Resource resource;
+    Resource examplePack;
+
+    @Value("classpath:script/complex_example_pack.sql")
+    Resource complexExamplePack;
 
     @BeforeAll
-    void init() throws IOException {
+    void init() {
 
-        var description = resource.getContentAsString(StandardCharsets.UTF_8);
-        var sql = description.split("/");
+        Stream.of(examplePack, complexExamplePack)
+            .map(pack -> {
+                try {
 
-        for (var statement : sql) {
+                    return pack.getContentAsString(StandardCharsets.UTF_8)
+                        .split("/");
+                } catch (IOException e) {
 
-            jdbcTemplate.update(statement);
-        }
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .flatMap(Arrays::stream)
+            .forEach(this.jdbcTemplate::update);
     }
 
 }
