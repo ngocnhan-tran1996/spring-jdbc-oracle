@@ -9,13 +9,15 @@ import java.sql.Connection;
 import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
 class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
 
-    private final Constructor<S> constructor;
     private final Map<String, TypeProperty> parameterByFieldName = new LinkedCaseInsensitiveMap<>();
+    private final Constructor<S> constructor;
+    private final TypeDescriptor[] constructorParameterTypes;
 
     private RecordPropertyMapper(Class<S> mappedClass) {
 
@@ -26,6 +28,13 @@ class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
         if (paramCount < 1) {
 
             throw new ValueException("Record must have parameters");
+        }
+
+        this.constructorParameterTypes = new TypeDescriptor[paramCount];
+        for (int i = 0; i < paramCount; ++i) {
+
+            var methodParameter = new MethodParameter(this.constructor, i);
+            this.constructorParameterTypes[i] = new TypeDescriptor(methodParameter);
         }
 
         super.extractProperties();
@@ -69,8 +78,9 @@ class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
                 targetType,
                 connection,
                 rawValue,
-                TypeDescriptor.valueOf(parameter.getType())
+                this.constructorParameterTypes[i]
             );
+
             args[i] = bw.convertIfNecessary(value, targetType);
             i++;
         }
