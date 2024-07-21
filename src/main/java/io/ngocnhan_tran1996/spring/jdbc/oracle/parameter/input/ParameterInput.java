@@ -82,7 +82,10 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
             this.typeValue = new ArrayTypeValue<>(arrayTypeName, values);
             this.type = Types.ARRAY;
-            this.returnType = ParameterOutput.withParameterName(getParameterName(), getMappedClass())
+            this.returnType = ParameterOutput.withParameterName(
+                    getParameterName(),
+                    getMappedClass()
+                )
                 .withArray(arrayTypeName)
                 .sqlReturnType();
             return this;

@@ -34,11 +34,11 @@ import org.springframework.util.ReflectionUtils;
 
 class BeanPropertyMapper<S> extends AbstractMapper {
 
-    private static final OracleConverters converters = DefaultOracleConverters.INSTANCE;
     private final Map<String, TypeProperty> readProperties = new LinkedCaseInsensitiveMap<>();
     private final Map<String, TypeProperty> writeProperties = new LinkedCaseInsensitiveMap<>();
     private final List<MapperProperty> mapperProperties;
     private final Class<S> mappedClass;
+    private OracleConverters converters = DefaultOracleConverters.INSTANCE;
 
     BeanPropertyMapper(Class<S> mappedClass) {
 
@@ -267,9 +267,17 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                 .withStruct(typeProperty.getStructName())
                 .convert(connection, rawValue);
 
-            case ARRAY -> ParameterOutput.withParameterName(fieldName)
-                .withArray(typeProperty.getArrayName())
-                .convert(connection, rawValue);
+            case ARRAY -> {
+
+                var value = ParameterOutput.withParameterName(fieldName, targetType)
+                    .withArray(typeProperty.getArrayName())
+                    .convert(connection, rawValue);
+                yield this.converters.convert(
+                    value,
+                    TypeDescriptor.forObject(value),
+                    typeDescriptor
+                );
+            }
 
             case STRUCT_ARRAY -> ParameterOutput.withParameterName(
                     fieldName,
@@ -284,13 +292,11 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                 targetType
             );
 
-            default -> {
-
-                var sourceType = Optional.ofNullable(rawValue)
-                    .map(Object::getClass)
-                    .orElse(null);
-                yield converters.convert(rawValue, sourceType, targetType);
-            }
+            default -> this.converters.convert(
+                rawValue,
+                TypeDescriptor.forObject(rawValue),
+                typeDescriptor
+            );
         };
 
     }
@@ -298,6 +304,15 @@ class BeanPropertyMapper<S> extends AbstractMapper {
     Class<S> getMappedClass() {
 
         return this.mappedClass;
+    }
+
+    public void setConverters(OracleConverters converters) {
+
+        if (converters != null) {
+
+            this.converters = converters;
+        }
+
     }
 
 }
