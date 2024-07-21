@@ -27,7 +27,7 @@ I tested on below Software/Framework version and I am **NOT** sure it can work o
 
 | **Software/Framework** | **Version**                            |
 |------------------------|----------------------------------------|
-| Java                   | 17                                     |
+| Java                   | 21                                     |
 | Maven                  | 3.9.8                                  |
 | Docker                 | 27.0.3                                 |
 | Oracle Image           | gvenzl/oracle-free:23.4-slim-faststart |
