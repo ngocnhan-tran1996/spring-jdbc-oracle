@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 import org.springframework.jdbc.core.SqlInOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlReturnType;
-import org.springframework.jdbc.core.SqlTypeValue;
 
 public final class ParameterInput<T> extends ParameterAccessor<T> {
 
@@ -139,12 +138,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
         public Optional<Object> getTypeValue() {
 
             return Optional.ofNullable(values)
-                .map(v -> this.sqlTypeValue());
-        }
-
-        public Optional<Object> getValue() {
-
-            return Optional.ofNullable(values);
+                .map(v -> this.typeValue);
         }
 
         public Object convert(Connection connection) {
@@ -155,7 +149,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
                 if (value.isPresent()) {
 
                     var sqlTypeValue = (AbstractTypeValue) value.get();
-                    return typeValue.createTypeValue(connection, sqlTypeValue.getTypeName());
+                    return sqlTypeValue.createTypeValue(connection, sqlTypeValue.getTypeName());
                 }
 
                 return null;
@@ -164,11 +158,6 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
                 return null;
             }
 
-        }
-
-        public SqlTypeValue sqlTypeValue() {
-
-            return this.typeValue;
         }
 
         public SqlParameter sqlParameter() {

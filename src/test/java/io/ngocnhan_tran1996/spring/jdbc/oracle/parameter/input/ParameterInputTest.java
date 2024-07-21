@@ -1,11 +1,8 @@
 package io.ngocnhan_tran1996.spring.jdbc.oracle.parameter.input;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import io.ngocnhan_tran1996.spring.jdbc.oracle.exception.ValueException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -44,22 +41,6 @@ class ParameterInputTest {
             .isThrownBy(() -> parameterTypeValue.withStructArray("x", null));
         assertThatExceptionOfType(ValueException.class)
             .isThrownBy(() -> parameterTypeValue.withStructArray("x", ""));
-    }
-
-    @Test
-    void with_values_are_null() {
-
-        var parameterTypeValue = ParameterInput.withParameterName("x");
-
-        assertThat(parameterTypeValue.withValues((Object[]) null).getValue())
-            .isEmpty();
-        assertThat(parameterTypeValue.withValues((Collection<Object>) null).getValue())
-            .isEmpty();
-
-        assertThat(parameterTypeValue.withValues(null, null).getValue())
-            .isPresent();
-        assertThat(parameterTypeValue.withValues(Arrays.asList(null, null)).getValue())
-            .isPresent();
     }
 
 }
