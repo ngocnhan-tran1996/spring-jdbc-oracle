@@ -30,6 +30,14 @@ public final class DefaultOracleConverters implements OracleConverters {
         addDefaultConverters(this);
     }
 
+    private static void addDefaultConverters(DefaultOracleConverters converters) {
+
+        converters.addGenericConverter(new NumberToStringGenericOracleConverter());
+        converters.addGenericConverter(
+            new CollectionToCollectionGenericOracleConverter(converters)
+        );
+    }
+
     @Override
     public void addGenericConverter(GenericOracleConverter<?, ?> genericOracleConverter) {
 
@@ -38,7 +46,7 @@ public final class DefaultOracleConverters implements OracleConverters {
             throw new ValueException(NOT_NULL.formatted("GenericOracleConverter"));
         }
 
-        var converterKey = getConvertKey(
+        var converterKey = this.getConvertKey(
             genericOracleConverter.getClass(),
             GenericOracleConverter.class
         );
@@ -65,7 +73,7 @@ public final class DefaultOracleConverters implements OracleConverters {
             throw new ValueException(NOT_NULL.formatted("OracleConverter"));
         }
 
-        var converterKey = getConvertKey(converter.getClass(), OracleConverter.class);
+        var converterKey = this.getConvertKey(converter.getClass(), OracleConverter.class);
         if (converterKey == null) {
 
             throw new ValueException(DETERMINE_EXCEPTION.formatted(converter));
@@ -77,7 +85,7 @@ public final class DefaultOracleConverters implements OracleConverters {
     @Override
     public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 
-        return find(sourceType, targetType)
+        return this.find(sourceType, targetType)
             .getConverter()
             .convert(source);
     }
@@ -89,8 +97,8 @@ public final class DefaultOracleConverters implements OracleConverters {
             return ConvertAdapter.NONE;
         }
 
-        List<Class<?>> sourceCandidates = getClassHierarchy(sourceType.getType());
-        List<Class<?>> targetCandidates = getClassHierarchy(targetType.getType());
+        List<Class<?>> sourceCandidates = this.getClassHierarchy(sourceType.getType());
+        List<Class<?>> targetCandidates = this.getClassHierarchy(targetType.getType());
 
         for (var sourceCandidate : sourceCandidates) {
             for (var targetCandidate : targetCandidates) {
@@ -119,15 +127,7 @@ public final class DefaultOracleConverters implements OracleConverters {
         return ConvertAdapter.NONE;
     }
 
-    private static void addDefaultConverters(DefaultOracleConverters converters) {
-
-        converters.addGenericConverter(new NumberToStringGenericOracleConverter());
-        converters.addGenericConverter(
-            new CollectionToCollectionGenericOracleConverter(converters)
-        );
-    }
-
-    private static ConvertKey getConvertKey(Class<?> converterClass, Class<?> genericClass) {
+    private ConvertKey getConvertKey(Class<?> converterClass, Class<?> genericClass) {
 
         ResolvableType resolvableType = ResolvableType.forClass(converterClass)
             .as(genericClass);
@@ -147,11 +147,11 @@ public final class DefaultOracleConverters implements OracleConverters {
         return new ConvertKey(sourceType, targetType);
     }
 
-    private static List<Class<?>> getClassHierarchy(Class<?> type) {
+    private List<Class<?>> getClassHierarchy(Class<?> type) {
 
         List<Class<?>> hierarchy = new ArrayList<>(20);
         Set<Class<?>> visited = new HashSet<>(20);
-        addToClassHierarchy(
+        this.addToClassHierarchy(
             0,
             ClassUtils.resolvePrimitiveIfNecessary(type),
             false,
@@ -170,7 +170,7 @@ public final class DefaultOracleConverters implements OracleConverters {
 
             if (superclass != null && superclass != Object.class && superclass != Enum.class) {
 
-                addToClassHierarchy(
+                this.addToClassHierarchy(
                     i + 1,
                     candidate.getSuperclass(),
                     array,
@@ -180,21 +180,21 @@ public final class DefaultOracleConverters implements OracleConverters {
 
             }
 
-            addInterfacesToClassHierarchy(candidate, array, hierarchy, visited);
+            this.addInterfacesToClassHierarchy(candidate, array, hierarchy, visited);
         }
 
         if (Enum.class.isAssignableFrom(type)) {
 
-            addToClassHierarchy(hierarchy.size(), Enum.class, false, hierarchy, visited);
-            addInterfacesToClassHierarchy(Enum.class, false, hierarchy, visited);
+            this.addToClassHierarchy(hierarchy.size(), Enum.class, false, hierarchy, visited);
+            this.addInterfacesToClassHierarchy(Enum.class, false, hierarchy, visited);
         }
 
-        addToClassHierarchy(hierarchy.size(), Object.class, array, hierarchy, visited);
-        addToClassHierarchy(hierarchy.size(), Object.class, false, hierarchy, visited);
+        this.addToClassHierarchy(hierarchy.size(), Object.class, array, hierarchy, visited);
+        this.addToClassHierarchy(hierarchy.size(), Object.class, false, hierarchy, visited);
         return hierarchy;
     }
 
-    private static void addInterfacesToClassHierarchy(
+    private void addInterfacesToClassHierarchy(
         Class<?> type,
         boolean asArray,
         List<Class<?>> hierarchy,
@@ -202,7 +202,7 @@ public final class DefaultOracleConverters implements OracleConverters {
 
         for (Class<?> implementedInterface : type.getInterfaces()) {
 
-            addToClassHierarchy(
+            this.addToClassHierarchy(
                 hierarchy.size(),
                 implementedInterface,
                 asArray,
@@ -212,7 +212,7 @@ public final class DefaultOracleConverters implements OracleConverters {
         }
     }
 
-    private static void addToClassHierarchy(
+    private void addToClassHierarchy(
         int index,
         Class<?> type,
         boolean asArray,
