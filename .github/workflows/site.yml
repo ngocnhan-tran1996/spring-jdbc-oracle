@@ -18,4 +18,10 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn site site:stage
+      run: mvn -B clean site --file pom.xml
+    - name: Deploy Site
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: gh-pages
+        folder: target/site
+        ssh-key: ${{ secrets.DEPLOY_KEY }}
