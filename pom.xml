@@ -7,15 +7,16 @@
   <groupId>io.github.ngocnhan-tran1996</groupId>
   <artifactId>spring-jdbc-oracle</artifactId>
   <version>1.0.0-SNAPSHOT</version>
+  <name>Spring Jdbc Oracle</name>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring-jdbc.version>6.1.10</spring-jdbc.version>
+    <spring-jdbc.version>6.1.11</spring-jdbc.version>
     <oracle.jdbc.version>23.4.0.24.05</oracle.jdbc.version>
-    <springboot.version>3.3.1</springboot.version>
+    <springboot.version>3.3.2</springboot.version>
     <testcontainers.version>1.19.8</testcontainers.version>
   </properties>
 
@@ -97,6 +98,11 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
