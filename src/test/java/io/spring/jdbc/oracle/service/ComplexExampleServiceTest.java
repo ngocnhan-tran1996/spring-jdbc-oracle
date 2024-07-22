@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.spring.jdbc.oracle.ComplexCustomer;
 import io.spring.jdbc.oracle.ComplexCustomerRecord;
+import io.spring.jdbc.oracle.ComplexCustomerRecord.Address;
 import io.spring.jdbc.oracle.SetupTestData;
 import io.spring.jdbc.oracle.config.ExampleConfig;
-import io.spring.jdbc.oracle.ComplexCustomerRecord.Address;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
