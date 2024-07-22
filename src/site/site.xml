@@ -15,8 +15,8 @@
 
     <menu name="USAGE">
       <item name="Convert to Java" href="convert-to-java.html" collapse="false">
-        <item name="Parameter Input" href="convert-to-java.html#parameter-input"/>
-        <item name="Parameter Output" href="convert-to-java.html#parameter-output"/>
+        <item name="Parameter Input" href="parameter-input.html"/>
+        <item name="Parameter Output" href="parameter-output.html"/>
       </item>
 
       <item name="Convention" href="convention.html" collapse="false">
@@ -24,6 +24,8 @@
         <item name="Naming Convention" href="convention.html#naming-convention"/>
         <item name="Annotation OracleParameter" href="convention.html#annotation-oracleparameter"/>
       </item>
+
+      <item name="Implementation" href="implementation.html"/>
     </menu>
 
   </body>

@@ -1,3 +1,6 @@
+title: How To Test
+author: Tran Ngoc Nhan
+
 # How To Test
 
 Please take a look to scrip and file `*Test.java`
