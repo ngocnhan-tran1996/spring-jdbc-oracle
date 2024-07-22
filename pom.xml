@@ -78,6 +78,13 @@
     </dependency>
   </dependencies>
 
+  <distributionManagement>
+    <site>
+      <id>github</id>
+      <url>scm:git:git@github.com:ngocnhan-tran1996/spring-jdbc-oracle.git</url>
+    </site>
+  </distributionManagement>
+
   <build>
     <plugins>
       <plugin>
@@ -98,11 +105,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
