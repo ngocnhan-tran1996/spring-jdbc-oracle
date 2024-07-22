@@ -68,166 +68,17 @@
           </div>
         </header>
         <main id="bodyColumn"  class="span10" >
-<h1>Convert to Java</h1><!-- TOC -->
-
+<h1>Convert to Java</h1>
 <ul>
 
-<li><a href="#convert-to-java">Convert to Java</a>
+<li>Convert to Java
 <ul>
 
-<li><a href="#parameter-input">Parameter Input</a></li>
-<li><a href="#parameter-output">Parameter Output</a></li>
+<li><a href="./parameter-input.html">Parameter Input</a></li>
+<li><a href="./parameter-output.html">Parameter Output</a></li>
 </ul>
 </li>
-</ul><!-- TOC -->
-<section>
-<h2><a name="Parameter_Input"></a>Parameter Input</h2>
-<p><b><code>ParameterInput.java</code> supports Type Input or Type Input Output</b></p>
-
-<div class="source"><pre class="prettyprint"><code class="language-oracle">TYPE customer IS RECORD (
-        first_name VARCHAR(255),
-        last_name  VARCHAR(255),
-        age        NUMBER
-);
-
-TYPE customers IS
-    TABLE OF customer;
-
-TYPE numbers IS
-    TABLE OF NUMBER INDEX BY BINARY_INTEGER;
-
-PROCEDURE example_proc (
-    in_numbers       IN numbers,
-    in_customer      IN customer,
-    in_customers     IN customers,
-    in_out_numbers   IN OUT numbers,
-    in_out_customer  IN OUT customer,
-    in_out_customers IN OUT customers,
-    -- out parameters
-);
-</code></pre></div>
-
-<div class="source"><pre class="prettyprint"><code class="language-java">/**
- * if package is not blank, it will be `schema.package.type_name`, otherwise `schema.type_name`
- * /
-ParameterInput.withParameterName(...) // parameter_name
-        .withValues(...) // for multiple values
-        .withValues(List.of(...)) // for multiple values
-        .withValue(...) // for one value
-        .withArray(...) // schema.package.array_type_name
-        .withStruct(...) // schema.package.type_name
-        .withStructArray(...) // schema.package.array_type_name, schema.package.type_name
-
-/**
- * use this in case type contains keyword &quot;TYPE `numbers` IS TABLE OF `primitive type`&quot;
- *
- * Note:
- * `numbers` is example, you can declare name whatever you want
- * `primitive type` is one of VARCHAR, NUMBER, NVARCHAR...
- * /
-var inNumbers = ParameterInput.withParameterName(&quot;in_numbers&quot;)
-    .withValues(...)
-    .withArray(&quot;example_pack.numbers&quot;);
-
-/**
- * use this in case type contains keyword either &quot;TYPE `customer` IS RECORD&quot; or &quot;Type `customer` AS OBJECT&quot;
- *
- * Note: `customer` is example, you can declare name whatever you want
- * /
-var inCustomer = ParameterInput.withParameterName(&quot;in_customer&quot;, Customer.class)
-    .withValue(...) // instance class Customer
-    .withStruct(&quot;example_pack.customer&quot;);
-
-/**
- * use this in case
- * 1. type contains keyword &quot;TYPE `customers` IS TABLE OF `customer`&quot;
- * 2. `customer` contains keyword either &quot;TYPE customer IS RECORD&quot; or &quot;Type customer AS OBJECT&quot;
- *
- * Note: `customers` and `customer` are example, you can declare name whatever you want
- * /
-var inCustomers = ParameterInput.withParameterName(&quot;in_customers&quot;, Customer.class)
-    .withValues(...) // instance multiple class Customer
-    .withStructArray(&quot;example_pack.customers&quot;, &quot;example_pack.customer&quot;);
-
-public class Customer {
-
-    @OracleParameter(&quot;first_name&quot;)
-    private String name;
-    private String lastName;
-    private BigDecimal age;
-
-    // getter/setter
-}
-</code></pre></div></section><section>
-<h2><a name="Parameter_Output"></a>Parameter Output</h2>
-<p><b><code>ParameterOutput.java</code> supports Type Output</b></p>
-
-<div class="source"><pre class="prettyprint"><code class="language-oracle">TYPE customer IS RECORD (
-        first_name VARCHAR(255),
-        last_name  VARCHAR(255),
-        age        NUMBER
-);
-
-TYPE customers IS
-    TABLE OF customer;
-
-TYPE numbers IS
-    TABLE OF NUMBER INDEX BY BINARY_INTEGER;
-
-PROCEDURE example_proc (
-    -- in/inout parameters
-    out_numbers      OUT numbers,
-    out_customer     OUT customer,
-    out_customers    OUT customers
-);
-</code></pre></div>
-
-<div class="source"><pre class="prettyprint"><code class="language-java">/**
- * if package is not blank, it will be `schema.package.type_name`, otherwise `schema.type_name`
- * /
-ParameterOutput.withParameterName(...) // parameter_name
-        .withArray(...) // schema.package.array_type_name
-        .withStructArray(...) // schema.package.array_type_name
-        .withStruct(...) // schema.package.type_name
-
-/**
- * use this in case type contains keyword &quot;TYPE `numbers` IS TABLE OF `primitive type`&quot;
- *
- * Note:
- * `numbers` is example, you can declare name whatever you want
- * `primitive type` is one of VARCHAR, NUMBER, NVARCHAR...
- * /
-var outNumbers = ParameterOutput.withParameterName(&quot;out_numbers&quot;)
-    .withArray(&quot;example_pack.numbers&quot;);
-
-/**
- * use this in case type contains keyword either &quot;TYPE `customer` IS RECORD&quot; or &quot;Type `customer` AS OBJECT&quot;
- *
- * Note: `customer` is example, you can declare name whatever you want
- * /
-var outCustomer = ParameterOutput.withParameterName(&quot;out_customer&quot;, Customer.class)
-    .withStruct(&quot;example_pack.customer&quot;);
-
-/**
- * use this in case
- * 1. type contains keyword &quot;TYPE `customers` IS TABLE OF `customer`&quot;
- * 2. `customer` contains keyword either &quot;TYPE customer IS RECORD&quot; or &quot;Type customer AS OBJECT&quot;
- *
- * Note: `customers` and `customer` are example, you can declare name whatever you want
- * /
-var outCustomers = ParameterOutput.withParameterName(&quot;out_customers&quot;, Customer.class)
-    .withStructArray(&quot;example_pack.customers&quot;); // no need type `customer`
-
-public class Customer {
-
-    @OracleParameter(&quot;first_name&quot;)
-    private String name;
-    private String lastName;
-    private BigDecimal age;
-
-    // getter/setter
-}
-</code></pre></div></section>
+</ul>
         </main>
       </div>
     </div>
