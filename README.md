@@ -11,7 +11,8 @@
 
 ## Document
 
-Please run `./mvnw site` and go to folder `target/site`
+- For offline site, please run `./mvnw site` and go to folder `target/site`.
+- For online site, click here [https://ngocnhan-tran1996.github.io/spring-jdbc-oracle](https://ngocnhan-tran1996.github.io/spring-jdbc-oracle)
 
 ## Reference
 
