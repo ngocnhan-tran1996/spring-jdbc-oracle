@@ -19,11 +19,7 @@
         <item name="Parameter Output" href="parameter-output.html"/>
       </item>
 
-      <item name="Convention" href="convention.html" collapse="false">
-        <item name="Data Convention" href="convention.html#data-convention"/>
-        <item name="Naming Convention" href="convention.html#naming-convention"/>
-        <item name="Annotation OracleParameter" href="convention.html#annotation-oracleparameter"/>
-      </item>
+      <item name="Convention" href="convention.html"/>
 
       <item name="Implementation" href="implementation.html"/>
     </menu>

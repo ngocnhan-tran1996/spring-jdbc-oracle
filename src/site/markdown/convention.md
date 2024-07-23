@@ -33,4 +33,26 @@ I have a small comparison.
 
 ## Annotation OracleParameter
 
-Use annotation `OracleParameter` in case both field name are not match.
+Use annotation `OracleParameter` in case
+- Both field names are not the same
+- Type input/output is a complex type
+
+Please take a look [ComplexCustomer.java](https://github.com/ngocnhan-tran1996/spring-jdbc-oracle/blob/main/src/test/java/io/spring/jdbc/oracle/ComplexCustomer.java) and [`complex_example_pack.sql`](https://github.com/ngocnhan-tran1996/spring-jdbc-oracle/tree/main/src/test/resources/script/complex_example_pack.sql)
+
+You will see how to use annotation `OracleParameter`
+
+```java
+@OracleParameter(
+    value = "original_address",
+    input = @OracleType(structName = "complex_example_pack.address"),
+    output = @OracleType(structName = "complex_example_pack.address")
+)
+private Address address;
+
+@OracleParameter(
+    value = "other_addresses",
+    input = @OracleType(structName = "complex_example_pack.address", arrayName = "complex_example_pack.addresses"),
+    output = @OracleType(structName = "complex_example_pack.address", arrayName = "complex_example_pack.addresses")
+)
+private Address[] addresses;
+```
