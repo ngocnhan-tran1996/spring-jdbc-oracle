@@ -4,7 +4,7 @@ import io.spring.jdbc.oracle.converter.GenericOracleConverter;
 import java.util.Optional;
 import org.springframework.core.convert.TypeDescriptor;
 
-class NumberToStringGenericOracleConverter implements GenericOracleConverter<Number, String> {
+final class NumberToStringGenericOracleConverter implements GenericOracleConverter<Number, String> {
 
     @Override
     public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {

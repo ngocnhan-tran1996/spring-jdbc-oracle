@@ -158,11 +158,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                         .convert(connection);
                 }
 
-                case CONVERTER -> BeanUtils.findMethod(
-                    typeProperty.getConverter(),
-                    "convert",
-                    propertyType
-                );
+                case CONVERTER -> MapperUtils.convertValue(typeProperty, value);
 
                 default -> value;
             };
@@ -285,11 +281,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                 .withStructArray(typeProperty.getArrayName())
                 .convert(connection, rawValue);
 
-            case CONVERTER -> BeanUtils.findMethod(
-                typeProperty.getConverter(),
-                "convert",
-                targetType
-            );
+            case CONVERTER -> MapperUtils.convertValue(typeProperty, rawValue);
 
             default -> this.converters.convert(
                 rawValue,

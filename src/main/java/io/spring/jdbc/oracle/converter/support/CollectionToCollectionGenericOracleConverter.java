@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.convert.TypeDescriptor;
 
-class CollectionToCollectionGenericOracleConverter implements
+final class CollectionToCollectionGenericOracleConverter implements
     GenericOracleConverter<Collection<?>, Object> {
 
     private final OracleConverters oracleConverters;
