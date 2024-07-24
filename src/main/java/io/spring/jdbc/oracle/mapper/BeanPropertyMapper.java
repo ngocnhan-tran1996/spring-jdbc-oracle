@@ -160,7 +160,15 @@ class BeanPropertyMapper<S> extends AbstractMapper {
 
                 case CONVERTER -> MapperUtils.convertValue(typeProperty, value);
 
-                default -> value;
+                default -> {
+
+                    var jdbcClass = this.converters.determineJavaClassForJdbcTypeCode(propertyType);
+                    yield this.converters.convert(
+                        value,
+                        TypeDescriptor.valueOf(propertyType),
+                        TypeDescriptor.valueOf(jdbcClass)
+                    );
+                }
             };
 
         });

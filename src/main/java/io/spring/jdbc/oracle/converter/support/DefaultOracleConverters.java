@@ -5,6 +5,9 @@ import io.spring.jdbc.oracle.converter.OracleConverter;
 import io.spring.jdbc.oracle.converter.OracleConverters;
 import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.utils.Strings;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,21 +26,43 @@ public final class DefaultOracleConverters implements OracleConverters {
     private static final String DETERMINE_EXCEPTION = "Unable determine %s";
     private final Set<ConvertAdapter> genericConverters = new CopyOnWriteArraySet<>();
     private final Map<ConvertKey, ConvertAdapter> converterCaches = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Integer> javaClassToJdbcTypeCodeMap;
+    private final Map<Integer, Class<?>> jdbcTypeCodeToJavaClassMap;
 
     private DefaultOracleConverters() {
 
         addDefaultConverters(this);
+        this.javaClassToJdbcTypeCodeMap = buildJavaClassToJdbcTypeCodeMappings();
+        this.jdbcTypeCodeToJavaClassMap = buildJdbcTypeCodeToJavaClassMappings();
     }
 
-    private static void addDefaultConverters(DefaultOracleConverters converters) {
+    private static void addDefaultConverters(OracleConverters converters) {
 
         converters.addGenericConverter(new NumberToStringGenericOracleConverter());
         converters.addGenericConverter(
             new CollectionToCollectionGenericOracleConverter(converters)
         );
 
-        converters.addConverter(new TimestampToLocalDatetimeConverter());
         converters.addConverter(new LocalDatetimeToTimestampConverter());
+        converters.addConverter(new TimestampToLocalDatetimeConverter());
+    }
+
+    private static ConcurrentHashMap<Class<?>, Integer> buildJavaClassToJdbcTypeCodeMappings() {
+
+        final ConcurrentHashMap<Class<?>, Integer> workMap = new ConcurrentHashMap<>();
+
+        workMap.put(LocalDateTime.class, Types.TIMESTAMP);
+
+        return workMap;
+    }
+
+    private static ConcurrentHashMap<Integer, Class<?>> buildJdbcTypeCodeToJavaClassMappings() {
+
+        final ConcurrentHashMap<Integer, Class<?>> workMap = new ConcurrentHashMap<>();
+
+        workMap.put(Types.TIMESTAMP, Timestamp.class);
+
+        return workMap;
     }
 
     @Override
@@ -90,6 +115,13 @@ public final class DefaultOracleConverters implements OracleConverters {
         return this.find(sourceType, targetType)
             .getConverter()
             .convert(source);
+    }
+
+    @Override
+    public Class<?> determineJavaClassForJdbcTypeCode(Class<?> sourceType) {
+
+        var typeCode = this.javaClassToJdbcTypeCodeMap.get(sourceType);
+        return this.jdbcTypeCodeToJavaClassMap.get(typeCode);
     }
 
     private ConvertAdapter find(TypeDescriptor sourceType, TypeDescriptor targetType) {

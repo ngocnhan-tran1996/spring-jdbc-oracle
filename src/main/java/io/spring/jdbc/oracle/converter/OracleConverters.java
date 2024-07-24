@@ -10,4 +10,6 @@ public interface OracleConverters {
 
     Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType);
 
+    Class<?> determineJavaClassForJdbcTypeCode(Class<?> sourceType);
+
 }

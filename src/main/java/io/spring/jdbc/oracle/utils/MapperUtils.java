@@ -48,6 +48,11 @@ public final class MapperUtils {
 
     public static Object convertValue(TypeProperty typeProperty, Object value) {
 
+        if (typeProperty == null || value == null) {
+
+            return null;
+        }
+
         var converter = typeProperty.getConverter();
         var method = BeanUtils.findMethod(
             converter,
