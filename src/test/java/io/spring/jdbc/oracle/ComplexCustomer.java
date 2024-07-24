@@ -3,12 +3,12 @@ package io.spring.jdbc.oracle;
 import io.spring.jdbc.oracle.annotation.OracleParameter;
 import io.spring.jdbc.oracle.annotation.OracleType;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ComplexCustomer extends Customer {
 
-    private Timestamp birthday;
+    private LocalDateTime birthday;
 
     @OracleParameter(
         value = "original_address",
@@ -32,7 +32,7 @@ public class ComplexCustomer extends Customer {
         String name,
         String lastName,
         BigDecimal age,
-        Timestamp birthday,
+        LocalDateTime birthday,
         Address address,
         Address[] addresses) {
 
@@ -42,11 +42,11 @@ public class ComplexCustomer extends Customer {
         this.addresses = addresses;
     }
 
-    public Timestamp getBirthday() {
+    public LocalDateTime getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Timestamp birthday) {
+    public void setBirthday(LocalDateTime birthday) {
         this.birthday = birthday;
     }
 

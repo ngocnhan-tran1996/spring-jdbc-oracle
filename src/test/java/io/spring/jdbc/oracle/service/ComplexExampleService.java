@@ -5,7 +5,6 @@ import io.spring.jdbc.oracle.parameter.input.ParameterInput;
 import io.spring.jdbc.oracle.parameter.output.ParameterOutput;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -44,7 +43,7 @@ class ComplexExampleService {
             String.class,
             String.class,
             BigDecimal.class,
-            Timestamp.class,
+            LocalDateTime.class,
             childClass,
             isRecord
                 ? List.class
@@ -64,7 +63,7 @@ class ComplexExampleService {
             "Nhan",
             "Tran",
             BigDecimal.TEN,
-            Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIN)),
+            LocalDateTime.of(LocalDate.now(), LocalTime.MIN),
             address,
             isRecord
                 ? List.of(address)

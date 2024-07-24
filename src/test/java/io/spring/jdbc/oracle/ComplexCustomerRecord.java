@@ -2,16 +2,23 @@ package io.spring.jdbc.oracle;
 
 import io.spring.jdbc.oracle.annotation.OracleParameter;
 import io.spring.jdbc.oracle.annotation.OracleType;
+import io.spring.jdbc.oracle.converter.OracleConverter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public record ComplexCustomerRecord(
     @OracleParameter("first_name")
     String name,
     String lastName,
     BigDecimal age,
-    Timestamp birthday,
+    @OracleParameter(
+        input = @OracleType(converter = LocalDatetimeToTimestampConverter.class),
+        output = @OracleType(converter = TimestampToLocalDatetimeConverter.class)
+    )
+    LocalDateTime birthday,
 
     @OracleParameter(
         value = "original_address",
@@ -39,6 +46,32 @@ public record ComplexCustomerRecord(
         )
         List<String> values
     ) {
+
+    }
+
+    public record LocalDatetimeToTimestampConverter() implements
+        OracleConverter<LocalDateTime, Timestamp> {
+
+        @Override
+        public Timestamp convert(LocalDateTime source) {
+
+            return Optional.ofNullable(source)
+                .map(Timestamp::valueOf)
+                .orElse(null);
+        }
+
+    }
+
+    public record TimestampToLocalDatetimeConverter() implements
+        OracleConverter<Timestamp, LocalDateTime> {
+
+        @Override
+        public LocalDateTime convert(Timestamp source) {
+
+            return Optional.ofNullable(source)
+                .map(Timestamp::toLocalDateTime)
+                .orElse(null);
+        }
 
     }
 

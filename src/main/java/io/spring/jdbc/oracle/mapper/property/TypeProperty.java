@@ -45,10 +45,11 @@ public class TypeProperty {
         return this.converter;
     }
 
+    @SuppressWarnings("unchecked")
     public void setConverter(
-        Class<? extends OracleConverter<Object, Object>> converter) {
+        Class<? extends OracleConverter<?, ?>> converter) {
 
-        this.converter = converter;
+        this.converter = (Class<? extends OracleConverter<Object, Object>>) converter;
     }
 
     public Types getType() {

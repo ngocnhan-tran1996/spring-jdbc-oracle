@@ -8,7 +8,6 @@ import io.spring.jdbc.oracle.ComplexCustomerRecord.Address;
 import io.spring.jdbc.oracle.SetupTestData;
 import io.spring.jdbc.oracle.config.ExampleConfig;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -42,7 +41,7 @@ class ComplexExampleServiceTest extends SetupTestData {
             "Nhan",
             "Tran",
             BigDecimal.TEN,
-            Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIN)),
+            LocalDateTime.of(LocalDate.now(), LocalTime.MIN),
             address,
             new ComplexCustomer.Address[]{address}
         );
@@ -75,7 +74,7 @@ class ComplexExampleServiceTest extends SetupTestData {
             "Nhan",
             "Tran",
             BigDecimal.TEN,
-            Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIN)),
+            LocalDateTime.of(LocalDate.now(), LocalTime.MIN),
             address,
             List.of(address)
         );

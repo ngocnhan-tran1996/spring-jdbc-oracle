@@ -9,6 +9,9 @@ import io.spring.jdbc.oracle.CustomerRecord;
 import io.spring.jdbc.oracle.SetupTestData;
 import io.spring.jdbc.oracle.annotation.OracleParameter;
 import io.spring.jdbc.oracle.config.ExampleConfig;
+import io.spring.jdbc.oracle.converter.GenericOracleConverter;
+import io.spring.jdbc.oracle.converter.OracleConverter;
+import io.spring.jdbc.oracle.converter.OracleConverters;
 import io.spring.jdbc.oracle.exception.ValueException;
 import java.math.BigDecimal;
 import java.sql.DriverManager;
@@ -21,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 @SpringBootTest
@@ -60,6 +64,41 @@ class DelegateMapperTest extends SetupTestData {
 
         assertThatExceptionOfType(ValueException.class)
             .isThrownBy(() -> DelegateMapper.newInstance(DuplicateAnnotationRecord.class));
+    }
+
+    @Test
+    void set_converters() {
+
+        var mapper = DelegateMapper.newInstance(Customer.class);
+        mapper.setConverters(new OracleConverters() {
+
+            @Override
+            public void addGenericConverter(GenericOracleConverter<?, ?> converterFactory) {
+
+            }
+
+            @Override
+            public void addConverter(OracleConverter<?, ?> converter) {
+
+            }
+
+            @Override
+            public Object convert(Object source, TypeDescriptor sourceType,
+                TypeDescriptor targetType) {
+
+                return null;
+            }
+
+            @Override
+            public Class<?> determineJavaClassForJdbcTypeCode(Class<?> sourceType) {
+
+                return null;
+            }
+
+        });
+
+        assertThat(mapper.convert(null))
+            .isNull();
     }
 
     @Nested
