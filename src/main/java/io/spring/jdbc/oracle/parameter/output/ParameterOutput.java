@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.SqlReturnType;
 public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
     private final Mapper mapper;
-    private AbstractReturnType<T> returnType;
+    private AbstractReturnType returnType;
     private String typeName;
 
     private ParameterOutput(String parameterName, Class<T> mappedClass) {
@@ -39,22 +39,22 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
         this.typeName = typeName;
         this.returnType = Object.class.equals(this.getMappedClass())
-            ? new ArrayReturnType<>()
-            : new ArrayReturnType<>(this.getMappedClass());
+            ? new ArrayReturnType()
+            : new ArrayReturnType(this.getMappedClass());
         return this;
     }
 
     public ParameterOutput<T> withStruct(String typeName) {
 
         this.typeName = typeName;
-        this.returnType = new StructReturnType<>(this.mapper);
+        this.returnType = new StructReturnType(this.mapper);
         return this;
     }
 
     public ParameterOutput<T> withStructArray(String typeName) {
 
         this.typeName = typeName;
-        this.returnType = new StructArrayReturnType<>(this.mapper);
+        this.returnType = new StructArrayReturnType(this.mapper);
         return this;
     }
 
@@ -75,9 +75,9 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
             var sqlReturnType = this.sqlReturnType();
 
-            return sqlReturnType instanceof StructReturnType<?> structReturnType
+            return sqlReturnType instanceof StructReturnType structReturnType
                 ? structReturnType.convertStruct(connection, (Struct) value)
-                : ((AbstractReturnType<?>) sqlReturnType).convertArray(connection, (Array) value);
+                : ((AbstractReturnType) sqlReturnType).convertArray(connection, (Array) value);
         } catch (Exception ex) {
 
             return null;

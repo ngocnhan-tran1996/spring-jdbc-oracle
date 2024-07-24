@@ -12,7 +12,7 @@ class ArrayReturnTypeTest {
     @Test
     void convert_struct_always_throw_exception() {
 
-        var returnType = new ArrayReturnType<>();
+        var returnType = new ArrayReturnType();
 
         assertThatExceptionOfType(UnsupportedOperationException.class)
             .isThrownBy(() -> returnType.convertStruct(null, null));

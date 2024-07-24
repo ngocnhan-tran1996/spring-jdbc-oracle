@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Struct;
 
-class StructArrayReturnType<T> extends ArrayReturnType<T> {
+class StructArrayReturnType extends ArrayReturnType {
 
     private final Mapper mapper;
 
@@ -17,7 +17,7 @@ class StructArrayReturnType<T> extends ArrayReturnType<T> {
     }
 
     @Override
-    protected T convertStruct(Connection connection, Struct struct) {
+    protected Object convertStruct(Connection connection, Struct struct) {
 
         return this.mapper.fromStruct(connection, struct);
     }
@@ -44,9 +44,7 @@ class StructArrayReturnType<T> extends ArrayReturnType<T> {
             throw new ValueException("Expected STRUCT but got '%s'".formatted(className));
         }
 
-        return super.getTargetType() == null
-            ? values
-            : super.arrayToCollection(values);
+        return values;
     }
 
 }

@@ -8,7 +8,7 @@ import java.sql.Struct;
 import java.sql.Types;
 import org.springframework.jdbc.core.SqlReturnType;
 
-abstract class AbstractReturnType<T> implements SqlReturnType {
+abstract class AbstractReturnType implements SqlReturnType {
 
     @Override
     public Object getTypeValue(CallableStatement cs, int paramIndex, int sqlType, String typeName)
@@ -28,7 +28,7 @@ abstract class AbstractReturnType<T> implements SqlReturnType {
             : this.convertArray(cs.getConnection(), array);
     }
 
-    protected abstract T convertStruct(Connection connection, Struct struct);
+    protected abstract Object convertStruct(Connection connection, Struct struct);
 
     protected abstract Object convertArray(Connection connection, Array array) throws SQLException;
 

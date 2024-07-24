@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.springframework.core.CollectionFactory;
 
-class ArrayReturnType<T> extends AbstractReturnType<T> {
+class ArrayReturnType extends AbstractReturnType {
 
     private final Class<?> targetType;
 
@@ -31,7 +31,7 @@ class ArrayReturnType<T> extends AbstractReturnType<T> {
     }
 
     @Override
-    protected T convertStruct(Connection connection, Struct struct) {
+    protected Object convertStruct(Connection connection, Struct struct) {
 
         throw new UnsupportedOperationException("not implement");
     }
