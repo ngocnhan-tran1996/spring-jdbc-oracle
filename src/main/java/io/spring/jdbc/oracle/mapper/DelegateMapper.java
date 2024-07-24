@@ -1,6 +1,7 @@
 package io.spring.jdbc.oracle.mapper;
 
 import io.spring.jdbc.oracle.accessor.ClassRecord;
+import io.spring.jdbc.oracle.converter.OracleConverters;
 import java.sql.Connection;
 import java.sql.Struct;
 import java.util.Map;
@@ -39,6 +40,11 @@ public final class DelegateMapper<T> {
     public Mapper get() {
 
         return this.mapper;
+    }
+
+    public void setConverters(OracleConverters converters) {
+
+        ((BeanPropertyMapper<?>) mapper).setConverters(converters);
     }
 
 }

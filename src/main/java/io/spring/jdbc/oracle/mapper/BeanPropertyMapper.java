@@ -305,7 +305,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
         return this.mappedClass;
     }
 
-    public void setConverters(OracleConverters converters) {
+    void setConverters(OracleConverters converters) {
 
         if (converters != null) {
 
