@@ -1,5 +1,7 @@
 package io.spring.jdbc.oracle.parameter.output;
 
+import static io.spring.jdbc.oracle.utils.Strings.NOT_NULL;
+
 import io.spring.jdbc.oracle.accessor.ParameterAccessor;
 import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.mapper.DelegateMapper;
@@ -60,7 +62,7 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
         if (Strings.isBlank(this.typeName)) {
 
-            throw new ValueException(Strings.NOT_NULL.formatted("returnType"));
+            throw new ValueException(NOT_NULL.formatted("returnType"));
         }
 
         return new SqlOutParameter(
