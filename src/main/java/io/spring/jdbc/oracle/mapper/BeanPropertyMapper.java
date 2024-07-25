@@ -149,7 +149,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
 
                 case STRUCT_ARRAY -> {
 
-                    propertyType = MapperUtils.extractClass(
+                    propertyType = MapperUtils.extractClassFromArray(
                         bw.getPropertyTypeDescriptor(fieldName)
                     );
                     yield ParameterInput.withParameterName(fieldName, (Class<Object>) propertyType)
@@ -284,7 +284,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
 
             case STRUCT_ARRAY -> ParameterOutput.withParameterName(
                     fieldName,
-                    MapperUtils.extractClass(typeDescriptor)
+                    MapperUtils.extractClassFromArray(typeDescriptor)
                 )
                 .withStructArray(typeProperty.getArrayName())
                 .convert(connection, rawValue);

@@ -31,7 +31,7 @@ public final class MapperUtils {
             .orElse(null);
     }
 
-    public static Class<?> extractClass(TypeDescriptor typeDescriptor) {
+    public static Class<?> extractClassFromArray(TypeDescriptor typeDescriptor) {
 
         var resolvableType = Objects.requireNonNull(
                 typeDescriptor,

@@ -16,7 +16,7 @@ class ParameterAccessorTest {
     @Test
     void throw_exception_when_parameterName_is_blank() {
 
-        var msg = NOT_BLANK.formatted("parameter ");
+        var msg = NOT_BLANK.formatted("parameter");
 
         assertThatExceptionOfType(ValueException.class)
             .isThrownBy(() -> new ParameterAccessorImpl<>(null, Object.class))
@@ -41,7 +41,6 @@ class ParameterAccessorTest {
     @Test
     void success_initial_when_parameterName_and_class_are_not_null() {
 
-        // assert
         var output = new ParameterAccessorImpl<>("X", Object.class);
         assertThat(output.getParameterName())
             .isEqualTo("X");

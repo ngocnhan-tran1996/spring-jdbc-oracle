@@ -11,13 +11,13 @@ import org.junit.jupiter.api.Test;
 class MatchersTest {
 
     @Test
-    void when_input_is_true() {
+    void return_false_when_input_is_true() {
 
         assertFalse(Matchers.not(true));
     }
 
     @Test
-    void when_input_is_false() {
+    void return_true_when_input_is_false() {
 
         assertTrue(Matchers.not(false));
     }
