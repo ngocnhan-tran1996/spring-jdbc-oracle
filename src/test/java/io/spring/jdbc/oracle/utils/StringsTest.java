@@ -53,6 +53,7 @@ class StringsTest {
         assertFalse(Strings.equalsIgnoreCase("X", null));
 
         assertTrue(Strings.equalsIgnoreCase("X", "x"));
+        assertTrue(Strings.equalsIgnoreCase("X", "X"));
     }
 
 }

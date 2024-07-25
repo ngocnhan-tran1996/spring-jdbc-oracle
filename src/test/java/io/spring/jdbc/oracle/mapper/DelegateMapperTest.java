@@ -73,7 +73,7 @@ class DelegateMapperTest extends SetupTestData {
         mapper.setConverters(new OracleConverters() {
 
             @Override
-            public void addGenericConverter(GenericOracleConverter<?, ?> converterFactory) {
+            public void addGenericConverter(GenericOracleConverter converterFactory) {
 
             }
 

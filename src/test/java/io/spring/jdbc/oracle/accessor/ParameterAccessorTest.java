@@ -1,5 +1,6 @@
 package io.spring.jdbc.oracle.accessor;
 
+import static io.spring.jdbc.oracle.utils.Strings.NOT_BLANK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
@@ -13,47 +14,48 @@ import org.junit.jupiter.api.Test;
 class ParameterAccessorTest {
 
     @Test
-    void when_parameterName_is_blank() {
+    void throw_exception_when_parameterName_is_blank() {
+
+        var msg = NOT_BLANK.formatted("parameter ");
 
         assertThatExceptionOfType(ValueException.class)
-            .isThrownBy(() -> new ParameterAccessorImpl<>(null, Record.class));
+            .isThrownBy(() -> new ParameterAccessorImpl<>(null, Object.class))
+            .withMessage(msg);
 
         assertThatExceptionOfType(ValueException.class)
-            .isThrownBy(() -> new ParameterAccessorImpl<>("", Record.class));
+            .isThrownBy(() -> new ParameterAccessorImpl<>("", Object.class))
+            .withMessage(msg);
 
         assertThatExceptionOfType(ValueException.class)
-            .isThrownBy(() -> new ParameterAccessorImpl<>("       ", Record.class));
+            .isThrownBy(() -> new ParameterAccessorImpl<>("       ", Object.class))
+            .withMessage(msg);
     }
 
     @Test
-    void when_class_is_not_null() {
-
-        // arrange
-        var x = "X";
-        var parameterName = "X";
-        var clazz = Object.class;
-
-        // assert
-        var output = new ParameterAccessorImpl<>(x, Object.class);
-        assertThat(output.getParameterName())
-            .isEqualTo(parameterName);
-        assertThat(output.getMappedClass())
-            .isEqualTo(clazz);
-    }
-
-    @Test
-    void when_class_is_null() {
+    void throw_exception_when_class_is_null() {
 
         assertThatNullPointerException()
-            .isThrownBy(() -> new ParameterAccessorImpl<>("x", null));
+            .isThrownBy(() -> new ParameterAccessorImpl<>("X", null));
+    }
+
+    @Test
+    void success_initial_when_parameterName_and_class_are_not_null() {
+
+        // assert
+        var output = new ParameterAccessorImpl<>("X", Object.class);
+        assertThat(output.getParameterName())
+            .isEqualTo("X");
+        assertThat(output.getMappedClass())
+            .isEqualTo(Object.class);
     }
 
     static class ParameterAccessorImpl<T> extends ParameterAccessor<T> {
 
-        public ParameterAccessorImpl(String parameterName, Class<T> mappedClass) {
+        ParameterAccessorImpl(String parameterName, Class<T> mappedClass) {
 
             super(parameterName, mappedClass);
         }
+
     }
 
 }
