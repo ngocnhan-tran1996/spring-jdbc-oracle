@@ -1,10 +1,11 @@
 package io.spring.jdbc.oracle.converter.support;
 
+import io.spring.jdbc.oracle.converter.ConvertKey;
 import io.spring.jdbc.oracle.converter.GenericOracleConverter;
 import java.util.Optional;
 import org.springframework.core.convert.TypeDescriptor;
 
-final class NumberToStringGenericOracleConverter implements GenericOracleConverter<Number, String> {
+final class NumberToStringGenericOracleConverter implements GenericOracleConverter {
 
     @Override
     public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
@@ -14,9 +15,15 @@ final class NumberToStringGenericOracleConverter implements GenericOracleConvert
     }
 
     @Override
-    public String convert(Number source) {
+    public ConvertKey getConvertKey() {
 
-        return Optional.ofNullable(source)
+        return new ConvertKey(Number.class, String.class);
+    }
+
+    @Override
+    public Object convert(Object source) {
+
+        return Optional.ofNullable((Number) source)
             .map(Number::toString)
             .orElse(null);
     }

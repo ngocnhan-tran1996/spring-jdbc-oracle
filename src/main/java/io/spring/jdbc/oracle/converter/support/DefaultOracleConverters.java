@@ -2,6 +2,7 @@ package io.spring.jdbc.oracle.converter.support;
 
 import static io.spring.jdbc.oracle.utils.Strings.NOT_NULL;
 
+import io.spring.jdbc.oracle.converter.ConvertKey;
 import io.spring.jdbc.oracle.converter.GenericOracleConverter;
 import io.spring.jdbc.oracle.converter.OracleConverter;
 import io.spring.jdbc.oracle.converter.OracleConverters;
@@ -43,6 +44,9 @@ public final class DefaultOracleConverters implements OracleConverters {
         converters.addGenericConverter(
             new CollectionToCollectionGenericOracleConverter(converters)
         );
+        converters.addGenericConverter(
+            new ArrayToCollectionGenericOracleConverter(converters)
+        );
 
         converters.addConverter(new LocalDatetimeToTimestampConverter());
         converters.addConverter(new TimestampToLocalDatetimeConverter());
@@ -67,30 +71,27 @@ public final class DefaultOracleConverters implements OracleConverters {
     }
 
     @Override
-    public void addGenericConverter(GenericOracleConverter<?, ?> genericOracleConverter) {
+    public void addGenericConverter(GenericOracleConverter genericOracleConverter) {
 
         if (genericOracleConverter == null) {
 
             throw new ValueException(NOT_NULL.formatted("GenericOracleConverter"));
         }
 
-        var converterKey = this.getConvertKey(
-            genericOracleConverter.getClass(),
-            GenericOracleConverter.class
-        );
-        if (converterKey == null) {
+        var convertKey = genericOracleConverter.getConvertKey();
+        if (convertKey == null) {
 
             throw new ValueException(DETERMINE_EXCEPTION.formatted(genericOracleConverter));
         }
 
         var existConvertKey = this.genericConverters.stream()
-            .anyMatch(genericConverter -> genericConverter.existConvertKey(converterKey));
+            .anyMatch(genericConverter -> genericConverter.existConvertKey(convertKey));
         if (existConvertKey) {
 
             return;
         }
 
-        this.genericConverters.add(new ConvertAdapter(genericOracleConverter, converterKey));
+        this.genericConverters.add(new ConvertAdapter(genericOracleConverter, convertKey));
     }
 
     @Override
@@ -101,13 +102,13 @@ public final class DefaultOracleConverters implements OracleConverters {
             throw new ValueException(NOT_NULL.formatted("OracleConverter"));
         }
 
-        var converterKey = this.getConvertKey(converter.getClass(), OracleConverter.class);
-        if (converterKey == null) {
+        var convertKey = this.getConvertKey(converter.getClass());
+        if (convertKey == null) {
 
             throw new ValueException(DETERMINE_EXCEPTION.formatted(converter));
         }
 
-        this.converterCaches.put(converterKey, new ConvertAdapter(converter));
+        this.converterCaches.put(convertKey, new ConvertAdapter(converter));
     }
 
     @Override
@@ -168,10 +169,10 @@ public final class DefaultOracleConverters implements OracleConverters {
         return ConvertAdapter.NONE;
     }
 
-    private ConvertKey getConvertKey(Class<?> converterClass, Class<?> genericClass) {
+    private ConvertKey getConvertKey(Class<?> converterClass) {
 
         ResolvableType resolvableType = ResolvableType.forClass(converterClass)
-            .as(genericClass);
+            .as(OracleConverter.class);
         ResolvableType[] generics = resolvableType.getGenerics();
         if (generics.length < 2) {
 
@@ -271,22 +272,17 @@ public final class DefaultOracleConverters implements OracleConverters {
         }
     }
 
-    private record ConvertKey(Class<?> sourceType, Class<?> targetType) {
-
-    }
-
     private static final class ConvertAdapter {
 
         private static final ConvertAdapter NONE = new ConvertAdapter(new NoneConverter());
 
-        private final GenericOracleConverter<Object, Object> converterFactory;
+        private final GenericOracleConverter genericOracleConverter;
         private final ConvertKey converterKey;
         private final OracleConverter<Object, Object> converter;
 
-        @SuppressWarnings("unchecked")
-        ConvertAdapter(GenericOracleConverter<?, ?> converterFactory, ConvertKey converterKey) {
+        ConvertAdapter(GenericOracleConverter genericOracleConverter, ConvertKey converterKey) {
 
-            this.converterFactory = (GenericOracleConverter<Object, Object>) converterFactory;
+            this.genericOracleConverter = genericOracleConverter;
             this.converterKey = converterKey;
             this.converter = null;
         }
@@ -294,15 +290,15 @@ public final class DefaultOracleConverters implements OracleConverters {
         @SuppressWarnings("unchecked")
         ConvertAdapter(OracleConverter<?, ?> converter) {
 
-            this.converterFactory = null;
+            this.genericOracleConverter = null;
             this.converterKey = null;
             this.converter = (OracleConverter<Object, Object>) converter;
         }
 
         boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
 
-            return this.converterFactory != null
-                && this.converterFactory.matches(sourceType, targetType);
+            return this.genericOracleConverter != null
+                && this.genericOracleConverter.matches(sourceType, targetType);
         }
 
         boolean existConvertKey(ConvertKey converterKey) {
@@ -313,9 +309,9 @@ public final class DefaultOracleConverters implements OracleConverters {
 
         OracleConverter<Object, Object> getConverter() {
 
-            return this.converterFactory == null
+            return this.genericOracleConverter == null
                 ? this.converter
-                : this.converterFactory;
+                : this.genericOracleConverter;
         }
 
     }

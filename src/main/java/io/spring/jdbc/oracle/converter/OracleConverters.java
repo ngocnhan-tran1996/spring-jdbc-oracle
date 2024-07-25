@@ -4,7 +4,7 @@ import org.springframework.core.convert.TypeDescriptor;
 
 public interface OracleConverters {
 
-    void addGenericConverter(GenericOracleConverter<?, ?> converterFactory);
+    void addGenericConverter(GenericOracleConverter converterFactory);
 
     void addConverter(OracleConverter<?, ?> converter);
 

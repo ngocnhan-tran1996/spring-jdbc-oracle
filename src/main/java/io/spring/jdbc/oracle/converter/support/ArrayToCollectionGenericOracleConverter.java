@@ -3,20 +3,35 @@ package io.spring.jdbc.oracle.converter.support;
 import io.spring.jdbc.oracle.converter.ConvertKey;
 import io.spring.jdbc.oracle.converter.GenericOracleConverter;
 import io.spring.jdbc.oracle.converter.OracleConverters;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.convert.TypeDescriptor;
 
-final class CollectionToCollectionGenericOracleConverter implements GenericOracleConverter {
+final class ArrayToCollectionGenericOracleConverter implements GenericOracleConverter {
 
     private final OracleConverters oracleConverters;
     private TypeDescriptor sourceType;
     private TypeDescriptor targetType;
 
-    CollectionToCollectionGenericOracleConverter(OracleConverters oracleConverters) {
+    ArrayToCollectionGenericOracleConverter(OracleConverters oracleConverters) {
 
         this.oracleConverters = oracleConverters;
+    }
+
+    private static Collection<Object> createCollection(
+        Class<?> targetType,
+        Class<?> elementType,
+        int length) {
+
+        if (targetType.isInterface() && targetType.isAssignableFrom(ArrayList.class)) {
+
+            return new ArrayList<>(length);
+        }
+
+        return CollectionFactory.createCollection(targetType, elementType, length);
     }
 
     @Override
@@ -25,14 +40,14 @@ final class CollectionToCollectionGenericOracleConverter implements GenericOracl
         this.sourceType = sourceType;
         this.targetType = targetType;
 
-        return Collection.class.isAssignableFrom(sourceType.getType())
+        return Object[].class.isAssignableFrom(sourceType.getType())
             && Collection.class.isAssignableFrom(targetType.getType());
     }
 
     @Override
     public ConvertKey getConvertKey() {
 
-        return new ConvertKey(Collection.class, Collection.class);
+        return new ConvertKey(Object[].class, Collection.class);
     }
 
     @Override
@@ -43,25 +58,30 @@ final class CollectionToCollectionGenericOracleConverter implements GenericOracl
             return null;
         }
 
-        var sourceCollection = (Collection<?>) source;
+        int length = Array.getLength(source);
         var elementTypeDescriptor = this.targetType.getElementTypeDescriptor();
-        var target = CollectionFactory.createCollection(
+        var target = createCollection(
             this.targetType.getType(),
             Optional.ofNullable(elementTypeDescriptor)
                 .map(TypeDescriptor::getType)
                 .orElse(null),
-            sourceCollection.size()
-        );
+            length);
 
         if (elementTypeDescriptor == null) {
 
-            target.addAll(sourceCollection);
+            for (int i = 0; i < length; i++) {
+
+                Object sourceElement = Array.get(source, i);
+                target.add(sourceElement);
+            }
+
             return target;
         }
 
-        for (Object sourceElement : sourceCollection) {
+        for (int i = 0; i < length; i++) {
 
-            Object targetElement = this.oracleConverters.convert(
+            var sourceElement = Array.get(source, i);
+            var targetElement = this.oracleConverters.convert(
                 sourceElement,
                 this.sourceType.elementTypeDescriptor(sourceElement),
                 elementTypeDescriptor
