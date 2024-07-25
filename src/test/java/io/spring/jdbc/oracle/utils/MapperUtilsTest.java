@@ -64,7 +64,7 @@ class MapperUtilsTest {
     class ExtractClassFromArray {
 
         @Test
-        void throw_exception_when_input_is_null_or_input_is_not_array_type() {
+        void throw_exception_when_input_is_either_null_or_not_array_type() {
 
             assertThatExceptionOfType(NullPointerException.class)
                 .isThrownBy(() -> MapperUtils.extractClassFromArray(null));
