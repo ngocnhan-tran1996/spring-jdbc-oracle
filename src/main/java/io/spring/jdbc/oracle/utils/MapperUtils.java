@@ -39,11 +39,11 @@ public final class MapperUtils {
             )
             .getResolvableType();
 
-        resolvableType = resolvableType.isArray()
+        var cls = resolvableType.isArray()
             ? resolvableType.getComponentType()
             : resolvableType.asCollection()
                 .getGenerics()[0];
-        return resolvableType.resolve();
+        return cls.resolve();
     }
 
     public static Object convertValue(TypeProperty typeProperty, Object value) {

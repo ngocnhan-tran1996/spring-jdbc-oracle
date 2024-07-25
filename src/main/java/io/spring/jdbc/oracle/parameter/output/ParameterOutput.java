@@ -23,11 +23,6 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
         this.mapper = DelegateMapper.newInstance(mappedClass).get();
     }
 
-    public static ParameterOutput<Object> withParameterName(String parameterName) {
-
-        return new ParameterOutput<>(parameterName, Object.class);
-    }
-
     public static <T> ParameterOutput<T> withParameterName(
         String parameterName,
         Class<T> mappedClass) {
@@ -35,12 +30,15 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
         return new ParameterOutput<>(parameterName, mappedClass);
     }
 
+    public static ParameterOutput<Object> withParameterName(String parameterName) {
+
+        return withParameterName(parameterName, Object.class);
+    }
+
     public ParameterOutput<T> withArray(String typeName) {
 
         this.typeName = typeName;
-        this.returnType = Object.class.equals(this.getMappedClass())
-            ? new ArrayReturnType()
-            : new ArrayReturnType(this.getMappedClass());
+        this.returnType = new ArrayReturnType();
         return this;
     }
 
@@ -60,9 +58,13 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
     public SqlOutParameter sqlOutParameter() {
 
-        this.validateReturnType();
+        if (Strings.isBlank(this.typeName)) {
+
+            throw new ValueException(Strings.NOT_NULL.formatted("returnType"));
+        }
+
         return new SqlOutParameter(
-            getParameterName(),
+            super.getParameterName(),
             this.returnType.sqlType(),
             this.typeName.toUpperCase(),
             this.returnType
@@ -88,15 +90,6 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
     public SqlReturnType sqlReturnType() {
 
         return this.returnType;
-    }
-
-    private void validateReturnType() {
-
-        if (Strings.isBlank(this.typeName)) {
-
-            throw new ValueException(Strings.NOT_NULL.formatted("returnType"));
-        }
-
     }
 
 }
