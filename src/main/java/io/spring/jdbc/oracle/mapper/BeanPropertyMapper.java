@@ -35,8 +35,8 @@ class BeanPropertyMapper<S> extends AbstractMapper {
 
     private final Map<String, TypeProperty> readProperties = new LinkedCaseInsensitiveMap<>();
     private final Map<String, TypeProperty> writeProperties = new LinkedCaseInsensitiveMap<>();
-    private final List<MapperProperty> mapperProperties;
     private final Class<S> mappedClass;
+    private final List<MapperProperty> mapperProperties;
     private OracleConverters converters = DefaultOracleConverters.INSTANCE;
 
     BeanPropertyMapper(Class<S> mappedClass) {
