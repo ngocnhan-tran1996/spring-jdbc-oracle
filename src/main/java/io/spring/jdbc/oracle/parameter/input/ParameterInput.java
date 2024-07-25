@@ -1,11 +1,12 @@
 package io.spring.jdbc.oracle.parameter.input;
 
+import static io.spring.jdbc.oracle.utils.Strings.NOT_NULL;
+
 import io.spring.jdbc.oracle.accessor.ParameterAccessor;
 import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.mapper.DelegateMapper;
 import io.spring.jdbc.oracle.mapper.Mapper;
 import io.spring.jdbc.oracle.parameter.output.ParameterOutput;
-import io.spring.jdbc.oracle.utils.Strings;
 import java.sql.Connection;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
             var value = values == null || values.isEmpty()
                 ? null
-                : new ArrayList<>(values).get(0);
+                : new ArrayList<>(values).getFirst();
             this.typeValue = new StructTypeValue<>(
                 structTypeName,
                 value,
@@ -184,7 +185,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
             if (this.type == null) {
 
-                throw new ValueException(Strings.NOT_NULL.formatted("typeValue"));
+                throw new ValueException(NOT_NULL.formatted("typeValue"));
             }
 
         }

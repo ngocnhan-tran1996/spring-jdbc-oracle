@@ -1,10 +1,11 @@
 package io.spring.jdbc.oracle.converter.support;
 
+import static io.spring.jdbc.oracle.utils.Strings.NOT_NULL;
+
 import io.spring.jdbc.oracle.converter.GenericOracleConverter;
 import io.spring.jdbc.oracle.converter.OracleConverter;
 import io.spring.jdbc.oracle.converter.OracleConverters;
 import io.spring.jdbc.oracle.exception.ValueException;
-import io.spring.jdbc.oracle.utils.Strings;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
@@ -70,7 +71,7 @@ public final class DefaultOracleConverters implements OracleConverters {
 
         if (genericOracleConverter == null) {
 
-            throw new ValueException(Strings.NOT_NULL.formatted("GenericOracleConverter"));
+            throw new ValueException(NOT_NULL.formatted("GenericOracleConverter"));
         }
 
         var converterKey = this.getConvertKey(
@@ -97,7 +98,7 @@ public final class DefaultOracleConverters implements OracleConverters {
 
         if (converter == null) {
 
-            throw new ValueException(Strings.NOT_NULL.formatted("OracleConverter"));
+            throw new ValueException(NOT_NULL.formatted("OracleConverter"));
         }
 
         var converterKey = this.getConvertKey(converter.getClass(), OracleConverter.class);

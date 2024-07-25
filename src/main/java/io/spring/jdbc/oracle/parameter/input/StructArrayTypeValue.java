@@ -1,5 +1,8 @@
 package io.spring.jdbc.oracle.parameter.input;
 
+import static io.spring.jdbc.oracle.utils.Strings.NOT_BLANK;
+import static io.spring.jdbc.oracle.utils.Strings.NOT_NULL;
+
 import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.mapper.Mapper;
 import io.spring.jdbc.oracle.utils.Strings;
@@ -22,10 +25,17 @@ class StructArrayTypeValue<T> extends ArrayTypeValue<T> {
         Mapper mapper) {
 
         super(arrayTypeName, values);
+
         if (Strings.isBlank(structTypeName)) {
 
-            throw new ValueException(Strings.NOT_BLANK.formatted("structTypeName"));
+            throw new ValueException(NOT_BLANK.formatted("structTypeName"));
         }
+
+        if (mapper == null) {
+
+            throw new ValueException(NOT_NULL.formatted("mapper"));
+        }
+
         this.structTypeName = structTypeName.toUpperCase();
         this.mapper = mapper;
     }
