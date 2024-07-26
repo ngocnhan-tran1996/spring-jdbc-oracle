@@ -92,6 +92,20 @@ class DelegateMapperTest {
             );
     }
 
+    void fromStruct_return_null_if_convert_process_is_failed(DelegateMapper<?> mapper) {
+
+        var output = mapper.fromStruct(connection, null);
+        assertThat(output)
+            .isNull();
+    }
+
+    void toStruct_return_null_if_convert_process_is_failed(DelegateMapper<?> mapper) {
+
+        var output = mapper.toStruct(connection, PERSON_TYPE, null);
+        assertThat(output)
+            .isNull();
+    }
+
     public record LocalDateTimeToLocalDate() implements OracleConverter<LocalDateTime, LocalDate> {
 
         @Override
@@ -116,7 +130,7 @@ class DelegateMapperTest {
     class PojoClass {
 
         @Test
-        void createStruct() throws SQLException {
+        void toStruct() throws SQLException {
 
             // arrange
             var mapper = DelegateMapper.newInstance(Person.class);
@@ -145,14 +159,7 @@ class DelegateMapperTest {
             assertThat(output)
                 .isEqualTo(expectOutput);
 
-            // always return null if convert process is fail
-            output = mapper.toStruct(
-                connection,
-                "EXAMPLE_PACK.CUSTOMER",
-                null
-            );
-            assertThat(output)
-                .isNull();
+            toStruct_return_null_if_convert_process_is_failed(mapper);
         }
 
         @Test
@@ -183,10 +190,7 @@ class DelegateMapperTest {
                     )
                 );
 
-            // always return null if convert process is fail
-            output = mapper.fromStruct(connection, null);
-            assertThat(output)
-                .isNull();
+            fromStruct_return_null_if_convert_process_is_failed(mapper);
         }
 
         @Test
@@ -215,11 +219,6 @@ class DelegateMapperTest {
                         Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIN))
                     )
                 );
-
-            // always return null if convert process is fail
-            output = mapper.fromStruct(connection, null);
-            assertThat(output)
-                .isNull();
         }
 
         @Getter
@@ -240,7 +239,7 @@ class DelegateMapperTest {
     class RecordClass {
 
         @Test
-        void createStruct() throws SQLException {
+        void toStruct() throws SQLException {
 
             // arrange
             var mapper = DelegateMapper.newInstance(Person.class);
@@ -269,14 +268,7 @@ class DelegateMapperTest {
             assertThat(output)
                 .isEqualTo(expectOutput);
 
-            // always return null if convert process is fail
-            output = mapper.toStruct(
-                connection,
-                "EXAMPLE_PACK.CUSTOMER",
-                null
-            );
-            assertThat(output)
-                .isNull();
+            toStruct_return_null_if_convert_process_is_failed(mapper);
         }
 
         @Test
@@ -307,10 +299,7 @@ class DelegateMapperTest {
                     )
                 );
 
-            // always return null if convert process is fail
-            output = mapper.fromStruct(connection, null);
-            assertThat(output)
-                .isNull();
+            fromStruct_return_null_if_convert_process_is_failed(mapper);
         }
 
         @Test
@@ -339,11 +328,6 @@ class DelegateMapperTest {
                         Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIN))
                     )
                 );
-
-            // always return null if convert process is fail
-            output = mapper.fromStruct(connection, null);
-            assertThat(output)
-                .isNull();
         }
 
         record Person(
