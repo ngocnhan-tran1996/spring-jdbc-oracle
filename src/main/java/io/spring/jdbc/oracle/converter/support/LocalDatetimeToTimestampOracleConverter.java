@@ -5,7 +5,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-final class LocalDatetimeToTimestampOracleConverter implements OracleConverter<LocalDateTime, Timestamp> {
+final class LocalDatetimeToTimestampOracleConverter implements
+    OracleConverter<LocalDateTime, Timestamp> {
 
     @Override
     public Timestamp convert(LocalDateTime source) {

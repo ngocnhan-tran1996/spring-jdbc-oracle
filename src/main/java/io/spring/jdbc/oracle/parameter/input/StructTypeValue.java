@@ -1,12 +1,9 @@
 package io.spring.jdbc.oracle.parameter.input;
 
-import static io.spring.jdbc.oracle.utils.Strings.NOT_BLANK;
-import static io.spring.jdbc.oracle.utils.Strings.NOT_NULL;
-
-import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.mapper.Mapper;
-import io.spring.jdbc.oracle.utils.Strings;
+import io.spring.jdbc.oracle.utils.Validators;
 import java.sql.Connection;
+import java.sql.Struct;
 
 class StructTypeValue<T> extends AbstractTypeValue {
 
@@ -14,21 +11,17 @@ class StructTypeValue<T> extends AbstractTypeValue {
     private final T value;
     private final Mapper mapper;
 
+    StructTypeValue(String structTypeName, Mapper mapper) {
+
+        this(structTypeName, null, mapper);
+    }
+
     StructTypeValue(String structTypeName, T value, Mapper mapper) {
 
-        if (Strings.isBlank(structTypeName)) {
-
-            throw new ValueException(NOT_BLANK.formatted("structTypeName"));
-        }
-
-        if (mapper == null) {
-
-            throw new ValueException(NOT_NULL.formatted("mapper"));
-        }
-
-        this.structTypeName = structTypeName.toUpperCase();
+        this.structTypeName = Validators.requireNotNull(structTypeName, "structTypeName")
+            .toUpperCase();
         this.value = value;
-        this.mapper = mapper;
+        this.mapper = Validators.requireNotNull(mapper, "mapper");
     }
 
     @Override
@@ -40,7 +33,12 @@ class StructTypeValue<T> extends AbstractTypeValue {
     @Override
     protected Object createTypeValue(Connection connection, String typeName) {
 
-        return this.mapper.toStruct(connection, this.structTypeName, this.value);
+        return this.createTypeValue(connection, this.value);
+    }
+
+    protected Struct createTypeValue(Connection connection, Object value) {
+
+        return this.mapper.toStruct(connection, this.structTypeName, value);
     }
 
 }

@@ -1,6 +1,5 @@
 package io.spring.jdbc.oracle.parameter.input;
 
-import io.spring.jdbc.oracle.utils.Strings;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.springframework.jdbc.core.support.AbstractSqlTypeValue;
@@ -11,8 +10,7 @@ abstract class AbstractTypeValue extends AbstractSqlTypeValue {
     protected Object createTypeValue(Connection connection, int sqlType, String typeName)
         throws SQLException {
 
-        var findTypeName = Strings.firstNoneBlank(this.getTypeName(), typeName);
-        return this.createTypeValue(connection, findTypeName);
+        return this.createTypeValue(connection, this.getTypeName());
     }
 
     protected abstract String getTypeName();

@@ -1,11 +1,6 @@
 package io.spring.jdbc.oracle.parameter.input;
 
-import static io.spring.jdbc.oracle.utils.Strings.NOT_BLANK;
-import static io.spring.jdbc.oracle.utils.Strings.NOT_NULL;
-
-import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.mapper.Mapper;
-import io.spring.jdbc.oracle.utils.Strings;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Struct;
@@ -15,8 +10,7 @@ import oracle.jdbc.OracleConnection;
 
 class StructArrayTypeValue<T> extends ArrayTypeValue<T> {
 
-    private final String structTypeName;
-    private final Mapper mapper;
+    private final StructTypeValue<T> structTypeValue;
 
     StructArrayTypeValue(
         String arrayTypeName,
@@ -25,19 +19,7 @@ class StructArrayTypeValue<T> extends ArrayTypeValue<T> {
         Mapper mapper) {
 
         super(arrayTypeName, values);
-
-        if (Strings.isBlank(structTypeName)) {
-
-            throw new ValueException(NOT_BLANK.formatted("structTypeName"));
-        }
-
-        if (mapper == null) {
-
-            throw new ValueException(NOT_NULL.formatted("mapper"));
-        }
-
-        this.structTypeName = structTypeName.toUpperCase();
-        this.mapper = mapper;
+        this.structTypeValue = new StructTypeValue<>(structTypeName, mapper);
     }
 
     @Override
@@ -54,7 +36,7 @@ class StructArrayTypeValue<T> extends ArrayTypeValue<T> {
 
         for (int i = 0; i < size; i++) {
 
-            structs[i] = this.mapper.toStruct(connection, this.structTypeName, values.get(i));
+            structs[i] = this.structTypeValue.createTypeValue(connection, values.get(i));
         }
 
         return connection

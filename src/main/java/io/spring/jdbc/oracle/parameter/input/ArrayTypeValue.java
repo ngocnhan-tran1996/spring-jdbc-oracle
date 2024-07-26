@@ -1,9 +1,6 @@
 package io.spring.jdbc.oracle.parameter.input;
 
-import static io.spring.jdbc.oracle.utils.Strings.NOT_BLANK;
-
-import io.spring.jdbc.oracle.exception.ValueException;
-import io.spring.jdbc.oracle.utils.Strings;
+import io.spring.jdbc.oracle.utils.Validators;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -16,12 +13,8 @@ class ArrayTypeValue<T> extends AbstractTypeValue {
 
     ArrayTypeValue(String arrayTypeName, Collection<T> values) {
 
-        if (Strings.isBlank(arrayTypeName)) {
-
-            throw new ValueException(NOT_BLANK.formatted("arrayTypeName"));
-        }
-
-        this.arrayTypeName = arrayTypeName.toUpperCase();
+        this.arrayTypeName = Validators.requireNotBank(arrayTypeName, "arrayTypeName")
+            .toUpperCase();
         this.values = values;
     }
 
