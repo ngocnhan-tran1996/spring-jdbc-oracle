@@ -18,15 +18,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class MapperUtilsTest {
+class MappersTest {
 
     @Nested
-    class ToArrayOrNull {
+    class ToArray {
 
         @Test
         void return_null_when_input_is_null() {
 
-            assertThat(MapperUtils.toArrayOrNull(null))
+            assertThat(Mappers.toArray(null))
                 .isNull();
         }
 
@@ -34,28 +34,27 @@ class MapperUtilsTest {
         void throw_exception_when_input_is_neither_array_nor_collection() {
 
             assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> MapperUtils.toArrayOrNull("null"));
+                .isThrownBy(() -> Mappers.toArray("null"));
 
             assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> MapperUtils.toArrayOrNull(Integer.class));
+                .isThrownBy(() -> Mappers.toArray(Integer.class));
 
             var emptyMap = Collections.emptyMap();
             assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> MapperUtils.toArrayOrNull(emptyMap));
+                .isThrownBy(() -> Mappers.toArray(emptyMap));
         }
 
         @Test
         void return_object_array() {
 
-            assertThat(MapperUtils.toArrayOrNull(Collections.emptyList()))
-                .isEmpty();
+            assertThat(Mappers.toArray(Collections.emptyList()))
+                .isEqualTo(new Object[0]);
 
-            assertThat(MapperUtils.toArrayOrNull(new String[0]))
-                .isEmpty();
+            assertThat(Mappers.toArray(new String[0]))
+                .isEqualTo(new Object[0]);
 
-            assertThat(MapperUtils.toArrayOrNull(List.of(1, "X")))
-                .isNotEmpty()
-                .containsExactly(1, "X");
+            assertThat(Mappers.toArray(List.of(1, "X")))
+                .isEqualTo(new Object[]{1, "X"});
         }
 
     }
@@ -67,35 +66,42 @@ class MapperUtilsTest {
         void throw_exception_when_input_is_either_null_or_not_array_type() {
 
             assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> MapperUtils.extractClassFromArray(null));
+                .isThrownBy(() -> Mappers.extractClassFromArray(null));
 
             var classTypeDescriptor = TypeDescriptor.valueOf(null);
             assertThatExceptionOfType(ArrayIndexOutOfBoundsException.class)
-                .isThrownBy(() -> MapperUtils.extractClassFromArray(classTypeDescriptor));
+                .isThrownBy(() -> Mappers.extractClassFromArray(classTypeDescriptor));
 
             var bigDecimalTypeDescriptor = TypeDescriptor.forObject(BigDecimal.TEN);
             assertThatExceptionOfType(ArrayIndexOutOfBoundsException.class)
-                .isThrownBy(() -> MapperUtils.extractClassFromArray(bigDecimalTypeDescriptor));
+                .isThrownBy(() -> Mappers.extractClassFromArray(bigDecimalTypeDescriptor));
+        }
+
+        @Test
+        void return_null_when_type_class_is_not_determined() {
+
+            assertThat(Mappers.extractClassFromArray(TypeDescriptor.forObject(List.of())))
+                .isNull();
         }
 
         @Test
         void return_type_class() {
 
             var array = TypeDescriptor.array(TypeDescriptor.valueOf(BigDecimal.class));
-            assertThat(MapperUtils.extractClassFromArray(array))
+            assertThat(Mappers.extractClassFromArray(array))
                 .isEqualTo(BigDecimal.class);
 
-            assertThat(MapperUtils.extractClassFromArray(TypeDescriptor.forObject(new Integer[0])))
+            assertThat(Mappers.extractClassFromArray(TypeDescriptor.forObject(new Integer[0])))
                 .isEqualTo(Integer.class);
 
             var collection = TypeDescriptor.collection(
                 List.class,
                 TypeDescriptor.valueOf(String.class)
             );
-            assertThat(MapperUtils.extractClassFromArray(collection))
+            assertThat(Mappers.extractClassFromArray(collection))
                 .isEqualTo(String.class);
 
-            assertThat(MapperUtils.extractClassFromArray(TypeDescriptor.forObject(List.of())))
+            assertThat(Mappers.extractClassFromArray(TypeDescriptor.forObject(List.of())))
                 .isNull();
         }
 
@@ -107,10 +113,10 @@ class MapperUtilsTest {
         @Test
         void return_null_when_method_has_null_value_parameter() {
 
-            assertThat(MapperUtils.convertValue(null, "X"))
+            assertThat(Mappers.convertValue(null, "X"))
                 .isNull();
 
-            assertThat(MapperUtils.convertValue(new TypeProperty(), null))
+            assertThat(Mappers.convertValue(new TypeProperty(), null))
                 .isNull();
         }
 
@@ -121,20 +127,17 @@ class MapperUtilsTest {
             typeProperty.setConverter(NoneConverter.class);
 
             assertThatExceptionOfType(ValueException.class)
-                .isThrownBy(() -> MapperUtils.convertValue(typeProperty, BigDecimal.ONE));
+                .isThrownBy(() -> Mappers.convertValue(typeProperty, BigDecimal.ONE));
         }
 
         @Test
-        void convert_bigDecimal_to_integer() {
+        void convert_BigDecimal_to_integer() {
 
             var typeProperty = new TypeProperty();
             typeProperty.setConverter(BigDecimalToInteger.class);
 
-            assertThat(MapperUtils.convertValue(typeProperty, BigDecimal.ONE))
+            assertThat(Mappers.convertValue(typeProperty, BigDecimal.ONE))
                 .isEqualTo(1);
-
-            assertThat(MapperUtils.convertValue(typeProperty, null))
-                .isNull();
         }
 
         public record BigDecimalToInteger() implements OracleConverter<BigDecimal, Integer> {

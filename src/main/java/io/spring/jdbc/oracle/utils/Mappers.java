@@ -3,7 +3,6 @@ package io.spring.jdbc.oracle.utils;
 import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.mapper.property.TypeProperty;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
@@ -11,12 +10,12 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
-public final class MapperUtils {
+public final class Mappers {
 
-    private MapperUtils() {
+    private Mappers() {
     }
 
-    public static Object[] toArrayOrNull(Object object) {
+    public static Object[] toArray(Object object) {
 
         return Optional.ofNullable(object)
             .map(o -> {
@@ -33,10 +32,7 @@ public final class MapperUtils {
 
     public static Class<?> extractClassFromArray(TypeDescriptor typeDescriptor) {
 
-        var resolvableType = Objects.requireNonNull(
-                typeDescriptor,
-                "STRUCT_ARRAY type is invalid"
-            )
+        var resolvableType = Validators.requireNotNull(typeDescriptor, "TypeDescriptor")
             .getResolvableType();
 
         var cls = resolvableType.isArray()

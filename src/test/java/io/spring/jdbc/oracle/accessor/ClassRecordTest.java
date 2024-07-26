@@ -1,10 +1,10 @@
 package io.spring.jdbc.oracle.accessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import io.spring.jdbc.oracle.exception.ValueException;
 import java.math.BigDecimal;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -16,12 +16,11 @@ class ClassRecordTest {
     @Test
     void throw_exception_when_class_is_null() {
 
-        assertThatNullPointerException()
+        assertThatExceptionOfType(ValueException.class)
             .isThrownBy(() -> new ClassRecord<>(null));
     }
 
     @Nested
-    @DisplayName("method isTypeRecord")
     class IsTypeRecord {
 
         @Test

@@ -1,12 +1,12 @@
 package io.spring.jdbc.oracle.accessor;
 
-import java.util.Objects;
+import io.spring.jdbc.oracle.utils.Validators;
 
 public record ClassRecord<T>(Class<T> mappedClass) {
 
     public ClassRecord {
 
-        Objects.requireNonNull(mappedClass, "mapped class");
+        Validators.requireNotNull(mappedClass, "Mapped class");
     }
 
     public boolean isTypeRecord() {
