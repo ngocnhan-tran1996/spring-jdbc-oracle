@@ -3,6 +3,7 @@ package io.spring.jdbc.oracle.converter.support;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.spring.jdbc.oracle.converter.OracleConverters;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,6 +42,30 @@ class DefaultOracleConvertersTest {
 
     @Nested
     class GenericConverter {
+
+        @Test
+        void convert_Number_to_String() {
+
+            var source = TypeDescriptor.valueOf(Number.class);
+            var target = TypeDescriptor.valueOf(String.class);
+
+            var output = oracleConverters.convert((short) 1, source, target);
+            assertThat(output).isEqualTo("1");
+
+            output = oracleConverters.convert(1, source, target);
+            assertThat(output).isEqualTo("1");
+
+            output = oracleConverters.convert(1L, source, target);
+            assertThat(output).isEqualTo("1");
+
+            output = oracleConverters.convert(1F, source, target);
+            assertThat(output).isEqualTo("1.0");
+
+            output = oracleConverters.convert(BigDecimal.ONE, source, target);
+            assertThat(output).isEqualTo("1");
+
+            return_null_if_input_is_null(source, target);
+        }
 
     }
 
