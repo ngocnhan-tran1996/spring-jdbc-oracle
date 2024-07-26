@@ -21,19 +21,6 @@ final class ArrayToCollectionGenericOracleConverter implements GenericOracleConv
         this.oracleConverters = oracleConverters;
     }
 
-    private static Collection<Object> createCollection(
-        Class<?> targetType,
-        Class<?> elementType,
-        int length) {
-
-        if (targetType.isInterface() && targetType.isAssignableFrom(ArrayList.class)) {
-
-            return new ArrayList<>(length);
-        }
-
-        return CollectionFactory.createCollection(targetType, elementType, length);
-    }
-
     @Override
     public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
 
@@ -91,6 +78,19 @@ final class ArrayToCollectionGenericOracleConverter implements GenericOracleConv
         }
 
         return target;
+    }
+
+    Collection<Object> createCollection(
+        Class<?> targetType,
+        Class<?> elementType,
+        int length) {
+
+        if (targetType.isInterface() && targetType.isAssignableFrom(ArrayList.class)) {
+
+            return new ArrayList<>(length);
+        }
+
+        return CollectionFactory.createCollection(targetType, elementType, length);
     }
 
 }

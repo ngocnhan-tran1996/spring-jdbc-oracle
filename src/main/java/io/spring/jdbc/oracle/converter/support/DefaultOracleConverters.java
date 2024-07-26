@@ -1,12 +1,11 @@
 package io.spring.jdbc.oracle.converter.support;
 
-import static io.spring.jdbc.oracle.utils.Strings.NOT_NULL;
-
 import io.spring.jdbc.oracle.converter.ConvertKey;
 import io.spring.jdbc.oracle.converter.GenericOracleConverter;
 import io.spring.jdbc.oracle.converter.OracleConverter;
 import io.spring.jdbc.oracle.converter.OracleConverters;
 import io.spring.jdbc.oracle.exception.ValueException;
+import io.spring.jdbc.oracle.utils.Validators;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
@@ -26,6 +25,7 @@ public final class DefaultOracleConverters implements OracleConverters {
     public static final OracleConverters INSTANCE = new DefaultOracleConverters();
 
     private static final String DETERMINE_EXCEPTION = "Unable determine %s";
+
     private final Set<ConvertAdapter> genericConverters = new CopyOnWriteArraySet<>();
     private final Map<ConvertKey, ConvertAdapter> converterCaches = new ConcurrentHashMap<>();
     private final Map<Class<?>, Integer> javaClassToJdbcTypeCodeMap;
@@ -48,10 +48,11 @@ public final class DefaultOracleConverters implements OracleConverters {
             new ArrayToCollectionGenericOracleConverter(converters)
         );
 
-        converters.addConverter(new LocalDatetimeToTimestampConverter());
-        converters.addConverter(new TimestampToLocalDatetimeConverter());
+        converters.addConverter(new LocalDatetimeToTimestampOracleConverter());
+        converters.addConverter(new TimestampToLocalDatetimeOracleConverter());
     }
 
+    // FIXME need add more
     private static ConcurrentHashMap<Class<?>, Integer> buildJavaClassToJdbcTypeCodeMappings() {
 
         final ConcurrentHashMap<Class<?>, Integer> workMap = new ConcurrentHashMap<>();
@@ -73,12 +74,8 @@ public final class DefaultOracleConverters implements OracleConverters {
     @Override
     public void addGenericConverter(GenericOracleConverter genericOracleConverter) {
 
-        if (genericOracleConverter == null) {
-
-            throw new ValueException(NOT_NULL.formatted("GenericOracleConverter"));
-        }
-
-        var convertKey = genericOracleConverter.getConvertKey();
+        var convertKey = Validators.requireNotNull(genericOracleConverter, "GenericOracleConverter")
+            .getConvertKey();
         if (convertKey == null) {
 
             throw new ValueException(DETERMINE_EXCEPTION.formatted(genericOracleConverter));
@@ -97,10 +94,7 @@ public final class DefaultOracleConverters implements OracleConverters {
     @Override
     public void addConverter(OracleConverter<?, ?> converter) {
 
-        if (converter == null) {
-
-            throw new ValueException(NOT_NULL.formatted("OracleConverter"));
-        }
+        Validators.requireNotNull(converter, "OracleConverter");
 
         var convertKey = this.getConvertKey(converter.getClass());
         if (convertKey == null) {
@@ -274,7 +268,7 @@ public final class DefaultOracleConverters implements OracleConverters {
 
     private static final class ConvertAdapter {
 
-        private static final ConvertAdapter NONE = new ConvertAdapter(new NoneConverter());
+        private static final ConvertAdapter NONE = new ConvertAdapter(new NoneOracleConverter());
 
         private final GenericOracleConverter genericOracleConverter;
         private final ConvertKey converterKey;

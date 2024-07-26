@@ -5,13 +5,13 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-final class TimestampToLocalDatetimeConverter implements OracleConverter<Timestamp, LocalDateTime> {
+final class LocalDatetimeToTimestampOracleConverter implements OracleConverter<LocalDateTime, Timestamp> {
 
     @Override
-    public LocalDateTime convert(Timestamp source) {
+    public Timestamp convert(LocalDateTime source) {
 
         return Optional.ofNullable(source)
-            .map(Timestamp::toLocalDateTime)
+            .map(Timestamp::valueOf)
             .orElse(null);
     }
 

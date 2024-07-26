@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import io.spring.jdbc.oracle.converter.OracleConverter;
-import io.spring.jdbc.oracle.converter.support.NoneConverter;
+import io.spring.jdbc.oracle.converter.support.NoneOracleConverter;
 import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.mapper.property.TypeProperty;
 import java.math.BigDecimal;
@@ -124,7 +124,7 @@ class MappersTest {
         void throw_exception_when_method_convert_is_not_found() {
 
             var typeProperty = new TypeProperty();
-            typeProperty.setConverter(NoneConverter.class);
+            typeProperty.setConverter(NoneOracleConverter.class);
 
             assertThatExceptionOfType(ValueException.class)
                 .isThrownBy(() -> Mappers.convertValue(typeProperty, BigDecimal.ONE));
