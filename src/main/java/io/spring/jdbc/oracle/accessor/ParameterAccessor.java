@@ -1,9 +1,6 @@
 package io.spring.jdbc.oracle.accessor;
 
-import static io.spring.jdbc.oracle.utils.Strings.NOT_BLANK;
-
-import io.spring.jdbc.oracle.exception.ValueException;
-import io.spring.jdbc.oracle.utils.Strings;
+import io.spring.jdbc.oracle.utils.Validators;
 
 public abstract class ParameterAccessor<T> {
 
@@ -12,12 +9,8 @@ public abstract class ParameterAccessor<T> {
 
     protected ParameterAccessor(String parameterName, Class<T> mappedClass) {
 
-        if (Strings.isBlank(parameterName)) {
-
-            throw new ValueException(NOT_BLANK.formatted("parameter"));
-        }
-
-        this.parameterName = parameterName.toUpperCase();
+        this.parameterName = Validators.requireNotBank(parameterName, "parameter")
+            .toUpperCase();
         this.mappedClass = new ClassRecord<>(mappedClass).mappedClass();
     }
 

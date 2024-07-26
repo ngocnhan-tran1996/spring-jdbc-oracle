@@ -1,9 +1,7 @@
 package io.spring.jdbc.oracle.accessor;
 
-import static io.spring.jdbc.oracle.utils.Strings.NOT_BLANK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import io.spring.jdbc.oracle.exception.ValueException;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -16,7 +14,7 @@ class ParameterAccessorTest {
     @Test
     void throw_exception_when_parameterName_is_blank() {
 
-        var msg = NOT_BLANK.formatted("parameter");
+        var msg = "parameter must not be blank";
 
         assertThatExceptionOfType(ValueException.class)
             .isThrownBy(() -> new ParameterAccessorImpl<>(null, Object.class))
@@ -34,7 +32,7 @@ class ParameterAccessorTest {
     @Test
     void throw_exception_when_class_is_null() {
 
-        assertThatNullPointerException()
+        assertThatExceptionOfType(ValueException.class)
             .isThrownBy(() -> new ParameterAccessorImpl<>("X", null));
     }
 
