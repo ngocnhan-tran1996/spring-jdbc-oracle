@@ -99,7 +99,7 @@ abstract class AbstractMapper implements Mapper {
         Map<String, Object> valueByName
     );
 
-    ResultSetMetaData getResultSetMetaData(Connection connection, String typeName)
+    private ResultSetMetaData getResultSetMetaData(Connection connection, String typeName)
         throws SQLException {
 
         if (connection.getMetaData() instanceof OracleDatabaseMetaData oracleDatabaseMetaData) {
@@ -114,7 +114,8 @@ abstract class AbstractMapper implements Mapper {
         return ((OracleTypeMetaData.Struct) oracleTypeMetaData).getMetaData();
     }
 
-    Map<String, Integer> extractIndexByColumnName(ResultSetMetaData rsmd) throws SQLException {
+    private Map<String, Integer> extractIndexByColumnName(ResultSetMetaData rsmd)
+        throws SQLException {
 
         Map<String, Integer> indexByColumnName = new LinkedCaseInsensitiveMap<>();
 
