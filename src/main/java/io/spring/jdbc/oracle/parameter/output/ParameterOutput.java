@@ -1,12 +1,9 @@
 package io.spring.jdbc.oracle.parameter.output;
 
-import static io.spring.jdbc.oracle.utils.Strings.NOT_NULL;
-
 import io.spring.jdbc.oracle.accessor.ParameterAccessor;
-import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.mapper.DelegateMapper;
 import io.spring.jdbc.oracle.mapper.Mapper;
-import io.spring.jdbc.oracle.utils.Strings;
+import io.spring.jdbc.oracle.utils.Validators;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.Struct;
@@ -16,8 +13,8 @@ import org.springframework.jdbc.core.SqlReturnType;
 public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
     private final Mapper mapper;
-    private AbstractReturnType returnType;
     private String typeName;
+    private AbstractReturnType returnType;
 
     private ParameterOutput(String parameterName, Class<T> mappedClass) {
 
@@ -60,11 +57,7 @@ public final class ParameterOutput<T> extends ParameterAccessor<T> {
 
     public SqlOutParameter sqlOutParameter() {
 
-        if (Strings.isBlank(this.typeName)) {
-
-            throw new ValueException(NOT_NULL.formatted("returnType"));
-        }
-
+        Validators.requireNotBank(this.typeName, "returnType");
         return new SqlOutParameter(
             super.getParameterName(),
             this.returnType.sqlType(),

@@ -6,14 +6,14 @@ import io.spring.jdbc.oracle.annotation.OracleType;
 import io.spring.jdbc.oracle.converter.OracleConverter;
 import io.spring.jdbc.oracle.converter.OracleConverters;
 import io.spring.jdbc.oracle.converter.support.DefaultOracleConverters;
-import io.spring.jdbc.oracle.converter.support.NoneConverter;
+import io.spring.jdbc.oracle.converter.support.NoneOracleConverter;
 import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.mapper.property.MapperProperty;
 import io.spring.jdbc.oracle.mapper.property.TypeProperty;
 import io.spring.jdbc.oracle.mapper.property.TypeProperty.Types;
 import io.spring.jdbc.oracle.parameter.input.ParameterInput;
 import io.spring.jdbc.oracle.parameter.output.ParameterOutput;
-import io.spring.jdbc.oracle.utils.MapperUtils;
+import io.spring.jdbc.oracle.utils.Mappers;
 import io.spring.jdbc.oracle.utils.Matchers;
 import io.spring.jdbc.oracle.utils.Strings;
 import java.beans.PropertyDescriptor;
@@ -32,6 +32,8 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.util.ReflectionUtils;
 
 class BeanPropertyMapper<S> extends AbstractMapper {
+
+    static final String UNIQUE_NAME = "Field name must be unique";
 
     private final Map<String, TypeProperty> readProperties = new LinkedCaseInsensitiveMap<>();
     private final Map<String, TypeProperty> writeProperties = new LinkedCaseInsensitiveMap<>();
@@ -81,7 +83,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
 
             if (this.readProperties.containsKey(columnName)) {
 
-                throw new ValueException("Field name must be unique");
+                throw new ValueException(UNIQUE_NAME);
             }
 
             if (pd.getReadMethod() != null) {
@@ -101,6 +103,11 @@ class BeanPropertyMapper<S> extends AbstractMapper {
         PropertyDescriptor pd,
         String columnName,
         OracleParameter oracleParameter) {
+
+        if (this.writeProperties.containsKey(columnName)) {
+
+            throw new ValueException(UNIQUE_NAME);
+        }
 
         if (pd.getWriteMethod() != null) {
 
@@ -143,22 +150,22 @@ class BeanPropertyMapper<S> extends AbstractMapper {
 
                 case ARRAY ->
                     ParameterInput.withParameterName(fieldName, (Class<Object>) propertyType)
-                        .withValues(MapperUtils.toArrayOrNull(value))
+                        .withValues(Mappers.toArray(value))
                         .withArray(typeProperty.getArrayName())
                         .convert(connection);
 
                 case STRUCT_ARRAY -> {
 
-                    propertyType = MapperUtils.extractClassFromArray(
+                    propertyType = Mappers.extractClassFromArray(
                         bw.getPropertyTypeDescriptor(fieldName)
                     );
                     yield ParameterInput.withParameterName(fieldName, (Class<Object>) propertyType)
-                        .withValues(MapperUtils.toArrayOrNull(value))
+                        .withValues(Mappers.toArray(value))
                         .withStructArray(typeProperty.getArrayName(), typeProperty.getStructName())
                         .convert(connection);
                 }
 
-                case CONVERTER -> MapperUtils.convertValue(typeProperty, value);
+                case CONVERTER -> Mappers.convertValue(typeProperty, value);
 
                 default -> {
 
@@ -242,7 +249,7 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                         }
 
                         if (typeProperty.getType() != Types.NONE
-                            || NoneConverter.class.isAssignableFrom(converter)) {
+                            || NoneOracleConverter.class.isAssignableFrom(converter)) {
 
                             return;
                         }
@@ -284,12 +291,12 @@ class BeanPropertyMapper<S> extends AbstractMapper {
 
             case STRUCT_ARRAY -> ParameterOutput.withParameterName(
                     fieldName,
-                    MapperUtils.extractClassFromArray(typeDescriptor)
+                    Mappers.extractClassFromArray(typeDescriptor)
                 )
                 .withStructArray(typeProperty.getArrayName())
                 .convert(connection, rawValue);
 
-            case CONVERTER -> MapperUtils.convertValue(typeProperty, rawValue);
+            case CONVERTER -> Mappers.convertValue(typeProperty, rawValue);
 
             default -> this.converters.convert(
                 rawValue,

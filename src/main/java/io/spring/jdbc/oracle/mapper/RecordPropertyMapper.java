@@ -51,6 +51,11 @@ class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
         String columnName,
         OracleParameter oracleParameter) {
 
+        if (this.parameterByFieldName.containsKey(columnName)) {
+
+            throw new ValueException(UNIQUE_NAME);
+        }
+
         // Record class will save columnName instead
         var typeProperty = super.getTypeProperty(columnName, OracleParameter::output)
             .apply(oracleParameter);

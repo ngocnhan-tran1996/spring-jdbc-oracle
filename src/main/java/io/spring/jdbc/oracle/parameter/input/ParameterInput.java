@@ -1,12 +1,10 @@
 package io.spring.jdbc.oracle.parameter.input;
 
-import static io.spring.jdbc.oracle.utils.Strings.NOT_NULL;
-
 import io.spring.jdbc.oracle.accessor.ParameterAccessor;
-import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.mapper.DelegateMapper;
 import io.spring.jdbc.oracle.mapper.Mapper;
 import io.spring.jdbc.oracle.parameter.output.ParameterOutput;
+import io.spring.jdbc.oracle.utils.Validators;
 import java.sql.Connection;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -135,12 +133,6 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
             return map;
         }
 
-        public Optional<Object> getTypeValue() {
-
-            return Optional.ofNullable(values)
-                .map(v -> this.typeValue);
-        }
-
         public Object convert(Connection connection) {
 
             try {
@@ -162,32 +154,32 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
         public SqlParameter sqlParameter() {
 
-            this.validateTypeValue();
             return new SqlParameter(
                 getParameterName(),
-                this.type,
+                this.getType(),
                 this.typeValue.getTypeName()
             );
         }
 
         public SqlInOutParameter sqlInOutParameter() {
 
-            this.validateTypeValue();
             return new SqlInOutParameter(
                 getParameterName(),
-                this.type,
+                this.getType(),
                 this.typeValue.getTypeName(),
                 this.returnType
             );
         }
 
-        private void validateTypeValue() {
+        private Optional<Object> getTypeValue() {
 
-            if (this.type == null) {
+            return Optional.ofNullable(values)
+                .map(v -> this.typeValue);
+        }
 
-                throw new ValueException(NOT_NULL.formatted("typeValue"));
-            }
+        private int getType() {
 
+            return Validators.requireNotNull(this.type, "type");
         }
 
     }
