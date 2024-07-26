@@ -61,6 +61,57 @@ class DelegateMapperTest {
             """);
     }
 
+    @Test
+    void setConverters() {
+
+        // arrange
+        var converters = DefaultOracleConverters.INSTANCE;
+        converters.addConverter(new LocalDateTimeToLocalDate());
+
+        var mapper = DelegateMapper.newInstance(Person.class);
+        mapper.setConverters(converters);
+
+        // assert
+        var output = mapper.convert(
+            Map.of(
+                "first_name", "hello@world",
+                "lastname", "info",
+                "AGE", BigDecimal.TEN,
+                "biRthDate", LocalDateTime.of(LocalDate.now(), LocalTime.MIN)
+            )
+        );
+        assertThat(output)
+            .usingRecursiveComparison()
+            .isEqualTo(
+                new Person(
+                    "hello@world",
+                    "info",
+                    BigDecimal.TEN.toPlainString(),
+                    LocalDate.now()
+                )
+            );
+    }
+
+    public record LocalDateTimeToLocalDate() implements OracleConverter<LocalDateTime, LocalDate> {
+
+        @Override
+        public LocalDate convert(LocalDateTime source) {
+
+            return Optional.of(source)
+                .map(LocalDateTime::toLocalDate)
+                .orElse(null);
+        }
+
+    }
+
+    record Person(
+        String firstName,
+        String lastName,
+        String age,
+        LocalDate birthDate) {
+
+    }
+
     @Nested
     class PojoClass {
 
@@ -302,57 +353,6 @@ class DelegateMapperTest {
             Timestamp birthDate) {
 
         }
-
-    }
-
-    @Test
-    void setConverters() {
-
-        // arrange
-        var converters = DefaultOracleConverters.INSTANCE;
-        converters.addConverter(new LocalDateTimeToLocalDate());
-
-        var mapper = DelegateMapper.newInstance(Person.class);
-        mapper.setConverters(converters);
-
-        // assert
-        var output = mapper.convert(
-            Map.of(
-                "first_name", "hello@world",
-                "lastname", "info",
-                "AGE", BigDecimal.TEN,
-                "biRthDate", LocalDateTime.of(LocalDate.now(), LocalTime.MIN)
-            )
-        );
-        assertThat(output)
-            .usingRecursiveComparison()
-            .isEqualTo(
-                new Person(
-                    "hello@world",
-                    "info",
-                    BigDecimal.TEN.toPlainString(),
-                    LocalDate.now()
-                )
-            );
-    }
-
-    public record LocalDateTimeToLocalDate() implements OracleConverter<LocalDateTime, LocalDate> {
-
-        @Override
-        public LocalDate convert(LocalDateTime source) {
-
-            return Optional.of(source)
-                .map(LocalDateTime::toLocalDate)
-                .orElse(null);
-        }
-
-    }
-
-    record Person(
-        String firstName,
-        String lastName,
-        String age,
-        LocalDate birthDate) {
 
     }
 

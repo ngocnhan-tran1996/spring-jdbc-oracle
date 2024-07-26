@@ -65,7 +65,7 @@ class MappersTest {
         @Test
         void throw_exception_when_input_is_either_null_or_not_array_type() {
 
-            assertThatExceptionOfType(NullPointerException.class)
+            assertThatExceptionOfType(ValueException.class)
                 .isThrownBy(() -> Mappers.extractClassFromArray(null));
 
             var classTypeDescriptor = TypeDescriptor.valueOf(null);
