@@ -53,10 +53,15 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                         propertyDescriptor.getName()
                     );
 
+                    if (field == null) {
+
+                        return null;
+                    }
+
                     return new MapperProperty(field, propertyDescriptor);
                 }
             )
-            .filter(mapperProperty -> Objects.nonNull(mapperProperty.field()))
+            .filter(Objects::nonNull)
             .toList();
     }
 
