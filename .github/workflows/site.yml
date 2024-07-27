@@ -21,7 +21,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B site site:stage
+      run: mvn -B site site:stage -DskipTests
     - name: Deploy Site
       uses: JamesIves/github-pages-deploy-action@v4
       with:
