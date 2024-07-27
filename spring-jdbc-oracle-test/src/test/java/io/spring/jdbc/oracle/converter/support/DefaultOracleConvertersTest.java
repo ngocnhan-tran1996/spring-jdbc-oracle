@@ -8,6 +8,11 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -65,6 +70,66 @@ class DefaultOracleConvertersTest {
             assertThat(output).isEqualTo("1");
 
             return_null_if_input_is_null(source, target);
+        }
+
+        @Test
+        void convert_Array_to_Collection() {
+
+            var source = TypeDescriptor.valueOf(Object[].class);
+            var unknownTarget = TypeDescriptor.valueOf(Collection.class);
+            var setTarget = TypeDescriptor.collection(
+                Set.class,
+                TypeDescriptor.valueOf(BigDecimal.class)
+            );
+            var listTarget = TypeDescriptor.collection(
+                ArrayList.class,
+                TypeDescriptor.valueOf(BigDecimal.class)
+            );
+
+            var output = oracleConverters.convert(new Object[0], source, unknownTarget);
+            assertThat(output).isEqualTo(Collections.emptyList());
+
+            output = oracleConverters.convert(new Object[]{1, 2}, source, unknownTarget);
+            assertThat(output).isEqualTo(List.of(1, 2));
+
+            output = oracleConverters.convert(new Object[0], source, setTarget);
+            assertThat(output).isEqualTo(Collections.emptySet());
+
+            output = oracleConverters.convert(new Object[]{1, 2}, source, setTarget);
+            assertThat(output).isEqualTo(Set.of(1, 2));
+
+            output = oracleConverters.convert(new Object[0], source, listTarget);
+            assertThat(output).isEqualTo(Collections.emptyList());
+
+            output = oracleConverters.convert(new Object[]{1, 2}, source, listTarget);
+            assertThat(output).isEqualTo(List.of(1, 2));
+
+            return_null_if_input_is_null(source, unknownTarget);
+            return_null_if_input_is_null(source, setTarget);
+            return_null_if_input_is_null(source, listTarget);
+        }
+
+        @Test
+        void convert_Collection_to_Collection() {
+
+            var source = TypeDescriptor.valueOf(Collection.class);
+            var unknownTarget = TypeDescriptor.valueOf(Collection.class);
+            var listTarget = TypeDescriptor.collection(
+                ArrayList.class,
+                TypeDescriptor.valueOf(Integer.class)
+            );
+
+            var output = oracleConverters.convert(Collections.emptyList(), source, unknownTarget);
+            assertThat(output).isEqualTo(Collections.emptySet());
+
+            output = oracleConverters.convert(List.of(1, 2), source, unknownTarget);
+            assertThat(output).isEqualTo(Set.of(1, 2));
+
+            output = oracleConverters.convert(List.of(1, 2), source, listTarget);
+            assertThat(output).isEqualTo(List.of(1, 2));
+
+            return_null_if_input_is_null(source, unknownTarget);
+            return_null_if_input_is_null(source, listTarget);
         }
 
     }
