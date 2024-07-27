@@ -13,7 +13,7 @@
 
   <groupId>io.github.ngocnhan-tran1996</groupId>
   <artifactId>spring-jdbc-oracle-test</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>${revision}{changelist}</version>
 
   <properties>
     <java.version>22</java.version>

@@ -6,7 +6,7 @@
 
   <groupId>io.github.ngocnhan-tran1996</groupId>
   <artifactId>spring-jdbc-oracle</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>${revision}{changelist}</version>
   <name>Spring Jdbc Oracle</name>
 
   <properties>

@@ -1,10 +1,12 @@
 package io.spring.jdbc.oracle.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import io.spring.jdbc.oracle.TestConfig;
+import io.spring.jdbc.oracle.annotation.OracleParameter;
 import io.spring.jdbc.oracle.converter.OracleConverter;
 import io.spring.jdbc.oracle.converter.support.DefaultOracleConverters;
+import io.spring.jdbc.oracle.exception.ValueException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import oracle.jdbc.driver.OracleConnection;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -28,12 +31,11 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest
-@Import(TestConfig.class)
+//@Import(TestConfig.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class DelegateMapperTest {
 
@@ -90,6 +92,9 @@ class DelegateMapperTest {
                     LocalDate.now()
                 )
             );
+
+        assertThat(mapper.convert(null))
+            .isNull();
     }
 
     void fromStruct_return_null_if_convert_process_is_failed(DelegateMapper<?> mapper) {
@@ -335,6 +340,83 @@ class DelegateMapperTest {
             String lastName,
             BigDecimal age,
             Timestamp birthDate) {
+
+        }
+
+    }
+
+    @Nested
+    class MethodSpec {
+
+        @Test
+        void throw_exception_if_class_have_same_property_name() {
+
+            // assert
+            assertThatExceptionOfType(ValueException.class)
+                .isThrownBy(() -> DelegateMapper.newInstance(PersonSetterPojo.class));
+
+            assertThatExceptionOfType(ValueException.class)
+                .isThrownBy(() -> DelegateMapper.newInstance(PersonGetterPojo.class));
+
+            assertThatExceptionOfType(ValueException.class)
+                .isThrownBy(() -> DelegateMapper.newInstance(PersonRecord.class));
+        }
+
+        @Test
+        void throw_exception_if_record_class_has_no_field() {
+
+            // assert
+            assertThatExceptionOfType(ValueException.class)
+                .isThrownBy(() -> DelegateMapper.newInstance(PersonNoFieldRecord.class));
+        }
+
+        @Test
+        void mock_throw_exception_if_class_has_no_same_type() throws SQLException {
+
+            // arrange
+            var mapper = DelegateMapper.newInstance(PersonWrongBirthDatePojo.class);
+
+            // assert
+            var output = mapper.toStruct(
+                connection.unwrap(OracleConnection.class),
+                PERSON_TYPE,
+                new PersonWrongBirthDatePojo()
+            );
+            assertThat(output)
+                .isNull();
+
+        }
+
+        @Setter
+        static class PersonSetterPojo {
+
+            private String firstName;
+            @OracleParameter("firstName")
+            private String lastName;
+        }
+
+        @Getter
+        static class PersonGetterPojo {
+
+            private String firstName;
+            @OracleParameter("firstName")
+            private String lastName;
+        }
+
+        @Getter
+        static class PersonWrongBirthDatePojo {
+
+            private final String birthDate = "TEST";
+        }
+
+        record PersonRecord(
+            String firstName,
+            @OracleParameter("firstName")
+            String lastName) {
+
+        }
+
+        record PersonNoFieldRecord() {
 
         }
 
