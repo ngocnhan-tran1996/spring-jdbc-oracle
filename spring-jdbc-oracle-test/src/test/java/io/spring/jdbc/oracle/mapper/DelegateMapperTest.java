@@ -62,7 +62,7 @@ class DelegateMapperTest {
     }
 
     @Test
-    void setConverters() {
+    void convert() {
 
         // arrange
         var converters = DefaultOracleConverters.INSTANCE;
