@@ -3,6 +3,7 @@ package io.spring.jdbc.oracle.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import io.spring.jdbc.oracle.TestConfig;
 import io.spring.jdbc.oracle.annotation.OracleParameter;
 import io.spring.jdbc.oracle.annotation.OracleType;
 import io.spring.jdbc.oracle.converter.OracleConverter;
@@ -31,11 +32,12 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest
-//@Import(TestConfig.class)
+@Import(TestConfig.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class DelegateMapperTest {
 

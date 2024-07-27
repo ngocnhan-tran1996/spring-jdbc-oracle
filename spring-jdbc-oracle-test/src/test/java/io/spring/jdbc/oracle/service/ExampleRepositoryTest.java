@@ -2,6 +2,7 @@ package io.spring.jdbc.oracle.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.spring.jdbc.oracle.TestConfig;
 import io.spring.jdbc.oracle.dto.CustomerPojo;
 import io.spring.jdbc.oracle.dto.CustomerRecord;
 import java.io.IOException;
@@ -16,11 +17,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest
-//@Import(ExampleConfig.class)
+@Import(TestConfig.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ExampleRepositoryTest {
 
