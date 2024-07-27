@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -63,6 +64,19 @@ public final class Mappers {
 
         var instance = BeanUtils.instantiateClass(converter);
         return ReflectionUtils.invokeMethod(method, instance, value);
+    }
+
+    public static TypeDescriptor resolveArrayTypeDescriptor(TypeDescriptor typeDescriptor) {
+
+        var sourceElementType = typeDescriptor.getElementTypeDescriptor();
+
+        if (sourceElementType == null) {
+
+            return typeDescriptor;
+        }
+
+        var resolveClass = ClassUtils.resolvePrimitiveIfNecessary(sourceElementType.getType());
+        return TypeDescriptor.array(TypeDescriptor.valueOf(resolveClass));
     }
 
 }

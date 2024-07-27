@@ -108,6 +108,11 @@ public final class DefaultOracleConverters implements OracleConverters {
             throw new ValueException(DETERMINE_EXCEPTION.formatted(converter));
         }
 
+        if (this.converterCaches.containsKey(convertKey)) {
+
+            return;
+        }
+
         this.converterCaches.put(convertKey, new ConvertAdapter(converter));
     }
 

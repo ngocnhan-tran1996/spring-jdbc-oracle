@@ -3,6 +3,7 @@ package io.spring.jdbc.oracle.converter.support;
 import io.spring.jdbc.oracle.converter.ConvertKey;
 import io.spring.jdbc.oracle.converter.GenericOracleConverter;
 import io.spring.jdbc.oracle.converter.OracleConverters;
+import io.spring.jdbc.oracle.utils.Mappers;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +28,9 @@ final class ArrayToCollectionGenericOracleConverter implements GenericOracleConv
         this.sourceType = sourceType;
         this.targetType = targetType;
 
-        return Object[].class.isAssignableFrom(sourceType.getType())
+        var source = Mappers.resolveArrayTypeDescriptor(sourceType).getType();
+
+        return Object[].class.isAssignableFrom(source)
             && Collection.class.isAssignableFrom(targetType.getType());
     }
 
