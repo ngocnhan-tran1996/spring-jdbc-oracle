@@ -72,21 +72,20 @@ class RecordPropertyMapper<S> extends BeanPropertyMapper<S> {
         int i = 0;
         for (var parameter : this.constructor.getParameters()) {
 
-            var targetType = parameter.getType();
             var fieldName = parameter.getName();
             var typeProperty = this.parameterByFieldName.get(fieldName);
+            var parameterType = this.constructorParameterTypes[i];
             var rawValue = valueByName.get(typeProperty.getFieldName());
 
             Object value = this.constructValue(
                 typeProperty,
                 fieldName,
-                targetType,
                 connection,
                 rawValue,
-                this.constructorParameterTypes[i]
+                parameterType
             );
 
-            args[i] = bw.convertIfNecessary(value, targetType);
+            args[i] = bw.convertIfNecessary(value, parameterType.getType());
             i++;
         }
 

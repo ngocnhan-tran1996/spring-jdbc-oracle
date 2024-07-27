@@ -3,18 +3,18 @@ package io.spring.jdbc.oracle.converter.support;
 import io.spring.jdbc.oracle.converter.ConvertKey;
 import io.spring.jdbc.oracle.converter.GenericOracleConverter;
 import io.spring.jdbc.oracle.converter.OracleConverters;
+import io.spring.jdbc.oracle.utils.Validators;
+import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.Optional;
-import org.springframework.core.CollectionFactory;
 import org.springframework.core.convert.TypeDescriptor;
 
-final class CollectionToCollectionGenericOracleConverter implements GenericOracleConverter {
+final class CollectionToArrayGenericOracleConverter implements GenericOracleConverter {
 
     private final OracleConverters oracleConverters;
     private TypeDescriptor sourceType;
     private TypeDescriptor targetType;
 
-    CollectionToCollectionGenericOracleConverter(OracleConverters oracleConverters) {
+    CollectionToArrayGenericOracleConverter(OracleConverters oracleConverters) {
 
         this.oracleConverters = oracleConverters;
     }
@@ -26,13 +26,13 @@ final class CollectionToCollectionGenericOracleConverter implements GenericOracl
         this.targetType = targetType;
 
         return Collection.class.isAssignableFrom(sourceType.getType())
-            && Collection.class.isAssignableFrom(targetType.getType());
+            && Object[].class.isAssignableFrom(targetType.getType());
     }
 
     @Override
     public ConvertKey getConvertKey() {
 
-        return new ConvertKey(Collection.class, Collection.class);
+        return new ConvertKey(Collection.class, Object[].class);
     }
 
     @Override
@@ -44,33 +44,25 @@ final class CollectionToCollectionGenericOracleConverter implements GenericOracl
         }
 
         var sourceCollection = (Collection<?>) source;
-        var elementTypeDescriptor = this.targetType.getElementTypeDescriptor();
-        var target = CollectionFactory.createCollection(
-            this.targetType.getType(),
-            Optional.ofNullable(elementTypeDescriptor)
-                .map(TypeDescriptor::getType)
-                .orElse(null),
-            sourceCollection.size()
+        var targetElementType = Validators.requireNotNull(
+            targetType.getElementTypeDescriptor(),
+            "targetElementType"
         );
+        var array = Array.newInstance(targetElementType.getType(), sourceCollection.size());
 
-        if (elementTypeDescriptor == null) {
-
-            target.addAll(sourceCollection);
-            return target;
-        }
-
+        int i = 0;
         for (var sourceElement : sourceCollection) {
 
             var targetElement = this.oracleConverters.convert(
                 sourceElement,
-                this.sourceType.elementTypeDescriptor(sourceElement),
-                elementTypeDescriptor
+                sourceType.elementTypeDescriptor(sourceElement),
+                targetElementType
             );
 
-            target.add(targetElement);
+            Array.set(array, i++, targetElement);
         }
 
-        return target;
+        return array;
     }
 
 }

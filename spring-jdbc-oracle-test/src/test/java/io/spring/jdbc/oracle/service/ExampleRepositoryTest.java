@@ -31,12 +31,12 @@ class ExampleRepositoryTest {
     JdbcTemplate jdbcTemplate;
 
     @Value("classpath:script/example_pack.sql")
-    Resource examplePack;
+    Resource pack;
 
     @BeforeEach
     void init() throws IOException {
 
-        var statement = examplePack.getContentAsString(StandardCharsets.UTF_8)
+        var statement = pack.getContentAsString(StandardCharsets.UTF_8)
             .split("/");
         Arrays.stream(statement)
             .forEach(this.jdbcTemplate::update);

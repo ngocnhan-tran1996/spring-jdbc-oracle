@@ -153,11 +153,10 @@ class BeanPropertyMapper<S> extends AbstractMapper {
                         .withStruct(typeProperty.getStructName())
                         .convert(connection);
 
-                case ARRAY ->
-                    ParameterInput.withParameterName(fieldName, (Class<Object>) propertyType)
-                        .withValues(Mappers.toArray(value))
-                        .withArray(typeProperty.getArrayName())
-                        .convert(connection);
+                case ARRAY -> ParameterInput.withParameterName(fieldName)
+                    .withValues(Mappers.toArray(value))
+                    .withArray(typeProperty.getArrayName())
+                    .convert(connection);
 
                 case STRUCT_ARRAY -> {
 
@@ -203,13 +202,11 @@ class BeanPropertyMapper<S> extends AbstractMapper {
             }
 
             var fieldName = typeProperty.getFieldName();
-            var propertyType = bw.getPropertyType(fieldName);
             var rawValue = valueByName.get(columnName);
 
             Object value = this.constructValue(
                 typeProperty,
                 fieldName,
-                propertyType,
                 connection,
                 rawValue,
                 bw.getPropertyTypeDescriptor(fieldName)
@@ -271,20 +268,19 @@ class BeanPropertyMapper<S> extends AbstractMapper {
     Object constructValue(
         TypeProperty typeProperty,
         String fieldName,
-        Class<?> targetType,
         Connection connection,
         Object rawValue,
         TypeDescriptor typeDescriptor) {
 
         return switch (typeProperty.getType()) {
 
-            case STRUCT -> ParameterOutput.withParameterName(fieldName, targetType)
+            case STRUCT -> ParameterOutput.withParameterName(fieldName, typeDescriptor.getType())
                 .withStruct(typeProperty.getStructName())
                 .convert(connection, rawValue);
 
             case ARRAY -> {
 
-                var value = ParameterOutput.withParameterName(fieldName, targetType)
+                var value = ParameterOutput.withParameterName(fieldName)
                     .withArray(typeProperty.getArrayName())
                     .convert(connection, rawValue);
                 yield this.converters.convert(

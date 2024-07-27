@@ -45,7 +45,13 @@ public final class DefaultOracleConverters implements OracleConverters {
             new CollectionToCollectionGenericOracleConverter(converters)
         );
         converters.addGenericConverter(
+            new CollectionToArrayGenericOracleConverter(converters)
+        );
+        converters.addGenericConverter(
             new ArrayToCollectionGenericOracleConverter(converters)
+        );
+        converters.addGenericConverter(
+            new ArrayToArrayGenericOracleConverter(converters)
         );
 
         converters.addConverter(new LocalDatetimeToTimestampOracleConverter());
