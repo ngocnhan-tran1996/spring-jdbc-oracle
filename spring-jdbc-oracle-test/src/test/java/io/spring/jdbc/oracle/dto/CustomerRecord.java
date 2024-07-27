@@ -1,4 +1,4 @@
-package io.spring.jdbc.oracle.service;
+package io.spring.jdbc.oracle.dto;
 
 import io.spring.jdbc.oracle.annotation.OracleParameter;
 import java.math.BigDecimal;

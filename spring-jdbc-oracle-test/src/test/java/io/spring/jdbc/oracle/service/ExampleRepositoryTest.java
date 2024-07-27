@@ -2,6 +2,8 @@ package io.spring.jdbc.oracle.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.spring.jdbc.oracle.dto.CustomerPojo;
+import io.spring.jdbc.oracle.dto.CustomerRecord;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;

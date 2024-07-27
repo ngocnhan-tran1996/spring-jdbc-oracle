@@ -1,5 +1,7 @@
 package io.spring.jdbc.oracle.service;
 
+import io.spring.jdbc.oracle.dto.CustomerPojo;
+import io.spring.jdbc.oracle.dto.CustomerRecord;
 import io.spring.jdbc.oracle.parameter.input.ParameterInput;
 import io.spring.jdbc.oracle.parameter.output.ParameterOutput;
 import java.math.BigDecimal;
