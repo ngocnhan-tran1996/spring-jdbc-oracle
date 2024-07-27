@@ -6,14 +6,14 @@
 
   <parent>
     <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
+    <artifactId>spring-boot-dependencies</artifactId>
     <version>3.3.2</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
   <groupId>io.github.ngocnhan-tran1996</groupId>
   <artifactId>spring-jdbc-oracle-test</artifactId>
-  <version>${revision}{changelist}</version>
+  <version>1.0.0-SNAPSHOT</version>
 
   <properties>
     <java.version>22</java.version>
@@ -22,7 +22,7 @@
   <dependencies>
     <dependency>
       <groupId>io.github.ngocnhan-tran1996</groupId>
-      <artifactId>spring-jdbc-oracle</artifactId>
+      <artifactId>spring-jdbc-oracle-core</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
 

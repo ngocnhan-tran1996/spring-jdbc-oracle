@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import io.spring.jdbc.oracle.annotation.OracleParameter;
+import io.spring.jdbc.oracle.annotation.OracleType;
 import io.spring.jdbc.oracle.converter.OracleConverter;
 import io.spring.jdbc.oracle.converter.support.DefaultOracleConverters;
 import io.spring.jdbc.oracle.exception.ValueException;
@@ -17,7 +18,6 @@ import java.time.LocalTime;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -123,6 +123,16 @@ class DelegateMapperTest {
 
     }
 
+    public record StringToTString() implements OracleConverter<String, String> {
+
+        @Override
+        public String convert(String source) {
+
+            return source;
+        }
+
+    }
+
     record Person(
         String firstName,
         String lastName,
@@ -209,9 +219,7 @@ class DelegateMapperTest {
                 Map.of(
                     "first_name", "hello@world",
                     "lastname", "info",
-                    "AGE", BigDecimal.TEN,
-                    "biRthDate",
-                    Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIN))
+                    "AGE", BigDecimal.TEN
                 )
             );
             assertThat(output)
@@ -221,7 +229,7 @@ class DelegateMapperTest {
                         "hello@world",
                         "info",
                         BigDecimal.TEN,
-                        Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIN))
+                        null
                     )
                 );
         }
@@ -229,13 +237,26 @@ class DelegateMapperTest {
         @Getter
         @Setter
         @NoArgsConstructor
-        @AllArgsConstructor
         static class Person {
 
+            @OracleParameter(
+                input = @OracleType(converter = StringToTString.class),
+                output = @OracleType(converter = StringToTString.class)
+            )
             private String firstName;
             private String lastName;
             private BigDecimal age;
             private Timestamp birthDate;
+            private String unknown;
+
+            public Person(String firstName, String lastName, BigDecimal age, Timestamp birthDate) {
+
+                this.firstName = firstName;
+                this.lastName = lastName;
+                this.age = age;
+                this.birthDate = birthDate;
+            }
+
         }
 
     }
@@ -375,6 +396,7 @@ class DelegateMapperTest {
 
             // arrange
             var mapper = DelegateMapper.newInstance(PersonWrongBirthDatePojo.class);
+            mapper.setConverters(null);
 
             // assert
             var output = mapper.toStruct(
@@ -390,17 +412,20 @@ class DelegateMapperTest {
         @Setter
         static class PersonSetterPojo {
 
-            private String firstName;
+            String firstName;
+
             @OracleParameter("firstName")
-            private String lastName;
+            String lastName;
+
         }
 
         @Getter
         static class PersonGetterPojo {
 
-            private String firstName;
+            private final String firstName = "X";
+
             @OracleParameter("firstName")
-            private String lastName;
+            private final String lastName = "X";
         }
 
         @Getter
