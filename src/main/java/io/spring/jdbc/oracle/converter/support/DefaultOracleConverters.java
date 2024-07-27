@@ -122,6 +122,11 @@ public final class DefaultOracleConverters implements OracleConverters {
     @Override
     public Class<?> determineJavaClassForJdbcTypeCode(Class<?> sourceType) {
 
+        if (sourceType == null) {
+
+            return null;
+        }
+
         var typeCode = this.javaClassToJdbcTypeCodeMap.get(sourceType);
 
         if (typeCode == null) {
