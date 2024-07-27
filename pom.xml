@@ -6,7 +6,7 @@
 
   <groupId>io.github.ngocnhan-tran1996</groupId>
   <artifactId>spring-jdbc-oracle</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>${revision}</version>
   <packaging>pom</packaging>
 
   <name>Spring Jdbc Oracle</name>
@@ -15,6 +15,10 @@
     <module>spring-jdbc-oracle-core</module>
     <module>spring-jdbc-oracle-test</module>
   </modules>
+
+  <properties>
+    <revision>1.0.0-SNAPSHOT</revision>
+  </properties>
 
   <distributionManagement>
     <site>

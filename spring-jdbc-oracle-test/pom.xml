@@ -13,17 +13,19 @@
 
   <groupId>io.github.ngocnhan-tran1996</groupId>
   <artifactId>spring-jdbc-oracle-test</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>${revision}</version>
 
   <properties>
-    <java.version>22</java.version>
+    <maven.compiler.source>22</maven.compiler.source>
+    <maven.compiler.target>22</maven.compiler.target>
+    <revision>1.0.0-SNAPSHOT</revision>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>io.github.ngocnhan-tran1996</groupId>
       <artifactId>spring-jdbc-oracle-core</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>${revision}</version>
     </dependency>
 
     <dependency>
