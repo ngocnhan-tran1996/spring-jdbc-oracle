@@ -4,10 +4,12 @@ author: Tran Ngoc Nhan
 # Convention
 
 <!-- TOC -->
+
 * [Convention](#convention)
-  * [Data Convention](#data-convention)
-  * [Naming Convention](#naming-convention)
-  * [Annotation OracleParameter](#annotation-oracleparameter)
+    * [Data Convention](#data-convention)
+    * [Naming Convention](#naming-convention)
+    * [Annotation OracleParameter](#annotation-oracleparameter)
+
 <!-- TOC -->
 
 ## Data Convention
@@ -17,7 +19,6 @@ author: Tran Ngoc Nhan
 | NUMBER        | BigDecimal    |
 | VARCHAR       | String        |
 | DATE          | Timestamp     |
-
 
 ## Naming Convention
 
@@ -30,14 +31,16 @@ I have a small comparison.
 | LAST_NAME     | lastName       |
 | LASTNAME      | lastName       |
 
-
 ## Annotation OracleParameter
 
 Use annotation `OracleParameter` in case
+
 - Both field names are not the same
 - Type input/output is a complex type
 
-Please take a look [ComplexCustomer.java](https://github.com/ngocnhan-tran1996/spring-jdbc-oracle/blob/main/src/test/java/io/spring/jdbc/oracle/ComplexCustomer.java) and [`complex_example_pack.sql`](https://github.com/ngocnhan-tran1996/spring-jdbc-oracle/tree/main/src/test/resources/script/complex_example_pack.sql)
+Please take a
+look [ComplexCustomerPojo.java](../../../spring-jdbc-oracle-test/src/test/java/io/spring/jdbc/oracle/dto/ComplexCustomerPojo.java)
+and [`complex_example_pack.sql`](../../../spring-jdbc-oracle-test/src/test/resources/script/complex_example_pack.sql).
 
 You will see how to use annotation `OracleParameter`
 
@@ -50,9 +53,9 @@ You will see how to use annotation `OracleParameter`
 private Address address;
 
 @OracleParameter(
-    value = "other_addresses",
-    input = @OracleType(structName = "complex_example_pack.address", arrayName = "complex_example_pack.addresses"),
-    output = @OracleType(structName = "complex_example_pack.address", arrayName = "complex_example_pack.addresses")
+    value = "other_address",
+    input = @OracleType(structName = "complex_example_pack.address", arrayName = "complex_example_pack.address_array"),
+    output = @OracleType(structName = "complex_example_pack.address", arrayName = "complex_example_pack.address_array")
 )
 private Address[] addresses;
 ```
