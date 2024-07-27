@@ -39,8 +39,8 @@ Use annotation `OracleParameter` in case
 - Type input/output is a complex type
 
 Please take a
-look [ComplexCustomerPojo.java](../../../spring-jdbc-oracle-test/src/test/java/io/spring/jdbc/oracle/dto/ComplexCustomerPojo.java)
-and [`complex_example_pack.sql`](../../../spring-jdbc-oracle-test/src/test/resources/script/complex_example_pack.sql).
+look [ComplexCustomerPojo.java](https://github.com/ngocnhan-tran1996/spring-jdbc-oracle/tree/main/spring-jdbc-oracle-test/src/test/java/io/spring/jdbc/oracle/dto/ComplexCustomerPojo.java)
+and [`complex_example_pack.sql`](https://github.com/ngocnhan-tran1996/spring-jdbc-oracle/tree/main/spring-jdbc-oracle-test/src/test/resources/script/complex_example_pack.sql).
 
 You will see how to use annotation `OracleParameter`
 
