@@ -66,54 +66,112 @@
 <h1>Implementation</h1>
 <p><code>SimpleJdbcCall</code> and <code>MapSqlParameterSource</code> come from Spring.</p>
 
-<div class="source"><pre class="prettyprint"><code class="language-java">var simpleJdbcCall = new SimpleJdbcCall(this.jdbcTemplate)
-    .withCatalogName(&quot;example_pack&quot;)
-    .withProcedureName(&quot;EXAMPLE_PROC&quot;)
-    .declareParameters(
+<div class="source"><pre class="prettyprint"><code class="language-java">@Repository
+@RequiredArgsConstructor
+class ExampleRepository {
 
-        inCustomerObject.sqlParameter(),
-        inNumbers.sqlParameter(),
-        inCustomer.sqlParameter(),
-        inCustomers.sqlParameter(),
+    private static final String OBJECT = &quot;customer_object&quot;;
+    private static final String NUMBERS = &quot;example_pack.numbers&quot;;
+    private static final String CUSTOMERS = &quot;example_pack.customers&quot;;
+    private static final String CUSTOMER = &quot;example_pack.customer&quot;;
 
-        inOutCustomerObject.sqlInOutParameter(),
-        inOutNumbers.sqlInOutParameter(),
-        inOutCustomer.sqlInOutParameter(),
-        inOutCustomers.sqlInOutParameter(),
+    private final JdbcTemplate jdbcTemplate;
 
-        outCustomerObject.sqlOutParameter(),
-        outNumbers.sqlOutParameter(),
-        outCustomer.sqlOutParameter(),
-        outCustomers.sqlOutParameter()
-    );
+    Map&lt;String, Object&gt; callExamplePack() {
 
-var sqlParameterSource = new MapSqlParameterSource()
-    .addValues(inCustomerObject.toMap())
-    .addValues(inNumbers.toMap())
-    .addValues(inCustomer.toMap())
-    .addValues(inCustomers.toMap())
+        this.jdbcTemplate.setResultsMapCaseInsensitive(true);
 
-    .addValues(inOutCustomerObject.toMap())
-    .addValues(inOutNumbers.toMap())
-    .addValues(inOutCustomer.toMap())
-    .addValues(inOutCustomers.toMap());
+        // in
+        var inCustomerObject = ParameterInput.withParameterName(&quot;in_customer_object&quot;)
+            .withValue(null)
+            .withStruct(OBJECT);
+        var inNumbers = ParameterInput.withParameterName(&quot;in_numbers&quot;)
+            .withValues(BigDecimal.ONE, BigDecimal.ZERO)
+            .withArray(NUMBERS);
+        var inCustomer = ParameterInput.withParameterName(&quot;in_customer&quot;, CustomerPojo.class)
+            .withValue(new CustomerPojo(&quot;Nhan&quot;, &quot;Tran&quot;, BigDecimal.ONE))
+            .withStruct(CUSTOMER);
+        var inCustomers = ParameterInput.withParameterName(&quot;in_customers&quot;, CustomerRecord.class)
+            .withValues(
+                List.of(
+                    new CustomerRecord(&quot;Tran&quot;, &quot;Nhan&quot;, BigDecimal.ZERO),
+                    new CustomerRecord(&quot;Nhan&quot;, &quot;Tran&quot;, BigDecimal.TEN)
+                )
+            )
+            .withStructArray(CUSTOMERS, CUSTOMER);
 
-// return Map&lt;String, Object&gt;
-return simpleJdbcCall.execute(sqlParameterSource);
+        // inout
+        var inOutCustomerObject = ParameterInput.withParameterName(&quot;in_out_customer_object&quot;)
+            .withValue(null)
+            .withStruct(OBJECT);
+        var inOutNumbers = ParameterInput.withParameterName(&quot;in_out_numbers&quot;)
+            .withValues(List.of(BigDecimal.TEN, BigDecimal.ZERO))
+            .withArray(NUMBERS);
+        var inOutCustomer = ParameterInput.withParameterName(
+                &quot;in_out_customer&quot;,
+                CustomerRecord.class
+            )
+            .withValue(new CustomerRecord(&quot;Tran&quot;, &quot;Nhan&quot;, BigDecimal.TEN))
+            .withStruct(CUSTOMER);
+        var inOutCustomers = ParameterInput.withParameterName(
+                &quot;in_out_customers&quot;,
+                CustomerPojo.class
+            )
+            .withValues(
+                List.of(
+                    new CustomerPojo(&quot;Nhan&quot;, &quot;Tran&quot;, BigDecimal.ZERO),
+                    new CustomerPojo(&quot;Tran&quot;, &quot;Nhan&quot;, BigDecimal.ONE)
+                )
+            )
+            .withStructArray(CUSTOMERS, CUSTOMER);
 
-// see the result and type
-var result = simpleJdbcCall.execute(sqlParameterSource);
-result.containsKey(&quot;IN_OUT_NUMBERS&quot;);
-result.containsKey(&quot;OUT_NUMBERS&quot;); // Array BigDecimal = BigDecimal[].class
+        // out
+        var outCustomerObject = ParameterOutput.withParameterName(&quot;out_customer_object&quot;)
+            .withStruct(OBJECT);
+        var outNumbers = ParameterOutput.withParameterName(&quot;out_numbers&quot;)
+            .withArray(NUMBERS);
+        var outCustomer = ParameterOutput.withParameterName(&quot;out_customer&quot;, CustomerPojo.class)
+            .withStruct(CUSTOMER);
+        var outCustomers = ParameterOutput.withParameterName(&quot;out_customers&quot;, CustomerRecord.class)
+            .withStructArray(CUSTOMERS);
 
-result.containsKey(&quot;IN_OUT_CUSTOMER&quot;);
-result.containsKey(&quot;OUT_CUSTOMER&quot;);
+        var simpleJdbcCall = new SimpleJdbcCall(this.jdbcTemplate)
+            .withCatalogName(&quot;example_pack&quot;)
+            .withProcedureName(&quot;EXAMPLE_PROC&quot;)
+            .declareParameters(
 
-result.containsKey(&quot;IN_OUT_CUSTOMERS&quot;); // Array Customer class = Customer[].class
-result.containsKey(&quot;OUT_CUSTOMERS&quot;);
+                inCustomerObject.sqlParameter(),
+                inNumbers.sqlParameter(),
+                inCustomer.sqlParameter(),
+                inCustomers.sqlParameter(),
 
-result.containsKey(&quot;IN_OUT_CUSTOMER_OBJECT&quot;);
-result.containsKey(&quot;OUT_CUSTOMER_OBJECT&quot;);
+                inOutCustomerObject.sqlInOutParameter(),
+                inOutNumbers.sqlInOutParameter(),
+                inOutCustomer.sqlInOutParameter(),
+                inOutCustomers.sqlInOutParameter(),
+
+                outCustomerObject.sqlOutParameter(),
+                outNumbers.sqlOutParameter(),
+                outCustomer.sqlOutParameter(),
+                outCustomers.sqlOutParameter()
+            );
+
+        var sqlParameterSource = new MapSqlParameterSource()
+            .addValues(inCustomerObject.toMap())
+            .addValues(inNumbers.toMap())
+            .addValues(inCustomer.toMap())
+            .addValues(inCustomers.toMap())
+
+            .addValues(inOutCustomerObject.toMap())
+            .addValues(inOutNumbers.toMap())
+            .addValues(inOutCustomer.toMap())
+            .addValues(inOutCustomers.toMap());
+
+        // return Map&lt;String, Object&gt;
+        return simpleJdbcCall.execute(sqlParameterSource);
+    }
+
+}
 </code></pre></div>
         </main>
       </div>
