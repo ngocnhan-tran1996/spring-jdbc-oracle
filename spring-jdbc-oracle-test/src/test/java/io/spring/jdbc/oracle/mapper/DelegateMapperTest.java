@@ -118,7 +118,7 @@ class DelegateMapperTest {
         @Override
         public LocalDate convert(LocalDateTime source) {
 
-            return Optional.of(source)
+            return Optional.ofNullable(source)
                 .map(LocalDateTime::toLocalDate)
                 .orElse(null);
         }

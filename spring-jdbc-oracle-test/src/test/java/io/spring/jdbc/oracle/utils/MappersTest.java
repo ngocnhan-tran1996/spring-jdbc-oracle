@@ -145,7 +145,7 @@ class MappersTest {
             @Override
             public Integer convert(BigDecimal source) {
 
-                return Optional.of(source)
+                return Optional.ofNullable(source)
                     .map(BigDecimal::intValue)
                     .orElse(null);
             }

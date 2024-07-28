@@ -11,10 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.springframework.jdbc.core.SqlInOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlReturnType;
@@ -46,8 +44,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
     public final ParameterTypeValue withValues(T... values) {
 
         this.values = Optional.ofNullable(values)
-            .map(Arrays::stream)
-            .map(Stream::toList)
+            .map(Arrays::asList)
             .orElse(null);
         return new ParameterTypeValue();
     }
@@ -60,10 +57,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
     public ParameterTypeValue withValue(T value) {
 
-        this.values = value == null
-            ? null
-            : List.of(value);
-        return new ParameterTypeValue();
+        return withValues(value);
     }
 
     public final class ParameterTypeValue {
@@ -129,7 +123,7 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
         public Map<String, Object> toMap() {
 
             var map = new HashMap<String, Object>();
-            map.put(getParameterName(), this.getTypeValue().orElse(null));
+            map.put(getParameterName(), this.getTypeValueOrNull());
             return map;
         }
 
@@ -137,10 +131,8 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
             try {
 
-                var value = this.getTypeValue();
-                if (value.isPresent()) {
+                if (this.getTypeValueOrNull() instanceof AbstractTypeValue sqlTypeValue) {
 
-                    var sqlTypeValue = (AbstractTypeValue) value.get();
                     return sqlTypeValue.createTypeValue(connection, sqlTypeValue.getTypeName());
                 }
 
@@ -171,10 +163,11 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
             );
         }
 
-        private Optional<Object> getTypeValue() {
+        private AbstractTypeValue getTypeValueOrNull() {
 
-            return Optional.ofNullable(values)
-                .map(v -> this.typeValue);
+            return values == null
+                ? null
+                : this.typeValue;
         }
 
         private int getType() {
