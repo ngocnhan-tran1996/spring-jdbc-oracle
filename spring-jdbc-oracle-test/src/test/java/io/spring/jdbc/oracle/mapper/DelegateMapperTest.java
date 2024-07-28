@@ -41,7 +41,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class DelegateMapperTest {
 
-    private static final String PERSON_TYPE = "PERSON";
+    private static final String PERSON_TYPE = "PERSON_OBJ";
 
     @Autowired
     DataSource dataSource;
@@ -56,7 +56,7 @@ class DelegateMapperTest {
         jdbcTemplate = new JdbcTemplate(dataSource);
 
         jdbcTemplate.update("""
-            CREATE OR REPLACE TYPE person AS OBJECT (
+            CREATE OR REPLACE TYPE person_obj AS OBJECT (
                     first_name VARCHAR(255),
                     last_name  VARCHAR(255),
                     age        NUMBER,

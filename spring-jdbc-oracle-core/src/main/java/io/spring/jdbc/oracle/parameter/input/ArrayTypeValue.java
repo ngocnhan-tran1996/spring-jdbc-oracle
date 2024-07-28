@@ -27,13 +27,9 @@ class ArrayTypeValue<T> extends AbstractTypeValue {
     @Override
     protected Object createTypeValue(Connection connection, String typeName) throws SQLException {
 
-        final var oracleArray = this.values == null
-            ? null
-            : this.values.toArray();
-
         return connection
             .unwrap(OracleConnection.class)
-            .createOracleArray(typeName, oracleArray);
+            .createOracleArray(typeName, this.values.toArray());
     }
 
     protected Collection<T> values() {

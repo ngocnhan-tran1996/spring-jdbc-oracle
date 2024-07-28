@@ -25,11 +25,6 @@ class StructArrayTypeValue<T> extends ArrayTypeValue<T> {
     @Override
     protected Object createTypeValue(Connection connection, String typeName) throws SQLException {
 
-        if (super.values() == null) {
-
-            return super.createTypeValue(connection, typeName);
-        }
-
         var values = new ArrayList<>(super.values());
         var size = values.size();
         Struct[] structs = new Struct[size];
