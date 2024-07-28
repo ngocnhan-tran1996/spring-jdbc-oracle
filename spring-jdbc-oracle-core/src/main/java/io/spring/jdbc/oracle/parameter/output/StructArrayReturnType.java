@@ -1,6 +1,5 @@
 package io.spring.jdbc.oracle.parameter.output;
 
-import io.spring.jdbc.oracle.exception.ValueException;
 import io.spring.jdbc.oracle.mapper.Mapper;
 import java.sql.Array;
 import java.sql.Connection;
@@ -31,17 +30,7 @@ class StructArrayReturnType extends ArrayReturnType {
 
         for (int i = 0; i < length; i++) {
 
-            var object = objects[i];
-            if (object instanceof Struct struct) {
-
-                values[i] = this.convertStruct(connection, struct);
-                continue;
-            }
-
-            String className = object == null
-                ? null
-                : object.getClass().getName();
-            throw new ValueException("Expected STRUCT but got '%s'".formatted(className));
+            values[i] = this.convertStruct(connection, (Struct) objects[i]);
         }
 
         return values;

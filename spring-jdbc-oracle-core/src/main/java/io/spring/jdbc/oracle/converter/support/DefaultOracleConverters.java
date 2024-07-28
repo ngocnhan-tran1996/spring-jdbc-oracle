@@ -206,7 +206,7 @@ public final class DefaultOracleConverters implements OracleConverters {
 
             Class<?> superclass = candidate.getSuperclass();
 
-            if (superclass != null && superclass != Object.class && superclass != Enum.class) {
+            if (superclass != null && superclass != Object.class) {
 
                 this.addToClassHierarchy(
                     i + 1,
@@ -219,12 +219,6 @@ public final class DefaultOracleConverters implements OracleConverters {
             }
 
             this.addInterfacesToClassHierarchy(candidate, array, hierarchy, visited);
-        }
-
-        if (Enum.class.isAssignableFrom(type)) {
-
-            this.addToClassHierarchy(hierarchy.size(), Enum.class, false, hierarchy, visited);
-            this.addInterfacesToClassHierarchy(Enum.class, false, hierarchy, visited);
         }
 
         this.addToClassHierarchy(hierarchy.size(), Object.class, array, hierarchy, visited);
