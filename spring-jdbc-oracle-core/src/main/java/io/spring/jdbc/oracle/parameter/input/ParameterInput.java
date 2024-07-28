@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.SqlInOutParameter;
@@ -57,7 +58,10 @@ public final class ParameterInput<T> extends ParameterAccessor<T> {
 
     public ParameterTypeValue withValue(T value) {
 
-        return withValues(value);
+        this.values = Optional.ofNullable(value)
+            .map(List::of)
+            .orElse(null);
+        return new ParameterTypeValue();
     }
 
     public final class ParameterTypeValue {
