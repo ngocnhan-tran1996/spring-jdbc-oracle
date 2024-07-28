@@ -46,6 +46,23 @@ class DefaultOracleConvertersTest {
 
         assertThatExceptionOfType(ValueException.class)
             .isThrownBy(() -> oracleConverters.addConverter(null));
+
+        var nullConvertKey = new NullConvertKey();
+        assertThatExceptionOfType(ValueException.class)
+            .isThrownBy(() -> oracleConverters.addConverter(nullConvertKey));
+
+        assertThatExceptionOfType(ValueException.class)
+            .isThrownBy(() -> oracleConverters.addGenericConverter(nullConvertKey));
+    }
+
+    @Test
+    void return_null_when_type_is_null() {
+
+        assertThat(oracleConverters.convert(null, null, TypeDescriptor.valueOf(Object.class)))
+            .isNull();
+
+        assertThat(oracleConverters.convert(null, TypeDescriptor.valueOf(Object.class), null))
+            .isNull();
     }
 
     @SuppressWarnings("unchecked")
@@ -79,6 +96,28 @@ class DefaultOracleConvertersTest {
         );
         assertThat(genericConverters)
             .hasSize(5);
+    }
+
+    record NullConvertKey() implements GenericOracleConverter {
+
+        @Override
+        public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
+
+            return true;
+        }
+
+        @Override
+        public ConvertKey getConvertKey() {
+
+            return null;
+        }
+
+        @Override
+        public Object convert(Object source) {
+
+            return null;
+        }
+
     }
 
     record ClonedLocalDatetimeToTimestampOracleConverter() implements
