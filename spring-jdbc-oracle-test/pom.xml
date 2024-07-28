@@ -26,8 +26,10 @@
 
       <dependency>
         <groupId>io.github.ngocnhan-tran1996</groupId>
-        <artifactId>spring-jdbc-oracle-test</artifactId>
+        <artifactId>spring-jdbc-oracle</artifactId>
         <version>${revision}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
